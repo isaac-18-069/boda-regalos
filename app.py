@@ -23,25 +23,70 @@ CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("boda_header.jpg")
 
 # ──────────────────────────────────────────────
-# ESTILOS VISUALES (Inspirado en la invitación elegida)
+# ESTILOS VISUALES (Sobre Interactivo y Tarjeta Boda)
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* Google Fonts para la tipografía cursiva elegante */
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;600&display=swap');
 
-    /* Fondo general cálido */
     .stApp {
         background-color: #FAF9F6;
     }
     
-    /* Tipografía general */
     h1, h2, h3, p, label, .stMarkdown {
         font-family: 'Montserrat', sans-serif !important;
         color: #2D3748 !important;
     }
     
-    /* Encabezado Invitación */
+    /* Contenedor del Sobre Interactivo */
+    .envelope-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 30px auto;
+    }
+    
+    .envelope {
+        position: relative;
+        width: 280px;
+        height: 180px;
+        background: #90A4AE;
+        border-radius: 8px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .envelope::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 0;
+        border-left: 140px solid transparent;
+        border-right: 140px solid transparent;
+        border-top: 100px solid #78909C;
+        transform-origin: top;
+        transition: transform 0.6s ease;
+    }
+    
+    .seal {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        z-index: 2;
+    }
+
+    /* Tipografía Boda */
     .boda-subtitulo {
         font-family: 'Cinzel', serif !important;
         letter-spacing: 4px;
@@ -73,7 +118,7 @@ st.markdown("""
         font-weight: 600;
     }
     
-    /* Contenedores tipo tarjeta */
+    /* Contenedor tipo Tarjeta */
     .boda-card {
         background-color: #FFFFFF;
         padding: 30px;
@@ -82,9 +127,14 @@ st.markdown("""
         border: 1px solid #E2E8F0;
         margin-bottom: 25px;
         text-align: center;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Badge de Regalos disponibles */
     .regalos-badge {
         background-color: #EBF8FF;
         color: #2B6CB0;
@@ -97,7 +147,6 @@ st.markdown("""
         margin-bottom: 15px;
     }
     
-    /* Tarjeta de resultado del regalo */
     .regalo-resultado {
         background: linear-gradient(135deg, #F7FAFC, #EDF2F7);
         border: 2px dashed #CBD5E0;
@@ -107,7 +156,7 @@ st.markdown("""
         margin: 20px 0;
     }
     
-    /* Botones principales */
+    /* Botones */
     div.stButton > button:first-child {
         background-color: #4A5568 !important;
         color: #FFFFFF !important;
@@ -118,13 +167,14 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif !important;
         letter-spacing: 1px;
         transition: all 0.3s ease;
+        display: block;
+        margin: 0 auto;
     }
     div.stButton > button:first-child:hover {
         background-color: #2D3748 !important;
         box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
     
-    /* Inputs */
     .stTextInput>div>div>input {
         border-radius: 10px;
         border: 1px solid #CBD5E0;
@@ -133,8 +183,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────
-# ESTADO DE SESIÓN
+# ESTADO DE SESIÓN Y PASOS DE NAVEGACIÓN
 # ──────────────────────────────────────────────
+if "paso" not in st.session_state:
+    st.session_state.paso = 1  # Paso 1: Sobre, Paso 2: Tarjeta Invitación, Paso 3: Formulario
+
 if "confirmado" not in st.session_state:
     st.session_state.confirmado = False
     st.session_state.nombre = ""
@@ -146,7 +199,6 @@ if "confirmado" not in st.session_state:
 # FUNCIONES AUXILIARES
 # ──────────────────────────────────────────────
 def cargar_regalos() -> pd.DataFrame:
-    """Carga la lista de regalos disponibles con manejo de errores."""
     try:
         if not CSV_REGALOS.exists():
             st.error(f"❌ No se encuentra el archivo {CSV_REGALOS.name}.")
@@ -161,7 +213,6 @@ def cargar_regalos() -> pd.DataFrame:
         return pd.DataFrame(columns=["Regalo"])
 
 def cargar_respuestas() -> pd.DataFrame:
-    """Carga las respuestas existentes."""
     try:
         if CSV_RESPUESTAS.exists():
             return pd.read_csv(CSV_RESPUESTAS)
@@ -171,14 +222,12 @@ def cargar_respuestas() -> pd.DataFrame:
         return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
 
 def nombre_ya_registrado(nombre: str, df_resp: pd.DataFrame) -> bool:
-    """Verifica si un nombre ya fue registrado (insensible a mayúsculas)."""
     return any(
         nombre.strip().lower() == str(n).strip().lower()
         for n in df_resp["Nombre"].tolist()
     )
 
 def asignar_regalo_con_lock(nombre: str) -> str:
-    """Asigna un regalo de forma atómica evitando duplicados simultáneos."""
     df = cargar_regalos()
     if df.empty:
         raise ValueError("No quedan regalos disponibles.")
@@ -189,73 +238,132 @@ def asignar_regalo_con_lock(nombre: str) -> str:
     return regalo
 
 # ──────────────────────────────────────────────
-# ENCABEZADO ESTILO INVITACIÓN
+# PASO 1: SOBRE CERRADO
 # ──────────────────────────────────────────────
-st.markdown('<div class="boda-subtitulo">NUESTRA BODA</div>', unsafe_allow_html=True)
-st.markdown('<div class="boda-nombres">Carlos & Eunice</div>', unsafe_allow_html=True)
-st.markdown('<div class="boda-fecha">18 • 07 • 2027</div>', unsafe_allow_html=True)
-
-# Cargar imagen si existe en la carpeta
-if IMAGEN_HEADER.exists():
-    try:
-        image = Image.open(IMAGEN_HEADER)
-        st.image(image, use_container_width=True)
-    except Exception:
-        pass
-
-# ──────────────────────────────────────────────
-# VISTA PRINCIPAL (FORMULARIO)
-# ──────────────────────────────────────────────
-if not st.session_state.confirmado:
-    df_regalos = cargar_regalos()
-    disponibles = len(df_regalos)
-
-    st.markdown('<div class="boda-card">', unsafe_allow_html=True)
-    if disponibles > 0:
-        st.markdown(f"""
-            <div class="regalos-badge">
-                🎁 Quedan {disponibles} opciones de regalos disponibles
+if st.session_state.paso == 1:
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown('<div class="boda-subtitulo">TIENES UNA INVITACIÓN</div>', unsafe_allow_html=True)
+    
+    # Dibujo del sobre con cera dorada
+    st.markdown("""
+        <div class="envelope-wrapper">
+            <div class="envelope">
+                <div class="seal">🌿</div>
             </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.warning("⚠️ Todos los regalos de la lista inicial ya han sido asignados.")
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<p style='text-align: center; color: #718096;'>Haz clic abajo para abrir la invitación</p>", unsafe_allow_html=True)
+    
+    if st.button("Abrir Invitación ✉️"):
+        st.session_state.paso = 2
+        st.rerun()
 
-    st.write("Por favor ingresa tu nombre completo para confirmar tu asistencia y obtener tu opción de regalo asignada.")
+# ──────────────────────────────────────────────
+# PASO 2: VISTA DE LA TARJETA (Carlos & Eunice)
+# ──────────────────────────────────────────────
+elif st.session_state.paso == 2:
+    st.markdown('<div class="boda-card">', unsafe_allow_html=True)
+    st.markdown('<div class="boda-subtitulo">NUESTRA BODA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="boda-nombres">Carlos & Eunice</div>', unsafe_allow_html=True)
+    st.markdown('<div class="boda-fecha">18 • 07 • 2027</div>', unsafe_allow_html=True)
+
+    # Imagen si existe
+    if IMAGEN_HEADER.exists():
+        try:
+            image = Image.open(IMAGEN_HEADER)
+            st.image(image, use_container_width=True)
+        except Exception:
+            pass
+
+    st.markdown("<p style='text-align: center; font-style: italic; color: #4A5568;'>Queremos compartir este día tan especial contigo.</p>", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ── FORMULARIO ──
-    with st.form("boda_form"):
-        nombre = st.text_input(
-            "Tu Nombre Completo:",
-            placeholder="Ej: María García López"
-        )
-        asiste = st.radio(
-            "¿Nos acompañarás en este día tan especial?",
-            ["¡Sí, ahí estaré! 🎉", "Lamentablemente no puedo 😢"]
-        )
-        st.markdown("<br>", unsafe_allow_html=True)
-        btn = st.form_submit_button("Confirmar Asistencia")
+    if st.button("Siguiente ➡️"):
+        st.session_state.paso = 3
+        st.rerun()
 
-    # ── PROCESAMIENTO ──
-    if btn:
-        if not nombre.strip():
-            st.error("📝 Por favor escribe tu nombre.")
+# ──────────────────────────────────────────────
+# PASO 3: FORMULARIO Y ASIGNACIÓN DE REGALOS
+# ──────────────────────────────────────────────
+elif st.session_state.paso == 3:
+    if not st.session_state.confirmado:
+        st.markdown('<div class="boda-subtitulo">CONFIRMACIÓN & REGALO</div>', unsafe_allow_html=True)
+        st.markdown('<div class="boda-nombres" style="font-size: 2.5rem !important;">Carlos & Eunice</div>', unsafe_allow_html=True)
+        st.markdown('<div class="boda-fecha" style="font-size: 1rem;">18 • 07 • 2027</div>', unsafe_allow_html=True)
+
+        df_regalos = cargar_regalos()
+        disponibles = len(df_regalos)
+
+        st.markdown('<div class="boda-card">', unsafe_allow_html=True)
+        if disponibles > 0:
+            st.markdown(f"""
+                <div class="regalos-badge">
+                    🎁 Quedan {disponibles} opciones de regalos en nuestra lista
+                </div>
+            """, unsafe_allow_html=True)
         else:
-            df_resp_existente = cargar_respuestas()
-            if nombre_ya_registrado(nombre, df_resp_existente):
-                st.warning(f"⚠️ El nombre **{nombre.strip()}** ya se encuentra registrado.")
-            else:
-                codigo = uuid.uuid4().hex[:8].upper()
-                
-                if asiste == "¡Sí, ahí estaré! 🎉":
-                    try:
-                        regalo = asignar_regalo_con_lock(nombre.strip())
+            st.warning("⚠️ Todos los regalos de la lista inicial ya han sido asignados.")
 
-                        # Guardar respuesta CSV
+        st.write("Por favor ingresa tu nombre completo para confirmar tu asistencia y recibir la opción de regalo asignada.")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # ── FORMULARIO ──
+        with st.form("boda_form"):
+            nombre = st.text_input(
+                "Tu Nombre Completo:",
+                placeholder="Ej: María García López"
+            )
+            asiste = st.radio(
+                "¿Nos acompañarás en este día tan especial?",
+                ["¡Sí, ahí estaré! 🎉", "Lamentablemente no puedo 😢"]
+            )
+            st.markdown("<br>", unsafe_allow_html=True)
+            btn = st.form_submit_button("Confirmar Asistencia")
+
+        if btn:
+            if not nombre.strip():
+                st.error("📝 Por favor escribe tu nombre.")
+            else:
+                df_resp_existente = cargar_respuestas()
+                if nombre_ya_registrado(nombre, df_resp_existente):
+                    st.warning(f"⚠️ El nombre **{nombre.strip()}** ya se encuentra registrado.")
+                else:
+                    codigo = uuid.uuid4().hex[:8].upper()
+                    
+                    if asiste == "¡Sí, ahí estaré! 🎉":
+                        try:
+                            regalo = asignar_regalo_con_lock(nombre.strip())
+
+                            # Guardar CSV
+                            nueva = pd.DataFrame([{
+                                "Nombre": nombre.strip(),
+                                "Asiste": "Sí",
+                                "Regalo": regalo,
+                                "Codigo": codigo
+                            }])
+                            nueva.to_csv(
+                                CSV_RESPUESTAS, mode='a',
+                                header=not CSV_RESPUESTAS.exists(), index=False
+                            )
+
+                            st.session_state.confirmado = True
+                            st.session_state.nombre = nombre.strip()
+                            st.session_state.regalo = regalo
+                            st.session_state.codigo = codigo
+                            st.session_state.asiste = "Sí"
+
+                            st.rerun()
+
+                        except ValueError as e:
+                            st.error(f"❌ {e}")
+                        except Exception as e:
+                            st.error(f"❌ Ocurrió un error inesperado: {e}")
+                    else:
                         nueva = pd.DataFrame([{
                             "Nombre": nombre.strip(),
-                            "Asiste": "Sí",
-                            "Regalo": regalo,
+                            "Asiste": "No",
+                            "Regalo": "N/A",
                             "Codigo": codigo
                         }])
                         nueva.to_csv(
@@ -263,42 +371,16 @@ if not st.session_state.confirmado:
                             header=not CSV_RESPUESTAS.exists(), index=False
                         )
 
-                        # Estado de sesión
                         st.session_state.confirmado = True
                         st.session_state.nombre = nombre.strip()
-                        st.session_state.regalo = regalo
+                        st.session_state.regalo = "N/A"
                         st.session_state.codigo = codigo
-                        st.session_state.asiste = "Sí"
+                        st.session_state.asiste = "No"
 
                         st.rerun()
 
-                    except ValueError as e:
-                        st.error(f"❌ {e}")
-                    except Exception as e:
-                        st.error(f"❌ Ocurrió un error inesperado: {e}")
-                else:
-                    # No asiste
-                    nueva = pd.DataFrame([{
-                        "Nombre": nombre.strip(),
-                        "Asiste": "No",
-                        "Regalo": "N/A",
-                        "Codigo": codigo
-                    }])
-                    nueva.to_csv(
-                        CSV_RESPUESTAS, mode='a',
-                        header=not CSV_RESPUESTAS.exists(), index=False
-                    )
-
-                    st.session_state.confirmado = True
-                    st.session_state.nombre = nombre.strip()
-                    st.session_state.regalo = "N/A"
-                    st.session_state.codigo = codigo
-                    st.session_state.asiste = "No"
-
-                    st.rerun()
-
 # ──────────────────────────────────────────────
-# MOSTRAR RESULTADO
+# MOSTRAR RESULTADO FINAL
 # ──────────────────────────────────────────────
 if st.session_state.confirmado:
     if st.session_state.asiste == "Sí":
@@ -336,14 +418,14 @@ if st.session_state.confirmado:
         </div>
         """, unsafe_allow_html=True)
 
-    # Botón para resetear en caso de pruebas
     if st.button("🔄 Registrar a otra persona"):
         for key in ["confirmado", "nombre", "regalo", "codigo", "asiste"]:
             st.session_state[key] = "" if key != "confirmado" else False
+        st.session_state.paso = 1
         st.rerun()
 
 # ──────────────────────────────────────────────
-# PANEL ADMIN
+# PANEL ADMIN (Oculto)
 # ──────────────────────────────────────────────
 st.markdown("<br><br>", unsafe_allow_html=True)
 with st.expander("📊 Ver lista de invitados (Panel Admin)", expanded=False):
