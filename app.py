@@ -222,11 +222,12 @@ if img_b64:
 
 # MÚSICA DE FONDO (ROMÁNTICA DE VIOLÍN)
 st.markdown("""
-<div class="invitation-card">
-    <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 500; margin-bottom: 8px;">🎻 Escucha nuestra canción</p>
+<div class="invitation-card" style="padding-bottom: 10px;">
+    <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
 </div>
 """, unsafe_allow_html=True)
-st.audio("https://youtu.be/7TzJKEn4q_c?si=axqVMUaok8pA7PL7")
+
+st.video("https://youtu.be/js2MkCAmTJY")
 
 # PADRES Y PADRINOS
 st.markdown("""
@@ -257,7 +258,7 @@ st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
     <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Boga Mar Adentro</p>
-    <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
+    <p style="font-size: 0.9rem; color: #4A5568 !important;">20:00 HRS</p>
     <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
         <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
             📍 Ver ubicación en GPS
