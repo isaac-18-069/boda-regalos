@@ -1,22 +1,21 @@
 import streamlit as st
 import pandas as pd
 import random
-import os
-import uuid
 from pathlib import Path
 import base64
+import uuid
 
 # ──────────────────────────────────────────────
 # CONFIGURACIÓN DE LA PÁGINA
 # ──────────────────────────────────────────────
 st.set_page_config(
     page_title="Carlos & Eunice 💍", 
-    page_icon="✨", 
+    page_icon="🌿", 
     layout="centered"
 )
 
 # ──────────────────────────────────────────────
-# RUTA DE ARCHIVOS
+# ARCHIVOS Y RUTAS
 # ──────────────────────────────────────────────
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
@@ -24,414 +23,301 @@ IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
 
 def get_image_base64(path):
     if path.exists():
-        with open(path, "rb") as image_file:
-            encoded = base64.b64encode(image_file.read()).decode()
+        with open(path, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode()
             return f"data:image/jpeg;base64,{encoded}"
     return None
 
+img_b64 = get_image_base64(IMAGEN_HEADER)
+
 # ──────────────────────────────────────────────
-# ESTILOS VISUALES (Rosas + Tarjeta Elegante)
+# ESTILOS CSS ESTILO CANVA / VERDE OLIVA
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap');
 
+/* Fondo general suave */
 .stApp {
-    background-color: #FAF9F6;
+    background-color: #FAF8F5;
 }
 
-h1, h2, h3, p, label, .stMarkdown {
+/* Ocultar elementos sobrantes de Streamlit */
+#MainMenu, footer, header {visibility: hidden;}
+
+/* Tipografía general */
+html, body, [class*="css"] {
     font-family: 'Montserrat', sans-serif !important;
-    color: #2D3748 !important;
+    color: #3B4A3F !important;
 }
 
-/* Sobre Interactivo */
-.envelope-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 30px auto;
-}
-
-.envelope {
-    position: relative;
-    width: 280px;
-    height: 180px;
-    background: #90A4AE;
-    border-radius: 8px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.envelope::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 0;
-    height: 0;
-    border-left: 140px solid transparent;
-    border-right: 140px solid transparent;
-    border-top: 100px solid #78909C;
-}
-
-.seal {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    z-index: 2;
-}
-
-/* Tarjeta de Invitación */
-.card-invitation {
-    position: relative;
+/* Contenedores tipo tarjeta */
+.invitation-card {
     background-color: #FFFFFF;
-    padding: 40px 25px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    padding: 30px 20px;
+    margin: 25px auto;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.04);
     border: 1px solid #E2E8F0;
-    margin: 20px auto;
     text-align: center;
-    overflow: hidden;
+    position: relative;
 }
 
-.flower-top-left {
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    width: 110px;
-    opacity: 0.85;
-    pointer-events: none;
-}
-.flower-bottom-right {
-    position: absolute;
-    bottom: -10px;
-    right: -10px;
-    width: 110px;
-    opacity: 0.85;
-    transform: rotate(180deg);
-    pointer-events: none;
-}
-
-.boda-subtitulo {
-    font-family: 'Cinzel', serif !important;
-    letter-spacing: 4px;
-    font-size: 1rem;
-    color: #5A6B7C;
+.green-card {
+    background-color: #6B7A68;
+    color: #FFFFFF !important;
+    border-radius: 16px;
+    padding: 30px 20px;
+    margin: 25px auto;
     text-align: center;
-    margin-bottom: 5px;
-    text-transform: uppercase;
+}
+.green-card * {
+    color: #FFFFFF !important;
 }
 
-.boda-nombres {
+/* Títulos elegantes */
+.title-names {
     font-family: 'Great Vibes', cursive !important;
-    font-size: 3.8rem !important;
-    color: #2C3E50 !important;
-    text-align: center;
-    margin-top: 0px;
+    font-size: 3.5rem !important;
+    color: #4A5A48 !important;
     margin-bottom: 0px;
     line-height: 1.2;
 }
 
-.boda-fecha {
+.subtitle-cinzel {
     font-family: 'Cinzel', serif !important;
     letter-spacing: 3px;
-    font-size: 1.1rem;
-    color: #4A5568;
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 20px;
-    font-weight: 600;
+    font-size: 0.9rem;
+    color: #788B75;
+    text-transform: uppercase;
 }
 
-.boda-foto-container {
-    margin: 20px auto;
-    max-width: 85%;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-    border: 3px solid #FAF9F6;
-}
-
-.boda-foto-container img {
-    width: 100%;
-    display: block;
-}
-
-.regalos-badge {
-    background-color: #EBF8FF;
-    color: #2B6CB0;
-    border: 1px solid #BEE3F8;
-    padding: 10px 18px;
-    border-radius: 20px;
-    font-weight: 600;
+/* Agenda / Itinerario */
+.timeline-item {
+    padding: 12px 0;
+    border-bottom: 1px dashed #CBD5E0;
     font-size: 0.95rem;
-    display: inline-block;
-    margin-bottom: 15px;
+}
+.timeline-item:last-child {
+    border-bottom: none;
 }
 
-.regalo-resultado {
-    background: linear-gradient(135deg, #F7FAFC, #EDF2F7);
-    border: 2px dashed #CBD5E0;
-    border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    margin: 20px 0;
-}
-
+/* Botones con estilo oliva */
 div.stButton > button:first-child {
-    background-color: #4A5568 !important;
+    background-color: #6B7A68 !important;
     color: #FFFFFF !important;
-    border-radius: 30px !important;
+    border-radius: 25px !important;
     border: none !important;
-    padding: 12px 38px !important;
+    padding: 12px 35px !important;
     font-size: 1rem !important;
-    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 500;
     letter-spacing: 1px;
+    width: 100%;
     transition: all 0.3s ease;
-    display: block;
-    margin: 15px auto;
 }
 div.stButton > button:first-child:hover {
-    background-color: #2D3748 !important;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    background-color: #556353 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Sobre animado */
+.envelope-box {
+    background-color: #5B6B58;
+    width: 220px;
+    height: 140px;
+    margin: 20px auto;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+.envelope-seal {
+    width: 45px;
+    height: 45px;
+    background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
 </style>
 """, unsafe_allow_html=True)
 
-FLOWER_SVG = """<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 10C30 15 40 35 30 55C20 40 5 30 10 10Z" fill="#A4C3B2" opacity="0.7"/><path d="M15 5C35 20 45 45 25 65C20 45 5 25 15 5Z" fill="#C4D7D1" opacity="0.6"/><circle cx="45" cy="45" r="18" fill="#E8B4B8" opacity="0.85"/><circle cx="42" cy="42" r="12" fill="#D88A92" opacity="0.9"/><circle cx="40" cy="40" r="6" fill="#B55B65"/><circle cx="65" cy="30" r="12" fill="#F4C2C2" opacity="0.8"/><circle cx="63" cy="28" r="8" fill="#E8B4B8"/></svg>"""
-
-# ──────────────────────────────────────────────
-# ESTADO DE SESIÓN
-# ──────────────────────────────────────────────
-if "paso" not in st.session_state:
-    st.session_state.paso = 1
-
-if "confirmado" not in st.session_state:
-    st.session_state.confirmado = False
-    st.session_state.nombre = ""
-    st.session_state.regalo = ""
-    st.session_state.codigo = ""
-    st.session_state.asiste = ""
-
 # ──────────────────────────────────────────────
 # FUNCIONES AUXILIARES
 # ──────────────────────────────────────────────
-def cargar_regalos() -> pd.DataFrame:
-    try:
-        if not CSV_REGALOS.exists():
-            st.error(f"❌ No se encuentra el archivo {CSV_REGALOS.name}.")
-            return pd.DataFrame(columns=["Regalo"])
-        df = pd.read_csv(CSV_REGALOS)
-        if "Regalo" not in df.columns:
-            st.error("❌ El CSV debe tener una columna llamada 'Regalo'.")
-            return pd.DataFrame(columns=["Regalo"])
-        return df
-    except Exception as e:
-        st.error(f"❌ Error al leer regalos.csv: {e}")
+def cargar_regalos():
+    if not CSV_REGALOS.exists():
         return pd.DataFrame(columns=["Regalo"])
+    return pd.read_csv(CSV_REGALOS)
 
-def cargar_respuestas() -> pd.DataFrame:
-    try:
-        if CSV_RESPUESTAS.exists():
-            return pd.read_csv(CSV_RESPUESTAS)
-        return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
-    except Exception as e:
-        st.error(f"❌ Error al leer respuestas.csv: {e}")
-        return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
+def cargar_respuestas():
+    if CSV_RESPUESTAS.exists():
+        return pd.read_csv(CSV_RESPUESTAS)
+    return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
 
-def nombre_ya_registrado(nombre: str, df_resp: pd.DataFrame) -> bool:
-    return any(
-        nombre.strip().lower() == str(n).strip().lower()
-        for n in df_resp["Nombre"].tolist()
-    )
-
-def asignar_regalo_con_lock(nombre: str) -> str:
+def asignar_regalo(nombre):
     df = cargar_regalos()
     if df.empty:
-        raise ValueError("No quedan regalos disponibles.")
-
+        return "Detalle de boda a elección personal"
     regalo = random.choice(df["Regalo"].tolist())
     df = df[df["Regalo"] != regalo]
     df.to_csv(CSV_REGALOS, index=False)
     return regalo
 
 # ──────────────────────────────────────────────
-# PASO 1: SOBRE CERRADO
+# VISTA PRINCIPAL DE LA INVITACIÓN (SCROLL CONTINUO)
 # ──────────────────────────────────────────────
-if st.session_state.paso == 1:
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown('<div class="boda-subtitulo">TIENES UNA INVITACIÓN</div>', unsafe_allow_html=True)
-    
-    st.markdown("""<div class="envelope-wrapper"><div class="envelope"><div class="seal">🌿</div></div></div>""", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #718096;'>Haz clic abajo para abrir la invitación</p>", unsafe_allow_html=True)
-    
-    if st.button("Abrir Invitación ✉️"):
-        st.session_state.paso = 2
-        st.rerun()
 
-# ──────────────────────────────────────────────
-# PASO 2: TARJETA CON ROSAS Y FOTO
-# ──────────────────────────────────────────────
-elif st.session_state.paso == 2:
-    img_b64 = get_image_base64(IMAGEN_HEADER)
-    img_html = f'<div class="boda-foto-container"><img src="{img_b64}" /></div>' if img_b64 else ""
+# HEADER CON NOMBRES
+st.markdown("""
+<div class="invitation-card">
+    <div class="subtitle-cinzel">NUESTRA BODA</div>
+    <div class="title-names">Carlos & Eunice</div>
+    <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68; font-weight: 600; margin-top: 5px;">
+        18 DE JULIO DE 2027
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-    card_html = f"""<div class="card-invitation"><div class="flower-top-left">{FLOWER_SVG}</div><div class="flower-bottom-right">{FLOWER_SVG}</div><div class="boda-subtitulo">NUESTRA BODA</div><div class="boda-nombres">Carlos & Eunice</div><div class="boda-fecha">18 • 07 • 2027</div>{img_html}<p style="font-style: italic; color: #4A5568; margin-top: 15px;">Queremos compartir este día tan especial contigo.</p></div>"""
+# FOTO DE LOS NOVIOS
+if img_b64:
+    st.markdown(f"""
+    <div class="invitation-card" style="padding: 10px; overflow: hidden;">
+        <img src="{img_b64}" style="width: 100%; border-radius: 12px; display: block;" />
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown(card_html, unsafe_allow_html=True)
+# MÚSICA DE FONDO (CANCIÓN)
+st.markdown("""
+<div class="invitation-card">
+    <p style="font-size: 0.9rem; color: #6B7A68; margin-bottom: 8px;">🎵 Escucha nuestra canción</p>
+</div>
+""", unsafe_allow_html=True)
+st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3") # Puedes cambiar por el audio MP3 que desees
 
-    if st.button("Siguiente ➡️"):
-        st.session_state.paso = 3
-        st.rerun()
+# PADRES Y PADRINOS
+st.markdown("""
+<div class="invitation-card">
+    <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
+    <div style="display: flex; justify-content: space-around; font-size: 0.85rem; margin-top: 10px;">
+        <div>
+            <strong>Padres del Novio</strong><br>Carlos Sr. & María
+        </div>
+        <div>
+            <strong>Padres de la Novia</strong><br>José & Juana
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# ──────────────────────────────────────────────
-# PASO 3: FORMULARIO Y REGALOS
-# ──────────────────────────────────────────────
-elif st.session_state.paso == 3:
-    if not st.session_state.confirmado:
-        st.markdown('<div class="boda-subtitulo">CONFIRMACIÓN & REGALO</div>', unsafe_allow_html=True)
-        st.markdown('<div class="boda-nombres" style="font-size: 2.5rem !important;">Carlos & Eunice</div>', unsafe_allow_html=True)
-        st.markdown('<div class="boda-fecha" style="font-size: 1rem;">18 • 07 • 2027</div>', unsafe_allow_html=True)
+# DÍA Y CALENDARIO
+st.markdown("""
+<div class="green-card">
+    <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
+    <h2 style="font-size: 2.2rem; margin: 10px 0;">SÁBADO 18 DE JULIO</h2>
+    <p style="font-size: 0.9rem; opacity: 0.9;">2027 • 16:00 HRS</p>
+</div>
+""", unsafe_allow_html=True)
 
-        df_regalos = cargar_regalos()
-        disponibles = len(df_regalos)
+# UBICACIÓN Y CEREMONIA
+st.markdown("""
+<div class="invitation-card">
+    <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
+    <p style="margin-top: 8px; font-weight: 600;">Iglesia Nuestra Señora de Guadalupe</p>
+    <p style="font-size: 0.85rem; color: #718096;">16:00 HRS</p>
+    <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
+        <div style="background-color: #E2E8F0; color: #2D3748; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px;">
+            📍 Ver ubicación en GPS
+        </div>
+    </a>
+</div>
+""", unsafe_allow_html=True)
 
-        st.markdown('<div class="card-invitation" style="padding: 25px;">', unsafe_allow_html=True)
-        if disponibles > 0:
-            st.markdown(f'<div class="regalos-badge">🎁 Quedan {disponibles} opciones de regalos en nuestra lista</div>', unsafe_allow_html=True)
+# ITINERARIO
+st.markdown("""
+<div class="invitation-card">
+    <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
+    <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
+    <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
+    <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
+    <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
+</div>
+""", unsafe_allow_html=True)
+
+# DRESS CODE & NOTAS
+st.markdown("""
+<div class="invitation-card">
+    <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
+    <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48; margin-top: 5px;">FORMAL / ELEGANTE</p>
+    <p style="font-size: 0.8rem; color: #718096;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+    <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
+    <p style="font-size: 0.85rem; font-weight: 500;">🔞 Evento de Adultos (Sin Niños)</p>
+</div>
+""", unsafe_allow_html=True)
+
+# SECCIÓN DE CONFIRMACIÓN Y REGALOS
+st.markdown("""
+<div class="invitation-card" id="confirmacion">
+    <div class="envelope-box">
+        <div class="envelope-seal">🌿</div>
+    </div>
+    <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
+    <p style="font-size: 0.85rem; color: #6B7A68; margin-top: 5px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# FORMULARIO
+with st.form("form_invitacion"):
+    nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: Maria López")
+    asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
+    submit = st.form_submit_button("Enviar Confirmación ✉️")
+
+if submit:
+    if not nombre.strip():
+        st.error("Por favor ingresa tu nombre.")
+    else:
+        df_resp = cargar_respuestas()
+        if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
+            st.warning(f"El nombre {nombre.strip()} ya ha sido registrado previamente.")
         else:
-            st.warning("⚠️ Todos los regalos de la lista inicial ya han sido asignados.")
-
-        st.write("Por favor ingresa tu nombre completo para confirmar tu asistencia y recibir la opción de regalo asignada.")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        with st.form("boda_form"):
-            nombre = st.text_input(
-                "Tu Nombre Completo:",
-                placeholder="Ej: María García López"
-            )
-            asiste = st.radio(
-                "¿Nos acompañarás en este día tan especial?",
-                ["¡Sí, ahí estaré! 🎉", "Lamentablemente no puedo 😢"]
-            )
-            st.markdown("<br>", unsafe_allow_html=True)
-            btn = st.form_submit_button("Confirmar Asistencia")
-
-        if btn:
-            if not nombre.strip():
-                st.error("📝 Por favor escribe tu nombre.")
+            codigo = uuid.uuid4().hex[:8].upper()
+            if asistencia == "¡Sí, allí estaré! 🎉":
+                regalo = asignar_regalo(nombre.strip())
+                asiste_val = "Sí"
             else:
-                df_resp_existente = cargar_respuestas()
-                if nombre_ya_registrado(nombre, df_resp_existente):
-                    st.warning(f"⚠️ El nombre **{nombre.strip()}** ya se encuentra registrado.")
-                else:
-                    codigo = uuid.uuid4().hex[:8].upper()
-                    
-                    if asiste == "¡Sí, ahí estaré! 🎉":
-                        try:
-                            regalo = asignar_regalo_con_lock(nombre.strip())
+                regalo = "N/A"
+                asiste_val = "No"
 
-                            nueva = pd.DataFrame([{
-                                "Nombre": nombre.strip(),
-                                "Asiste": "Sí",
-                                "Regalo": regalo,
-                                "Codigo": codigo
-                            }])
-                            nueva.to_csv(
-                                CSV_RESPUESTAS, mode='a',
-                                header=not CSV_RESPUESTAS.exists(), index=False
-                            )
+            nueva_fila = pd.DataFrame([{
+                "Nombre": nombre.strip(),
+                "Asiste": asiste_val,
+                "Regalo": regalo,
+                "Codigo": codigo
+            }])
+            nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
 
-                            st.session_state.confirmado = True
-                            st.session_state.nombre = nombre.strip()
-                            st.session_state.regalo = regalo
-                            st.session_state.codigo = codigo
-                            st.session_state.asiste = "Sí"
+            st.success("¡Respuesta guardada con éxito!")
+            if asiste_val == "Sí":
+                st.balloons()
+                st.markdown(f"""
+                <div class="green-card">
+                    <h3>🎁 Tu sugerencia de regalo:</h3>
+                    <h1 style="font-size: 2rem;">{regalo}</h1>
+                    <p style="font-size: 0.8rem;">Código de confirmación: {codigo}</p>
+                </div>
+                """, unsafe_allow_html=True)
 
-                            st.rerun()
-
-                        except ValueError as e:
-                            st.error(f"❌ {e}")
-                        except Exception as e:
-                            st.error(f"❌ Ocurrió un error inesperado: {e}")
-                    else:
-                        nueva = pd.DataFrame([{
-                            "Nombre": nombre.strip(),
-                            "Asiste": "No",
-                            "Regalo": "N/A",
-                            "Codigo": codigo
-                        }])
-                        nueva.to_csv(
-                            CSV_RESPUESTAS, mode='a',
-                            header=not CSV_RESPUESTAS.exists(), index=False
-                        )
-
-                        st.session_state.confirmado = True
-                        st.session_state.nombre = nombre.strip()
-                        st.session_state.regalo = "N/A"
-                        st.session_state.codigo = codigo
-                        st.session_state.asiste = "No"
-
-                        st.rerun()
-
-# ──────────────────────────────────────────────
-# RESULTADO FINAL
-# ──────────────────────────────────────────────
-if st.session_state.confirmado:
-    if st.session_state.asiste == "Sí":
-        st.balloons()
-        
-        st.markdown(f"""
-        <div class="card-invitation">
-            <h2 style="color: #2D3748;">✨ ¡Confirmado, {st.session_state.nombre}! ✨</h2>
-            <p>Es un honor para nosotros contar con tu presencia el <strong>18 de Julio de 2027</strong>.</p>
-            <div class="regalo-resultado">
-                <h3 style="margin-bottom: 5px; font-size: 1.1rem; color: #4A5568;">🎁 Tu sugerencia de regalo asignada es:</h3>
-                <h1 style="font-size: 2rem; margin: 15px 0; color: #1A202C;">{st.session_state.regalo}</h1>
-                <p style="font-size: 0.88em; color: #718096; margin-top: 10px;"><em>Este detalle fue asignado al azar para evitar obsequios duplicados. ¡Tu presencia es lo más importante!</em></p>
-            </div>
-            <p style="font-size: 0.85em; color: #A0AEC0;">🔑 Código de confirmación: <strong>{st.session_state.codigo}</strong></p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    else:
-        st.markdown(f"""
-        <div class="card-invitation">
-            <h2>Gracias por avisarnos, {st.session_state.nombre}</h2>
-            <p>Lamentamos que no puedas acompañarnos el 18-07-2027. ¡Te enviamos un gran abrazo!</p>
-            <p style="font-size: 0.85em; color: #A0AEC0;">🔑 Código de registro: <strong>{st.session_state.codigo}</strong></p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    if st.button("🔄 Registrar a otra persona"):
-        for key in ["confirmado", "nombre", "regalo", "codigo", "asiste"]:
-            st.session_state[key] = "" if key != "confirmado" else False
-        st.session_state.paso = 1
-        st.rerun()
-
-# ──────────────────────────────────────────────
-# PANEL ADMIN
-# ──────────────────────────────────────────────
+# ADMIN PANEL (EXPANDIBLE)
 st.markdown("<br><br>", unsafe_allow_html=True)
-with st.expander("📊 Ver lista de invitados (Panel Admin)", expanded=False):
-    df_resp = cargar_respuestas()
-    if not df_resp.empty:
-        st.dataframe(df_resp, use_container_width=True, hide_index=True)
-        st.download_button(
-            label="📥 Descargar respuestas en Excel/CSV",
-            data=df_resp.to_csv(index=False).encode("utf-8"),
-            file_name="respuestas_boda_carlos_eunice.csv",
-            mime="text/csv"
-        )
+with st.expander("📊 Panel Admin (Ver invitados)"):
+    df_ver = cargar_respuestas()
+    if not df_ver.empty:
+        st.dataframe(df_ver, use_container_width=True)
     else:
-        st.caption("Aún no se han recibido confirmaciones.")
+        st.caption("Aún no hay respuestas.")
