@@ -226,7 +226,7 @@ st.markdown("""
     <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 500; margin-bottom: 8px;">🎻 Escucha nuestra canción</p>
 </div>
 """, unsafe_allow_html=True)
-st.audio("https://ia800109.us.archive.org/27/items/TaylorDavisAThousandYears/Taylor%20Davis%20-%20A%20Thousand%20Years.mp3")
+st.audio("https://youtu.be/js2MkCAmTJY?si=VMPDFz1cMqzXvWJV")
 
 # PADRES Y PADRINOS
 st.markdown("""
@@ -270,10 +270,10 @@ st.markdown("""
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-    <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
-    <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
-    <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
-    <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
+    <div class="timeline-item">⛪ 20:00 hrs — Ceremonia Religiosa</div>
+    <div class="timeline-item">🥂 20:30 hrs — Bienvenida y Brindis</div>
+    <div class="timeline-item">🍽️ 21:00 hrs — Cena de Gala</div>
+    <div class="timeline-item">💃 21:30 hrs — Fiesta y Baile</div>
 </div>
 """, unsafe_allow_html=True)
 
