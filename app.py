@@ -226,7 +226,7 @@ st.markdown("""
     <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 500; margin-bottom: 8px;">🎻 Escucha nuestra canción</p>
 </div>
 """, unsafe_allow_html=True)
-st.audio("https://youtu.be/js2MkCAmTJY?si=VMPDFz1cMqzXvWJV")
+st.audio("https://youtu.be/7TzJKEn4q_c?si=axqVMUaok8pA7PL7")
 
 # PADRES Y PADRINOS
 st.markdown("""
