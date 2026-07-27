@@ -31,7 +31,7 @@ def get_image_base64(path):
 img_b64 = get_image_base64(IMAGEN_HEADER)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS ESTILO CANVA / VERDE OLIVA
+# ESTILOS CSS ESTILO CANVA / VERDE OLIVA (LEGIBILIDAD MEJORADA)
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -39,21 +39,25 @@ st.markdown("""
 
 /* Fondo general suave */
 .stApp {
-    background-color: #FAF8F5;
+    background-color: #FAF8F5 !important;
 }
 
 /* Ocultar elementos sobrantes de Streamlit */
 #MainMenu, footer, header {visibility: hidden;}
 
+/* Forzar color oscuro legible en TODOS los textos */
+p, span, label, div, h1, h2, h3, h4, h5, h6 {
+    color: #2D3748 !important;
+}
+
 /* Tipografía general */
 html, body, [class*="css"] {
     font-family: 'Montserrat', sans-serif !important;
-    color: #3B4A3F !important;
 }
 
 /* Contenedores tipo tarjeta */
 .invitation-card {
-    background-color: #FFFFFF;
+    background-color: #FFFFFF !important;
     border-radius: 16px;
     padding: 30px 20px;
     margin: 25px auto;
@@ -64,8 +68,7 @@ html, body, [class*="css"] {
 }
 
 .green-card {
-    background-color: #6B7A68;
-    color: #FFFFFF !important;
+    background-color: #6B7A68 !important;
     border-radius: 16px;
     padding: 30px 20px;
     margin: 25px auto;
@@ -87,8 +90,9 @@ html, body, [class*="css"] {
 .subtitle-cinzel {
     font-family: 'Cinzel', serif !important;
     letter-spacing: 3px;
-    font-size: 0.9rem;
-    color: #788B75;
+    font-size: 1rem !important;
+    color: #4A5A48 !important;
+    font-weight: 600 !important;
     text-transform: uppercase;
 }
 
@@ -96,10 +100,30 @@ html, body, [class*="css"] {
 .timeline-item {
     padding: 12px 0;
     border-bottom: 1px dashed #CBD5E0;
-    font-size: 0.95rem;
+    font-size: 1rem !important;
+    color: #2D3748 !important;
+    font-weight: 500 !important;
 }
 .timeline-item:last-child {
     border-bottom: none;
+}
+
+/* Estilos de Formulario (Labels, Inputs y Radio) */
+div[data-baseweb="input"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E0 !important;
+    border-radius: 8px !important;
+}
+
+div[data-baseweb="input"] input {
+    color: #1A202C !important;
+    background-color: #FFFFFF !important;
+}
+
+.stRadio label {
+    color: #2D3748 !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
 }
 
 /* Botones con estilo oliva */
@@ -110,10 +134,13 @@ div.stButton > button:first-child {
     border: none !important;
     padding: 12px 35px !important;
     font-size: 1rem !important;
-    font-weight: 500;
+    font-weight: 600 !important;
     letter-spacing: 1px;
     width: 100%;
     transition: all 0.3s ease;
+}
+div.stButton > button:first-child * {
+    color: #FFFFFF !important;
 }
 div.stButton > button:first-child:hover {
     background-color: #556353 !important;
@@ -141,7 +168,7 @@ div.stButton > button:first-child:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: white !important;
     font-size: 18px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
@@ -171,7 +198,7 @@ def asignar_regalo(nombre):
     return regalo
 
 # ──────────────────────────────────────────────
-# VISTA PRINCIPAL DE LA INVITACIÓN (SCROLL CONTINUO)
+# VISTA PRINCIPAL DE LA INVITACIÓN
 # ──────────────────────────────────────────────
 
 # HEADER CON NOMBRES
@@ -179,7 +206,7 @@ st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel">NUESTRA BODA</div>
     <div class="title-names">Carlos & Eunice</div>
-    <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68; font-weight: 600; margin-top: 5px;">
+    <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
         18 DE JULIO DE 2027
     </div>
 </div>
@@ -193,19 +220,19 @@ if img_b64:
     </div>
     """, unsafe_allow_html=True)
 
-# MÚSICA DE FONDO (CANCIÓN)
+# MÚSICA DE FONDO (ROMÁNTICA DE VIOLÍN)
 st.markdown("""
 <div class="invitation-card">
-    <p style="font-size: 0.9rem; color: #6B7A68; margin-bottom: 8px;">🎵 Escucha nuestra canción</p>
+    <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 500; margin-bottom: 8px;">🎻 Escucha nuestra canción</p>
 </div>
 """, unsafe_allow_html=True)
-st.audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3") # Puedes cambiar por el audio MP3 que desees
+st.audio("https://ia800109.us.archive.org/27/items/TaylorDavisAThousandYears/Taylor%20Davis%20-%20A%20Thousand%20Years.mp3")
 
 # PADRES Y PADRINOS
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
-    <div style="display: flex; justify-content: space-around; font-size: 0.85rem; margin-top: 10px;">
+    <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
         <div>
             <strong>Padres del Novio</strong><br>Carlos Sr. & María
         </div>
@@ -220,8 +247,8 @@ st.markdown("""
 st.markdown("""
 <div class="green-card">
     <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
-    <h2 style="font-size: 2.2rem; margin: 10px 0;">SÁBADO 18 DE JULIO</h2>
-    <p style="font-size: 0.9rem; opacity: 0.9;">2027 • 16:00 HRS</p>
+    <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
+    <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -229,10 +256,10 @@ st.markdown("""
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
-    <p style="margin-top: 8px; font-weight: 600;">Iglesia Nuestra Señora de Guadalupe</p>
-    <p style="font-size: 0.85rem; color: #718096;">16:00 HRS</p>
+    <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
+    <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
     <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
-        <div style="background-color: #E2E8F0; color: #2D3748; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px;">
+        <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
             📍 Ver ubicación en GPS
         </div>
     </a>
@@ -254,10 +281,10 @@ st.markdown("""
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
-    <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48; margin-top: 5px;">FORMAL / ELEGANTE</p>
-    <p style="font-size: 0.8rem; color: #718096;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+    <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 5px;">FORMAL / ELEGANTE</p>
+    <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
     <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
-    <p style="font-size: 0.85rem; font-weight: 500;">🔞 Evento de Adultos (Sin Niños)</p>
+    <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -268,13 +295,13 @@ st.markdown("""
         <div class="envelope-seal">🌿</div>
     </div>
     <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
-    <p style="font-size: 0.85rem; color: #6B7A68; margin-top: 5px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+    <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 5px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # FORMULARIO
 with st.form("form_invitacion"):
-    nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: Maria López")
+    nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
     asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
     submit = st.form_submit_button("Enviar Confirmación ✉️")
 
@@ -307,9 +334,9 @@ if submit:
                 st.balloons()
                 st.markdown(f"""
                 <div class="green-card">
-                    <h3>🎁 Tu sugerencia de regalo:</h3>
-                    <h1 style="font-size: 2rem;">{regalo}</h1>
-                    <p style="font-size: 0.8rem;">Código de confirmación: {codigo}</p>
+                    <h3 style="color:#FFFFFF !important;">🎁 Tu sugerencia de regalo:</h3>
+                    <h1 style="font-size: 2rem; color:#FFFFFF !important;">{regalo}</h1>
+                    <p style="font-size: 0.85rem; color:#FFFFFF !important;">Código de confirmación: {codigo}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
