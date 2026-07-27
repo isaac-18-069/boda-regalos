@@ -204,8 +204,8 @@ def asignar_regalo(nombre):
 # HEADER CON NOMBRES
 st.markdown("""
 <div class="invitation-card">
-    <div class="subtitle-cinzel">NUESTRA BODA</div>
-    <div class="title-names">Carlos & Eunice</div>
+    <div class="subtitle-cinzel">NUESTRA BODA 😍💍</div>
+    <div class="title-names">Carlos & Eunice 😍 </div>
     <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
         18 DE JULIO DE 2027
     </div>
@@ -249,7 +249,7 @@ st.markdown("""
 <div class="green-card">
     <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
     <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
-    <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
+    <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 20:00 HRS</p>
 </div>
 """, unsafe_allow_html=True)
 
