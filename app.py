@@ -234,10 +234,10 @@ st.markdown("""
     <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
     <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
         <div>
-            <strong>Padres del Novio</strong><br>Carlos Sr. & María
+            <strong>Padres del Novio</strong><br>Carlos M & Diana P
         </div>
         <div>
-            <strong>Padres de la Novia</strong><br>José & Juana
+            <strong>Padres de la Novia</strong><br>Emilio M & Pricila C
         </div>
     </div>
 </div>
