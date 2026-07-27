@@ -11,7 +11,7 @@ import base64
 # ──────────────────────────────────────────────
 st.set_page_config(
     page_title="Carlos & Eunice 💍", 
-    page_icon="✨", 
+    page_icon="✨😍", 
     layout="centered"
 )
 
@@ -20,7 +20,7 @@ st.set_page_config(
 # ──────────────────────────────────────────────
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
-IMAGEN_HEADER = Path("boda_header.jpg")
+IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
 
 # Función auxiliar para convertir la imagen a base64 (HTML embedding)
 def get_image_base64(path):
