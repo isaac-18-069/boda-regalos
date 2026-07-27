@@ -10,7 +10,7 @@ from PIL import Image
 # CONFIGURACIÓN DE LA PÁGINA
 # ──────────────────────────────────────────────
 st.set_page_config(
-    page_title="Nuestra Boda 💍", 
+    page_title="Carlos & Eunice 💍", 
     page_icon="✨", 
     layout="centered"
 )
@@ -23,80 +23,117 @@ CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("boda_header.jpg")
 
 # ──────────────────────────────────────────────
-# ESTILOS VISUALES (Verde Claro, Blanco y Elegante)
+# ESTILOS VISUALES (Inspirado en la invitación elegida)
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* Fondo general */
+    /* Google Fonts para la tipografía cursiva elegante */
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;600&display=swap');
+
+    /* Fondo general cálido */
     .stApp {
-        background-color: #FAFAFA;
+        background-color: #FAF9F6;
     }
     
-    /* Fuentes y Títulos */
+    /* Tipografía general */
     h1, h2, h3, p, label, .stMarkdown {
-        font-family: 'Georgia', 'Times New Roman', serif !important;
-        color: #1c3b2b !important; /* Verde bosque oscuro */
+        font-family: 'Montserrat', sans-serif !important;
+        color: #2D3748 !important;
     }
     
-    /* Contenedores elegantes tipo tarjeta */
+    /* Encabezado Invitación */
+    .boda-subtitulo {
+        font-family: 'Cinzel', serif !important;
+        letter-spacing: 4px;
+        font-size: 1.1rem;
+        color: #5A6B7C;
+        text-align: center;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+    
+    .boda-nombres {
+        font-family: 'Great Vibes', cursive !important;
+        font-size: 3.8rem !important;
+        color: #2C3E50 !important;
+        text-align: center;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        line-height: 1.2;
+    }
+    
+    .boda-fecha {
+        font-family: 'Cinzel', serif !important;
+        letter-spacing: 3px;
+        font-size: 1.2rem;
+        color: #4A5568;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+    
+    /* Contenedores tipo tarjeta */
     .boda-card {
         background-color: #FFFFFF;
         padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-        border: 1px solid #e2ebe4;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+        border: 1px solid #E2E8F0;
         margin-bottom: 25px;
         text-align: center;
     }
     
     /* Badge de Regalos disponibles */
     .regalos-badge {
-        background-color: #E8F5E9;
-        color: #2E7D32;
-        border: 1px solid #A5D6A7;
-        padding: 10px 15px;
+        background-color: #EBF8FF;
+        color: #2B6CB0;
+        border: 1px solid #BEE3F8;
+        padding: 10px 18px;
         border-radius: 20px;
-        font-weight: bold;
+        font-weight: 600;
+        font-size: 0.95rem;
         display: inline-block;
         margin-bottom: 15px;
     }
     
-    /* Tarjeta de resultado final */
+    /* Tarjeta de resultado del regalo */
     .regalo-resultado {
-        background: linear-gradient(135deg, #F1F8E9, #E8F5E9);
-        border: 2px solid #81C784;
+        background: linear-gradient(135deg, #F7FAFC, #EDF2F7);
+        border: 2px dashed #CBD5E0;
         border-radius: 15px;
         padding: 25px;
         text-align: center;
         margin: 20px 0;
     }
     
-    /* Botones primarios y de formulario */
+    /* Botones principales */
     div.stButton > button:first-child {
-        background-color: #2E7D32 !important;
+        background-color: #4A5568 !important;
         color: #FFFFFF !important;
-        border-radius: 25px !important;
+        border-radius: 30px !important;
         border: none !important;
-        padding: 10px 30px !important;
-        font-size: 1.1em !important;
-        font-family: 'Georgia', serif !important;
+        padding: 12px 35px !important;
+        font-size: 1rem !important;
+        font-family: 'Montserrat', sans-serif !important;
+        letter-spacing: 1px;
         transition: all 0.3s ease;
     }
     div.stButton > button:first-child:hover {
-        background-color: #1B5E20 !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        background-color: #2D3748 !important;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
     
-    /* Entradas de texto */
+    /* Inputs */
     .stTextInput>div>div>input {
         border-radius: 10px;
-        border: 1px solid #C8E6C9;
+        border: 1px solid #CBD5E0;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────
-# ESTADO DE SESIÓN — persiste entre recargas
+# ESTADO DE SESIÓN
 # ──────────────────────────────────────────────
 if "confirmado" not in st.session_state:
     st.session_state.confirmado = False
@@ -106,7 +143,7 @@ if "confirmado" not in st.session_state:
     st.session_state.asiste = ""
 
 # ──────────────────────────────────────────────
-# FUNCIONES AUXILIARES DE LÓGICA
+# FUNCIONES AUXILIARES
 # ──────────────────────────────────────────────
 def cargar_regalos() -> pd.DataFrame:
     """Carga la lista de regalos disponibles con manejo de errores."""
@@ -152,12 +189,13 @@ def asignar_regalo_con_lock(nombre: str) -> str:
     return regalo
 
 # ──────────────────────────────────────────────
-# CABECERA Y FOTO DE LA INVITACIÓN
+# ENCABEZADO ESTILO INVITACIÓN
 # ──────────────────────────────────────────────
-st.markdown("<h1 style='text-align: center; margin-bottom: 0px;'>¡Nos Casamos!</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-style: italic; color: #558B2F;'>Queremos compartir este día tan especial contigo</p>", unsafe_allow_html=True)
+st.markdown('<div class="boda-subtitulo">NUESTRA BODA</div>', unsafe_allow_html=True)
+st.markdown('<div class="boda-nombres">Carlos & Eunice</div>', unsafe_allow_html=True)
+st.markdown('<div class="boda-fecha">18 • 07 • 2027</div>', unsafe_allow_html=True)
 
-# Cargar imagen si existe
+# Cargar imagen si existe en la carpeta
 if IMAGEN_HEADER.exists():
     try:
         image = Image.open(IMAGEN_HEADER)
@@ -176,13 +214,13 @@ if not st.session_state.confirmado:
     if disponibles > 0:
         st.markdown(f"""
             <div class="regalos-badge">
-                🎁 Quedan {disponibles} opciones de regalos en nuestra lista
+                🎁 Quedan {disponibles} opciones de regalos disponibles
             </div>
         """, unsafe_allow_html=True)
     else:
         st.warning("⚠️ Todos los regalos de la lista inicial ya han sido asignados.")
 
-    st.write("Ingresa tu nombre y confirma si nos acompañarás. El sistema te asignará una opción al azar de nuestra lista para no repetir detalles.")
+    st.write("Por favor ingresa tu nombre completo para confirmar tu asistencia y obtener tu opción de regalo asignada.")
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ── FORMULARIO ──
@@ -192,7 +230,7 @@ if not st.session_state.confirmado:
             placeholder="Ej: María García López"
         )
         asiste = st.radio(
-            "¿Nos acompañarás en nuestro gran día?",
+            "¿Nos acompañarás en este día tan especial?",
             ["¡Sí, ahí estaré! 🎉", "Lamentablemente no puedo 😢"]
         )
         st.markdown("<br>", unsafe_allow_html=True)
@@ -260,7 +298,7 @@ if not st.session_state.confirmado:
                     st.rerun()
 
 # ──────────────────────────────────────────────
-# MOSTRAR RESULTADO (Persiste tras recargar)
+# MOSTRAR RESULTADO
 # ──────────────────────────────────────────────
 if st.session_state.confirmado:
     if st.session_state.asiste == "Sí":
@@ -268,20 +306,20 @@ if st.session_state.confirmado:
         
         st.markdown(f"""
         <div class="boda-card">
-            <h2 style="color: #2E7D32;">✨ ¡Confirmado, {st.session_state.nombre}! ✨</h2>
-            <p>Es un honor para nosotros contar con tu presencia en este gran día.</p>
+            <h2 style="color: #2D3748;">✨ ¡Confirmado, {st.session_state.nombre}! ✨</h2>
+            <p>Es un honor para nosotros contar con tu presencia el <strong>18 de Julio de 2027</strong>.</p>
             
             <div class="regalo-resultado">
-                <h3 style="margin-bottom: 5px;">🎁 Tu regalo asignado es:</h3>
-                <h1 style="font-size: 2.2em; margin: 10px 0; color: #1B5E20;">
+                <h3 style="margin-bottom: 5px; font-size: 1.1rem; color: #4A5568;">🎁 Tu sugerencia de regalo asignada es:</h3>
+                <h1 style="font-size: 2rem; margin: 15px 0; color: #1A202C;">
                     {st.session_state.regalo}
                 </h1>
-                <p style="font-size: 0.9em; opacity: 0.8;">
-                    <em>Tu presencia es nuestro mejor regalo. Este detalle fue asignado al azar por el sistema para construir nuestro hogar sin repetir obsequios.</em>
+                <p style="font-size: 0.88em; color: #718096; margin-top: 10px;">
+                    <em>Este detalle fue asignado al azar para evitar obsequios duplicados. ¡Tu presencia es lo más importante!</em>
                 </p>
             </div>
             
-            <p style="font-size: 0.85em; color: #666;">
+            <p style="font-size: 0.85em; color: #A0AEC0;">
                 🔑 Código de confirmación: <strong>{st.session_state.codigo}</strong>
             </p>
         </div>
@@ -291,21 +329,21 @@ if st.session_state.confirmado:
         st.markdown(f"""
         <div class="boda-card">
             <h2>Gracias por avisarnos, {st.session_state.nombre}</h2>
-            <p>Lamentamos mucho que no puedas acompañarnos. ¡Te mandamos un fuerte abrazo!</p>
-            <p style="font-size: 0.85em; color: #666;">
+            <p>Lamentamos que no puedas acompañarnos el 18-07-2027. ¡Te enviamos un gran abrazo!</p>
+            <p style="font-size: 0.85em; color: #A0AEC0;">
                 🔑 Código de registro: <strong>{st.session_state.codigo}</strong>
             </p>
         </div>
         """, unsafe_allow_html=True)
 
-    # Botón auxiliar para resetear en pruebas
+    # Botón para resetear en caso de pruebas
     if st.button("🔄 Registrar a otra persona"):
         for key in ["confirmado", "nombre", "regalo", "codigo", "asiste"]:
             st.session_state[key] = "" if key != "confirmado" else False
         st.rerun()
 
 # ──────────────────────────────────────────────
-# SECCIÓN ADMIN (Oculta en Expander)
+# PANEL ADMIN
 # ──────────────────────────────────────────────
 st.markdown("<br><br>", unsafe_allow_html=True)
 with st.expander("📊 Ver lista de invitados (Panel Admin)", expanded=False):
@@ -315,7 +353,7 @@ with st.expander("📊 Ver lista de invitados (Panel Admin)", expanded=False):
         st.download_button(
             label="📥 Descargar respuestas en Excel/CSV",
             data=df_resp.to_csv(index=False).encode("utf-8"),
-            file_name="respuestas_boda.csv",
+            file_name="respuestas_boda_carlos_eunice.csv",
             mime="text/csv"
         )
     else:
