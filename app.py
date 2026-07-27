@@ -274,7 +274,7 @@ st.markdown("""
     <div class="timeline-item">⛪ 20:00 hrs — Ceremonia Religiosa</div>
     <div class="timeline-item">🥂 20:30 hrs — Bienvenida y Brindis</div>
     <div class="timeline-item">🍽️ 21:00 hrs — Cena de Gala</div>
-    <div class="timeline-item">💃 21:30 hrs — Fiesta y Baile</div>
+    <div class="timeline-item">💃 21:30 hrs — Evento Musical</div>
 </div>
 """, unsafe_allow_html=True)
 
