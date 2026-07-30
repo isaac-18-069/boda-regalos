@@ -506,7 +506,7 @@ else:
                 <strong>Padres del Novio</strong><br>Carlos M & Diana P ❤️
             </div>
             <div>
-                <strong>Padres de la Novia</strong><br> Emilio M & Prisila C
+                <strong>Padres de la Novia</strong><br> Emilio M & Prisila C ❤️
             </div>
         </div>
     </div>
@@ -525,7 +525,7 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">⛪ Ceremonia ❤️💍</div>
-        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">  </p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
             <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
@@ -540,7 +540,7 @@ else:
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
         <div class="timeline-item">⛪ 16:00 hrs — Ceremonia </div>
-        <div class="timeline-item">🥂 20:30 hrs — Bienvenida y felicitaciones a los recien casados</div>
+        <div class="timeline-item">🥂 20:30 hrs — Bienvenida y Felicitaciones A Los Recien Casados</div>
         <div class="timeline-item">🍽️ 21:00 hrs — Cena de Gala</div>
         <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Festejo </div>
     </div>
