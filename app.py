@@ -40,7 +40,7 @@ img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
 flores_src = get_image_base64_or_url(IMAGEN_FLORES_LOCAL, URL_FLORES_GITHUB)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CORREGIDOS (FLORES BIEN POSICIONADAS)
+# ESTILOS CSS CORREGIDOS (FLORES DESPLAZADAS Y PADDING AUMENTADO)
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -60,12 +60,12 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS CON FLORAL RECORRIDO DE MANERA ELEGANTE */
+/* TARJETAS CON ESPACIO SUFICIENTE PARA LAS FLORES */
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 60px 25px 60px 25px;
-    margin: 25px auto;
+    padding: 80px 25px 80px 25px; /* Aumentado arriba y abajo para no tapar letras */
+    margin: 30px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
     text-align: center;
@@ -73,38 +73,45 @@ html, body, [class*="css"] {{
     overflow: hidden;
 }}
 
-/* RAMO FLORAL SUPERIOR EN TAMAÑO PROPORCIONAL Y CENTRADO */
+/* RAMO FLORAL SUPERIOR UBICADO BIEN ARRIBA */
 .invitation-card::before {{
     content: "";
     position: absolute;
-    top: -30px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 280px;
-    height: 100px;
+    width: 250px;
+    height: 75px;
     background-image: url('{flores_src}');
     background-size: 100% auto;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
     pointer-events: none;
+    z-index: 1;
 }}
 
-/* RAMO FLORAL INFERIOR */
+/* RAMO FLORAL INFERIOR UBICADO BIEN ABAJO */
 .invitation-card::after {{
     content: "";
     position: absolute;
-    bottom: -30px;
+    bottom: -10px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 280px;
-    height: 100px;
+    width: 250px;
+    height: 75px;
     background-image: url('{flores_src}');
     background-size: 100% auto;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
     pointer-events: none;
+    z-index: 1;
+}}
+
+.invitation-card * {{
+    position: relative;
+    z-index: 2; /* Para asegurar que todo el texto quede por ENCIMA de las flores */
 }}
 
 .green-card {{
@@ -130,15 +137,16 @@ html, body, [class*="css"] {{
 .subtitle-cinzel {{
     font-family: 'Cinzel', serif !important;
     letter-spacing: 3px;
-    font-size: 1rem !important;
+    font-size: 1.1rem !important;
     color: #4A5A48 !important;
     font-weight: 600 !important;
     text-transform: uppercase;
+    margin-top: 5px;
 }}
 
 /* Versículo Bíblico */
 .verse-card {{
-    background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(244,239,232,0.9) 100%) !important;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,239,232,0.95) 100%) !important;
     border-left: 4px solid #A3B18A;
     border-right: 4px solid #A3B18A;
 }}
@@ -214,7 +222,7 @@ div.stButton > button:first-child:hover {{
     background-color: #5B6B58;
     width: 260px;
     height: 170px;
-    margin: 20px auto 15px auto;
+    margin: 15px auto 15px auto;
     border-radius: 12px;
     position: relative;
     display: flex;
@@ -299,7 +307,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. VERSÍCULO BÍBLICO DE AMOR (1 CORINTIOS 13:4, 7-8)
+    # 2. VERSÍCULO BÍBLICO DE AMOR
     st.markdown("""
     <div class="invitation-card verse-card">
         <p class="verse-text">
@@ -542,7 +550,7 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
-        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 5px;">FORMAL / ELEGANTE</p>
+        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 8px;">FORMAL / ELEGANTE</p>
         <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
         <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
         <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
@@ -553,7 +561,7 @@ else:
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
         <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
-        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 5px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 8px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
     </div>
     """, unsafe_allow_html=True)
 
