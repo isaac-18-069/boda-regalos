@@ -15,6 +15,10 @@ st.set_page_config(
     layout="centered"
 )
 
+# Initialize Session State para controlar la apertura del sobre
+if "invitacion_abierta" not in st.session_state:
+    st.session_state["invitacion_abierta"] = False
+
 # ──────────────────────────────────────────────
 # ARCHIVOS Y RUTAS
 # ──────────────────────────────────────────────
@@ -124,8 +128,8 @@ div.stButton > button:first-child {
     color: #FFFFFF !important;
     border-radius: 25px !important;
     border: none !important;
-    padding: 12px 35px !important;
-    font-size: 1rem !important;
+    padding: 14px 35px !important;
+    font-size: 1.1rem !important;
     font-weight: 600 !important;
     letter-spacing: 1px;
     width: 100%;
@@ -139,29 +143,34 @@ div.stButton > button:first-child:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.envelope-box {
+/* SOBRE DE INICIO */
+.welcome-envelope {
     background-color: #5B6B58;
-    width: 220px;
-    height: 140px;
-    margin: 20px auto;
-    border-radius: 8px;
+    width: 260px;
+    height: 170px;
+    margin: 30px auto 20px auto;
+    border-radius: 12px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
-.envelope-seal {
-    width: 45px;
-    height: 45px;
+
+.seal-initials {
+    width: 65px;
+    height: 65px;
     background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white !important;
+    font-family: 'Cinzel', serif !important;
     font-size: 18px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid #F3E5AB;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -189,323 +198,324 @@ def asignar_regalo(nombre):
     return regalo
 
 # ──────────────────────────────────────────────
-# HEADER CON NOMBRES
+# PASO 1: PANTALLA INICIAL DEL SOBRE
 # ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card">
-    <div class="subtitle-cinzel">NUESTRA BODA 😍💍</div>
-    <div class="title-names">Carlos & Eunice 😍</div>
-    <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
-        18 DE JULIO DE 2027
+if not st.session_state["invitacion_abierta"]:
+    st.markdown("""
+    <div class="invitation-card" style="margin-top: 50px; padding: 40px 20px;">
+        <div class="subtitle-cinzel">NUESTRA BODA</div>
+        <div class="welcome-envelope">
+            <div class="seal-initials">C & E</div>
+        </div>
+        <p style="font-size: 0.9rem; color: #6B7A68 !important; margin-top: 15px; font-weight: 500;">
+            Has recibido una invitación especial
+        </p>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+    
+    if st.button("✉️ Click para abrir la invitación"):
+        st.session_state["invitacion_abierta"] = True
+        st.rerun()
 
 # ──────────────────────────────────────────────
-# FOTO EN FORMA DE ROMPECABEZAS (PUZZLE INTERACTIVO)
+# PASO 2: CONTENIDO DE LA INVITACIÓN
 # ──────────────────────────────────────────────
-if img_b64:
-    puzzle_html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        body {{
-            background-color: transparent;
-            font-family: 'Montserrat', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }}
-        .card-container {{
-            background-color: #FFFFFF;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
-            border: 1px solid #E2E8F0;
-            text-align: center;
-            width: 100%;
-            max-width: 450px;
-        }}
-        .instructions {{
-            font-size: 13px;
-            color: #6B7A68;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }}
-        #puzzle-board {{
-            width: 320px;
-            height: 320px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 2px;
-            background: #E2E8F0;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid #6B7A68;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }}
-        .tile {{
-            width: 100%;
-            height: 100%;
-            background-image: url('{img_b64}');
-            background-size: 320px 320px;
-            cursor: pointer;
-            transition: transform 0.2s, border 0.2s;
-            border: 1px solid rgba(255,255,255,0.4);
-        }}
-        .tile.selected {{
-            border: 3px solid #D4AF37;
-            transform: scale(0.95);
-        }}
-        .btn-resolve {{
-            margin-top: 12px;
-            background-color: #6B7A68;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }}
-        .success-msg {{
-            display: none;
-            color: #4A5A48;
-            font-weight: bold;
-            margin-top: 10px;
-            font-size: 14px;
-        }}
-    </style>
-    </head>
-    <body>
-    <div class="card-container">
-        <div class="instructions">🧩 haz clic en dos piezas para intercambiarlas y armar la foto</div>
-        <div id="puzzle-board"></div>
-        <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
-        <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
+else:
+    # HEADER CON NOMBRES
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">NUESTRA BODA 😍💍</div>
+        <div class="title-names">Carlos & Eunice 😍</div>
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
+            18 DE JULIO DE 2027
+        </div>
     </div>
+    """, unsafe_allow_html=True)
 
-    <script>
-        const board = document.getElementById('puzzle-board');
-        const successMsg = document.getElementById('success');
-        let tiles = [];
-        let selectedTile = null;
-
-        // Posiciones originales (3x3 grid)
-        const correctPositions = [
-            '0px 0px', '-106px 0px', '-213px 0px',
-            '0px -106px', '-106px -106px', '-213px -106px',
-            '0px -213px', '-106px -213px', '-213px -213px'
-        ];
-
-        let currentPositions = [...correctPositions];
-
-        function shuffle(array) {{
-            for (let i = array.length - 1; i > 0; i--) {{
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+    # FOTO EN FORMA DE ROMPECABEZAS (PUZZLE INTERACTIVO)
+    if img_b64:
+        puzzle_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <style>
+            * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+            body {{
+                background-color: transparent;
+                font-family: 'Montserrat', sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }}
-        }}
+            .card-container {{
+                background-color: #FFFFFF;
+                border-radius: 16px;
+                padding: 20px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+                border: 1px solid #E2E8F0;
+                text-align: center;
+                width: 100%;
+                max-width: 450px;
+            }}
+            .instructions {{
+                font-size: 13px;
+                color: #6B7A68;
+                margin-bottom: 12px;
+                font-weight: 600;
+            }}
+            #puzzle-board {{
+                width: 320px;
+                height: 320px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 2px;
+                background: #E2E8F0;
+                border-radius: 12px;
+                overflow: hidden;
+                border: 2px solid #6B7A68;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }}
+            .tile {{
+                width: 100%;
+                height: 100%;
+                background-image: url('{img_b64}');
+                background-size: 320px 320px;
+                cursor: pointer;
+                transition: transform 0.2s, border 0.2s;
+                border: 1px solid rgba(255,255,255,0.4);
+            }}
+            .tile.selected {{
+                border: 3px solid #D4AF37;
+                transform: scale(0.95);
+            }}
+            .btn-resolve {{
+                margin-top: 12px;
+                background-color: #6B7A68;
+                color: white;
+                border: none;
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-size: 12px;
+                cursor: pointer;
+                font-weight: 600;
+            }}
+            .success-msg {{
+                display: none;
+                color: #4A5A48;
+                font-weight: bold;
+                margin-top: 10px;
+                font-size: 14px;
+            }}
+        </style>
+        </head>
+        <body>
+        <div class="card-container">
+            <div class="instructions">🧩 haz clic en dos piezas para intercambiarlas y armar la foto</div>
+            <div id="puzzle-board"></div>
+            <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
+            <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
+        </div>
 
-        function initPuzzle() {{
-            shuffle(currentPositions);
-            renderBoard();
-        }}
+        <script>
+            const board = document.getElementById('puzzle-board');
+            const successMsg = document.getElementById('success');
+            let tiles = [];
+            let selectedTile = null;
 
-        function renderBoard() {{
-            board.innerHTML = '';
-            currentPositions.forEach((pos, index) => {{
-                const tile = document.createElement('div');
-                tile.className = 'tile';
-                tile.style.backgroundPosition = pos;
-                tile.dataset.index = index;
-                tile.addEventListener('click', () => onTileClick(tile, index));
-                board.appendChild(tile);
-            }});
-            checkWin();
-        }}
+            const correctPositions = [
+                '0px 0px', '-106px 0px', '-213px 0px',
+                '0px -106px', '-106px -106px', '-213px -106px',
+                '0px -213px', '-106px -213px', '-213px -213px'
+            ];
 
-        function onTileClick(tile, index) {{
-            if (selectedTile === null) {{
-                selectedTile = index;
-                board.children[index].classList.add('selected');
-            }} else {{
-                let prevIndex = selectedTile;
-                // Intercambiar posiciones
-                let temp = currentPositions[prevIndex];
-                currentPositions[prevIndex] = currentPositions[index];
-                currentPositions[index] = temp;
+            let currentPositions = [...correctPositions];
 
-                selectedTile = null;
+            function shuffle(array) {{
+                for (let i = array.length - 1; i > 0; i--) {{
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }}
+            }}
+
+            function initPuzzle() {{
+                shuffle(currentPositions);
                 renderBoard();
             }}
-        }}
 
-        function checkWin() {{
-            let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
-            if (isWin) {{
-                successMsg.style.display = 'block';
-                board.style.border = '3px solid #28a745';
+            function renderBoard() {{
+                board.innerHTML = '';
+                currentPositions.forEach((pos, index) => {{
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.style.backgroundPosition = pos;
+                    tile.dataset.index = index;
+                    tile.addEventListener('click', () => onTileClick(tile, index));
+                    board.appendChild(tile);
+                }});
+                checkWin();
             }}
-        }}
 
-        function autoSolve() {{
-            currentPositions = [...correctPositions];
-            renderBoard();
-        }}
+            function onTileClick(tile, index) {{
+                if (selectedTile === null) {{
+                    selectedTile = index;
+                    board.children[index].classList.add('selected');
+                }} else {{
+                    let prevIndex = selectedTile;
+                    let temp = currentPositions[prevIndex];
+                    currentPositions[prevIndex] = currentPositions[index];
+                    currentPositions[index] = temp;
 
-        initPuzzle();
-    </script>
-    </body>
-    </html>
-    """
-    components.html(puzzle_html, height=460)
+                    selectedTile = null;
+                    renderBoard();
+                }}
+            }}
 
-# ──────────────────────────────────────────────
-# MÚSICA DE FONDO (YOUTUBE)
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card" style="padding-bottom: 10px;">
-    <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
-</div>
-""", unsafe_allow_html=True)
+            function checkWin() {{
+                let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
+                if (isWin) {{
+                    successMsg.style.display = 'block';
+                    board.style.border = '3px solid #28a745';
+                }}
+            }}
 
-st.video("https://youtu.be/js2MkCAmTJY")
+            function autoSolve() {{
+                currentPositions = [...correctPositions];
+                renderBoard();
+            }}
 
-# ──────────────────────────────────────────────
-# PADRES Y PADRINOS
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card">
-    <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
-    <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
-        <div>
-            <strong>Padres del Novio</strong><br>Carlos Sr. & María
-        </div>
-        <div>
-            <strong>Padres de la Novia</strong><br>José & Juana
+            initPuzzle();
+        </script>
+        </body>
+        </html>
+        """
+        components.html(puzzle_html, height=460)
+
+    # MÚSICA DE FONDO (YOUTUBE)
+    st.markdown("""
+    <div class="invitation-card" style="padding-bottom: 10px;">
+        <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.video("https://youtu.be/js2MkCAmTJY")
+
+    # PADRES Y PADRINOS
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
+        <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
+            <div>
+                <strong>Padres del Novio</strong><br>Carlos Sr. & María
+            </div>
+            <div>
+                <strong>Padres de la Novia</strong><br>José & Juana
+            </div>
         </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# ──────────────────────────────────────────────
-# DÍA Y CALENDARIO
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="green-card">
-    <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
-    <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
-    <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
-</div>
-""", unsafe_allow_html=True)
-
-# ──────────────────────────────────────────────
-# UBICACIÓN Y CEREMONIA
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card">
-    <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
-    <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
-    <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
-    <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
-        <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
-            📍 Ver ubicación en GPS
-        </div>
-    </a>
-</div>
-""", unsafe_allow_html=True)
-
-# ──────────────────────────────────────────────
-# ITINERARIO
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card">
-    <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-    <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
-    <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
-    <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
-    <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
-</div>
-""", unsafe_allow_html=True)
-
-# ──────────────────────────────────────────────
-# DRESS CODE & NOTAS
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card">
-    <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
-    <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 5px;">FORMAL / ELEGANTE</p>
-    <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
-    <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
-    <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
-</div>
-""", unsafe_allow_html=True)
-
-# ──────────────────────────────────────────────
-# SECCIÓN DE CONFIRMACIÓN Y REGALOS
-# ──────────────────────────────────────────────
-st.markdown("""
-<div class="invitation-card" id="confirmacion">
-    <div class="envelope-box">
-        <div class="envelope-seal">🌿</div>
+    # DÍA Y CALENDARIO
+    st.markdown("""
+    <div class="green-card">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
+        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
+        <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
     </div>
-    <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
-    <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 5px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# FORMULARIO
-with st.form("form_invitacion"):
-    nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
-    asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
-    submit = st.form_submit_button("Enviar Confirmación ✉️")
+    # UBICACIÓN Y CEREMONIA
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
+        <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
+        <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
+                📍 Ver ubicación en GPS
+            </div>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
 
-if submit:
-    if not nombre.strip():
-        st.error("Por favor ingresa tu nombre.")
-    else:
-        df_resp = cargar_respuestas()
-        if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
-            st.warning(f"El nombre {nombre.strip()} ya ha sido registrado previamente.")
+    # ITINERARIO
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
+        <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
+        <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
+        <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # DRESS CODE & NOTAS
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
+        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 5px;">FORMAL / ELEGANTE</p>
+        <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
+        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # SECCIÓN DE CONFIRMACIÓN Y REGALOS
+    st.markdown("""
+    <div class="invitation-card" id="confirmacion">
+        <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
+        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 5px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # FORMULARIO
+    with st.form("form_invitacion"):
+        nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
+        asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
+        submit = st.form_submit_button("Enviar Confirmación ✉️")
+
+    if submit:
+        if not nombre.strip():
+            st.error("Por favor ingresa tu nombre.")
         else:
-            codigo = uuid.uuid4().hex[:8].upper()
-            if asistencia == "¡Sí, allí estaré! 🎉":
-                regalo = asignar_regalo(nombre.strip())
-                asiste_val = "Sí"
+            df_resp = cargar_respuestas()
+            if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
+                st.warning(f"El nombre {nombre.strip()} ya ha sido registrado previamente.")
             else:
-                regalo = "N/A"
-                asiste_val = "No"
+                codigo = uuid.uuid4().hex[:8].upper()
+                if asistencia == "¡Sí, allí estaré! 🎉":
+                    regalo = asignar_regalo(nombre.strip())
+                    asiste_val = "Sí"
+                else:
+                    regalo = "N/A"
+                    asiste_val = "No"
 
-            nueva_fila = pd.DataFrame([{
-                "Nombre": nombre.strip(),
-                "Asiste": asiste_val,
-                "Regalo": regalo,
-                "Codigo": codigo
-            }])
-            nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
+                nueva_fila = pd.DataFrame([{
+                    "Nombre": nombre.strip(),
+                    "Asiste": asiste_val,
+                    "Regalo": regalo,
+                    "Codigo": codigo
+                }])
+                nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
 
-            st.success("¡Respuesta guardada con éxito!")
-            if asiste_val == "Sí":
-                st.balloons()
-                st.markdown(f"""
-                <div class="green-card">
-                    <h3 style="color:#FFFFFF !important;">🎁 Tu sugerencia de regalo:</h3>
-                    <h1 style="font-size: 2rem; color:#FFFFFF !important;">{regalo}</h1>
-                    <p style="font-size: 0.85rem; color:#FFFFFF !important;">Código de confirmación: {codigo}</p>
-                </div>
-                """, unsafe_allow_html=True)
+                st.success("¡Respuesta guardada con éxito!")
+                if asiste_val == "Sí":
+                    st.balloons()
+                    st.markdown(f"""
+                    <div class="green-card">
+                        <h3 style="color:#FFFFFF !important;">🎁 Tu sugerencia de regalo:</h3>
+                        <h1 style="font-size: 2rem; color:#FFFFFF !important;">{regalo}</h1>
+                        <p style="font-size: 0.85rem; color:#FFFFFF !important;">Código de confirmación: {codigo}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-# ADMIN PANEL
-st.markdown("<br><br>", unsafe_allow_html=True)
-with st.expander("📊 Panel Admin (Ver invitados)"):
-    df_ver = cargar_respuestas()
-    if not df_ver.empty:
-        st.dataframe(df_ver, use_container_width=True)
-    else:
-        st.caption("Aún no hay respuestas.")
+    # ADMIN PANEL
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    with st.expander("📊 Panel Admin (Ver invitados)"):
+        df_ver = cargar_respuestas()
+        if not df_ver.empty:
+            st.dataframe(df_ver, use_container_width=True)
+        else:
+            st.caption("Aún no hay respuestas.")
