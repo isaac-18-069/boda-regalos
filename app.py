@@ -40,7 +40,7 @@ img_b64 = get_image_base64(IMAGEN_HEADER)
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
 .stApp {
     background-color: #FAF8F5 !important;
@@ -93,6 +93,25 @@ html, body, [class*="css"] {
     color: #4A5A48 !important;
     font-weight: 600 !important;
     text-transform: uppercase;
+}
+
+/* Versículo Bíblico */
+.verse-text {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #4A5A48 !important;
+    line-height: 1.6;
+    margin: 0;
+}
+.verse-ref {
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.8rem !important;
+    color: #6B7A68 !important;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    display: block;
 }
 
 .timeline-item {
@@ -221,7 +240,7 @@ if not st.session_state["invitacion_abierta"]:
 # PASO 2: CONTENIDO DE LA INVITACIÓN
 # ──────────────────────────────────────────────
 else:
-    # HEADER CON NOMBRES
+    # 1. HEADER CON NOMBRES
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">NUESTRA BODA 😍💍</div>
@@ -232,7 +251,17 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # FOTO EN FORMA DE ROMPECABEZAS (PUZZLE INTERACTIVO)
+    # 2. VERSÍCULO BÍBLICO (AÑADIDO ENTRE NOMBRES Y FOTO)
+    st.markdown("""
+    <div class="invitation-card" style="padding: 25px 25px;">
+        <p class="verse-text">
+            «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser.»
+        </p>
+        <span class="verse-ref">1 CORINTIOS 13:4, 7-8</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 3. FOTO EN FORMA DE ROMPECABEZAS (PUZZLE INTERACTIVO)
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -393,7 +422,7 @@ else:
         """
         components.html(puzzle_html, height=460)
 
-    # MÚSICA DE FONDO (YOUTUBE)
+    # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
     <div class="invitation-card" style="padding-bottom: 10px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
@@ -402,7 +431,7 @@ else:
 
     st.video("https://youtu.be/js2MkCAmTJY")
 
-    # PADRES Y PADRINOS
+    # 5. PADRES Y PADRINOS
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
@@ -417,7 +446,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # DÍA Y CALENDARIO
+    # 6. DÍA Y CALENDARIO
     st.markdown("""
     <div class="green-card">
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
@@ -426,7 +455,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # UBICACIÓN Y CEREMONIA
+    # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
@@ -440,7 +469,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # ITINERARIO
+    # 8. ITINERARIO
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
@@ -451,7 +480,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # DRESS CODE & NOTAS
+    # 9. DRESS CODE & NOTAS
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
@@ -462,7 +491,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # SECCIÓN DE CONFIRMACIÓN Y REGALOS
+    # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
         <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
