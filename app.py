@@ -60,11 +60,11 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS CON ESPACIO SUFICIENTE PARA LAS FLORES */
+/* TARJETAS CON ESPACIO AMPLIO PARA LAS FLORES */
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 80px 25px 80px 25px;
+    padding: 90px 25px 90px 25px; /* Espacio superior e inferior ampliado para evitar solapamientos */
     margin: 30px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
@@ -77,13 +77,13 @@ html, body, [class*="css"] {{
 .invitation-card::before {{
     content: "";
     position: absolute;
-    top: -10px;
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    width: 250px;
-    height: 75px;
+    width: 280px;
+    height: 100px;
     background-image: url('{flores_src}');
-    background-size: 100% auto;
+    background-size: contain;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
@@ -95,13 +95,13 @@ html, body, [class*="css"] {{
 .invitation-card::after {{
     content: "";
     position: absolute;
-    bottom: -10px;
+    bottom: -15px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 250px;
-    height: 75px;
+    width: 280px;
+    height: 100px;
     background-image: url('{flores_src}');
-    background-size: 100% auto;
+    background-size: contain;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
@@ -126,7 +126,6 @@ html, body, [class*="css"] {{
     color: #FFFFFF !important;
 }}
 
-/* TARJETA DE RESULTADO / SOBRE CONFIRMADO */
 .confirmation-envelope-card {{
     background: linear-gradient(135deg, #5B6B58 0%, #4A5A48 100%);
     border-radius: 20px;
@@ -159,7 +158,6 @@ html, body, [class*="css"] {{
     margin-top: 5px;
 }}
 
-/* Versículo Bíblico */
 .verse-card {{
     background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,239,232,0.95) 100%) !important;
     border-left: 4px solid #A3B18A;
@@ -232,7 +230,6 @@ div.stButton > button:first-child:hover {{
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }}
 
-/* SOBRE DE INICIO INTERACTIVO */
 .welcome-envelope {{
     background-color: #5B6B58;
     width: 260px;
@@ -332,7 +329,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. FOTO INTERACTIVA CON EL NUEVO MARCO PERSONALIZADO Y PUZZLE
+    # 3. FOTO INTERACTIVA CON MARCO CORREGIDO Y FLORES EXTERIORES (ESTILO IMAGEN DE REFERENCIA)
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -351,25 +348,33 @@ else:
             .card-container {{
                 background-color: #FFFFFF;
                 border-radius: 20px;
-                padding: 45px 20px 40px 20px;
+                padding: 40px 20px 30px 20px;
                 box-shadow: 0 8px 25px rgba(0,0,0,0.04);
                 border: 1px solid #E8E2D9;
                 text-align: center;
                 width: 100%;
-                max-width: 450px;
+                max-width: 480px;
                 position: relative;
-                overflow: hidden;
+                overflow: visible;
             }}
             .instructions {{
                 font-size: 13px;
                 color: #6B7A68;
-                margin-bottom: 15px;
+                margin-bottom: 25px;
                 font-weight: 600;
                 position: relative;
                 z-index: 5;
             }}
 
-            /* CONTENEDOR DEL MARCO CORTADO CON DETALLES DORADOS Y FLORALES VERDE OLIVA */
+            /* CONTENEDOR RELATIVO PARA POSICIONAR LAS FLORES EXTERIORES ALREDEDOR DEL MARCO */
+            .puzzle-outer-wrapper {{
+                position: relative;
+                width: 320px;
+                height: 320px;
+                margin: 0 auto;
+            }}
+
+            /* MARCO POLIGONAL */
             .frame-wrapper {{
                 position: relative;
                 width: 310px;
@@ -384,33 +389,33 @@ else:
                 z-index: 2;
             }}
 
-            /* ADORNOS FLORALES VERDE OLIVA */
+            /* FLORES EXTERIORES: ARRIBA A LA IZQUIERDA */
             .floral-corner-left {{
                 position: absolute;
-                top: 25px;
-                left: 10px;
-                width: 70px;
-                height: 70px;
+                top: -20px;
+                left: -35px;
+                width: 140px;
+                height: 140px;
                 background-image: url('{flores_src}');
                 background-size: contain;
                 background-repeat: no-repeat;
                 z-index: 4;
                 pointer-events: none;
-                filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
             }}
+
+            /* FLORES EXTERIORES: ABAJO A LA DERECHA */
             .floral-corner-right {{
                 position: absolute;
-                bottom: 25px;
-                right: 10px;
-                width: 70px;
-                height: 70px;
+                bottom: -20px;
+                right: -35px;
+                width: 140px;
+                height: 140px;
                 background-image: url('{flores_src}');
                 background-size: contain;
                 background-repeat: no-repeat;
                 transform: rotate(180deg);
                 z-index: 4;
                 pointer-events: none;
-                filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
             }}
 
             #puzzle-board {{
@@ -439,11 +444,11 @@ else:
                 transform: scale(0.92);
             }}
             .btn-resolve {{
-                margin-top: 18px;
+                margin-top: 25px;
                 background-color: #6B7A68;
                 color: white;
                 border: none;
-                padding: 9px 22px;
+                padding: 10px 24px;
                 border-radius: 20px;
                 font-size: 12px;
                 cursor: pointer;
@@ -465,11 +470,15 @@ else:
         <body>
         <div class="card-container">
             <div class="instructions">🧩 Haz clic en dos piezas para intercambiarlas y armar la foto</div>
-            <div class="floral-corner-left"></div>
-            <div class="floral-corner-right"></div>
-            <div class="frame-wrapper">
-                <div id="puzzle-board"></div>
+            
+            <div class="puzzle-outer-wrapper">
+                <div class="floral-corner-left"></div>
+                <div class="floral-corner-right"></div>
+                <div class="frame-wrapper">
+                    <div id="puzzle-board"></div>
+                </div>
             </div>
+
             <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
             <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
         </div>
@@ -545,11 +554,11 @@ else:
         </body>
         </html>
         """
-        components.html(puzzle_html, height=510)
+        components.html(puzzle_html, height=530)
 
     # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 30px;">
+    <div class="invitation-card" style="padding-bottom: 25px; padding-top: 75px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
@@ -657,7 +666,6 @@ else:
                 st.success("¡Respuesta guardada con éxito!")
                 if asiste_val == "Sí":
                     st.balloons()
-                    # MUESTRA DEL SOBRE CERRADO DE CONFIRMACIÓN CON LA FRASE SOLICITADA
                     st.markdown(f"""
                     <div class="confirmation-envelope-card">
                         <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
