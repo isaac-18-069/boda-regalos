@@ -25,6 +25,7 @@ if "invitacion_abierta" not in st.session_state:
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
+IMAGEN_FLORES = Path("flores.png")  # Puedes guardar aquí la imagen 1 de flores
 
 def get_image_base64(path):
     if path.exists():
@@ -34,16 +35,17 @@ def get_image_base64(path):
     return None
 
 img_b64 = get_image_base64(IMAGEN_HEADER)
+flores_b64 = get_image_base64(IMAGEN_FLORES)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS
+# ESTILOS CSS CON DETALLES FLORALES
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
 .stApp {
-    background-color: #FAF8F5 !important;
+    background-color: #FAF6F0 !important;
 }
 
 #MainMenu, footer, header {visibility: hidden;}
@@ -56,23 +58,45 @@ html, body, [class*="css"] {
     font-family: 'Montserrat', sans-serif !important;
 }
 
+/* TARJETAS CON BORDE Y ESTILO FLORAL */
 .invitation-card {
-    background-color: #FFFFFF !important;
-    border-radius: 16px;
-    padding: 30px 20px;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 20px;
+    padding: 35px 25px;
     margin: 25px auto;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.04);
-    border: 1px solid #E2E8F0;
+    box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
+    border: 1px solid #E8E2D9;
     text-align: center;
     position: relative;
+    overflow: hidden;
+}
+
+/* DECORACIÓN FLORAL EN LAS ESQUINAS DE LAS TARJETAS */
+.invitation-card::before {
+    content: "🌸";
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.invitation-card::after {
+    content: "🌸";
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.2rem;
+    opacity: 0.7;
 }
 
 .green-card {
     background-color: #6B7A68 !important;
-    border-radius: 16px;
-    padding: 30px 20px;
+    border-radius: 20px;
+    padding: 35px 25px;
     margin: 25px auto;
     text-align: center;
+    box-shadow: 0 10px 25px rgba(107, 122, 104, 0.2);
 }
 .green-card * {
     color: #FFFFFF !important;
@@ -80,9 +104,9 @@ html, body, [class*="css"] {
 
 .title-names {
     font-family: 'Great Vibes', cursive !important;
-    font-size: 3.5rem !important;
+    font-size: 3.8rem !important;
     color: #4A5A48 !important;
-    margin-bottom: 0px;
+    margin-bottom: 5px;
     line-height: 1.2;
 }
 
@@ -96,21 +120,27 @@ html, body, [class*="css"] {
 }
 
 /* Versículo Bíblico */
+.verse-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(244,239,232,0.9) 100%) !important;
+    border-left: 4px solid #A3B18A;
+    border-right: 4px solid #A3B18A;
+}
+
 .verse-text {
     font-family: 'Montserrat', sans-serif;
     font-style: italic;
-    font-size: 0.95rem;
+    font-size: 0.98rem;
     color: #4A5A48 !important;
-    line-height: 1.6;
+    line-height: 1.7;
     margin: 0;
 }
 .verse-ref {
     font-family: 'Cinzel', serif !important;
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
     color: #6B7A68 !important;
     font-weight: 600;
     letter-spacing: 2px;
-    margin-top: 8px;
+    margin-top: 10px;
     display: block;
 }
 
@@ -162,7 +192,7 @@ div.stButton > button:first-child:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* SOBRE DE INICIO */
+/* SOBRE DE INICIO INTERACTIVO */
 .welcome-envelope {
     background-color: #5B6B58;
     width: 260px;
@@ -222,7 +252,7 @@ def asignar_regalo(nombre):
 if not st.session_state["invitacion_abierta"]:
     st.markdown("""
     <div class="invitation-card" style="margin-top: 50px; padding: 40px 20px;">
-        <div class="subtitle-cinzel">NUESTRA BODA 😍💍 </div>
+        <div class="subtitle-cinzel">NUESTRA BODA</div>
         <div class="welcome-envelope">
             <div class="seal-initials">C & E</div>
         </div>
@@ -243,17 +273,17 @@ else:
     # 1. HEADER CON NOMBRES
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">NUESTRA BODA 😍💍</div>
-        <div class="title-names">Carlos & Eunice 😍</div>
+        <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
+        <div class="title-names">Carlos & Eunice</div>
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
-            18 DE JUNIO DE 2027
+            18 DE JULIO DE 2027
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. VERSÍCULO BÍBLICO (AÑADIDO ENTRE NOMBRES Y FOTO)
+    # 2. VERSÍCULO BÍBLICO DE AMOR (1 CORINTIOS 13:4, 7-8)
     st.markdown("""
-    <div class="invitation-card" style="padding: 25px 25px;">
+    <div class="invitation-card verse-card">
         <p class="verse-text">
             «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser.»
         </p>
@@ -261,7 +291,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. FOTO EN FORMA DE ROMPECABEZAS (PUZZLE INTERACTIVO)
+    # 3. FOTO INTERACTIVA (MARCO DE ROMPECABEZAS)
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -279,10 +309,10 @@ else:
             }}
             .card-container {{
                 background-color: #FFFFFF;
-                border-radius: 16px;
+                border-radius: 20px;
                 padding: 20px;
                 box-shadow: 0 8px 25px rgba(0,0,0,0.04);
-                border: 1px solid #E2E8F0;
+                border: 1px solid #E8E2D9;
                 text-align: center;
                 width: 100%;
                 max-width: 450px;
@@ -302,7 +332,7 @@ else:
                 grid-template-rows: repeat(3, 1fr);
                 gap: 2px;
                 background: #E2E8F0;
-                border-radius: 12px;
+                border-radius: 14px;
                 overflow: hidden;
                 border: 2px solid #6B7A68;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -321,7 +351,7 @@ else:
                 transform: scale(0.95);
             }}
             .btn-resolve {{
-                margin-top: 12px;
+                margin-top: 14px;
                 background-color: #6B7A68;
                 color: white;
                 border: none;
@@ -437,10 +467,10 @@ else:
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
             <div>
-                <strong>Padres del Novio</strong><br>Carlos M & Diana P
+                <strong>Padres del Novio</strong><br>Carlos Sr. & María
             </div>
             <div>
-                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C
+                <strong>Padres de la Novia</strong><br>José & Juana
             </div>
         </div>
     </div>
@@ -458,8 +488,8 @@ else:
     # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">⛪ Ceremonia </div>
-        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;"> Registro Civil </p>
+        <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
             <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
@@ -473,10 +503,10 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia </div>
-        <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Felicitaciones a los recien casados </div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
+        <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
         <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
-        <div class="timeline-item">💃 20:30 hrs — Fiesta </div>
+        <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
     </div>
     """, unsafe_allow_html=True)
 
