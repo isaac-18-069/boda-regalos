@@ -20,121 +20,140 @@ if "invitacion_abierta" not in st.session_state:
     st.session_state["invitacion_abierta"] = False
 
 # ──────────────────────────────────────────────
-# ARCHIVOS Y RUTAS
+# ARCHIVOS Y RUTAS EN GITHUB / LOCAL
 # ──────────────────────────────────────────────
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
-IMAGEN_FLORES = Path("flores.png")  # Puedes guardar aquí la imagen 1 de flores
 
-def get_image_base64(path):
-    if path.exists():
-        with open(path, "rb") as f:
+# Nombre exacto de tu archivo subido a GitHub
+IMAGEN_FLORES_LOCAL = Path("Cet article n'est pas disponible - Etsy.jpg")
+
+# Enlace RAW directo desde tu repositorio de GitHub
+URL_FLORES_GITHUB = "https://raw.githubusercontent.com/isaac-18-069/boda-regalos/main/Cet%20article%20n'est%20pas%20disponible%20-%20Etsy.jpg"
+
+def get_image_base64_or_url(path_local, url_github):
+    if path_local.exists():
+        with open(path_local, "rb") as f:
             encoded = base64.b64encode(f.read()).decode()
             return f"data:image/jpeg;base64,{encoded}"
-    return None
+    return url_github
 
-img_b64 = get_image_base64(IMAGEN_HEADER)
-flores_b64 = get_image_base64(IMAGEN_FLORES)
+img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
+flores_src = get_image_base64_or_url(IMAGEN_FLORES_LOCAL, URL_FLORES_GITHUB)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CON DETALLES FLORALES
+# ESTILOS CSS CON ARCO Y DETALLES FLORALES
 # ──────────────────────────────────────────────
-st.markdown("""
+st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
-.stApp {
+.stApp {{
     background-color: #FAF6F0 !important;
-}
+}}
 
-#MainMenu, footer, header {visibility: hidden;}
+#MainMenu, footer, header {{visibility: hidden;}}
 
-p, span, label, div, h1, h2, h3, h4, h5, h6 {
+p, span, label, div, h1, h2, h3, h4, h5, h6 {{
     color: #2D3748 !important;
-}
+}}
 
-html, body, [class*="css"] {
+html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
-}
+}}
 
-/* TARJETAS CON BORDE Y ESTILO FLORAL */
-.invitation-card {
+/* TARJETAS CON MARCO FLORAL ARRIBA Y ABAJO */
+.invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 35px 25px;
+    padding: 90px 25px 90px 25px; /* Espacio para las flores arriba y abajo */
     margin: 25px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
     text-align: center;
     position: relative;
     overflow: hidden;
-}
+}}
 
-/* DECORACIÓN FLORAL EN LAS ESQUINAS DE LAS TARJETAS */
-.invitation-card::before {
-    content: "🌸";
+/* FLORES DECORATIVAS SUPERIORES (ARCO) */
+.invitation-card::before {{
+    content: "";
     position: absolute;
-    top: 10px;
-    left: 15px;
-    font-size: 1.2rem;
-    opacity: 0.7;
-}
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 85px;
+    background-image: url('{flores_src}');
+    background-size: contain;
+    background-position: top center;
+    background-repeat: no-repeat;
+    opacity: 0.95;
+    pointer-events: none;
+}}
 
-.invitation-card::after {
-    content: "🌸";
+/* FLORES DECORATIVAS INFERIORES */
+.invitation-card::after {{
+    content: "";
     position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.2rem;
-    opacity: 0.7;
-}
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 85px;
+    background-image: url('{flores_src}');
+    background-size: contain;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    transform: rotate(180deg);
+    opacity: 0.95;
+    pointer-events: none;
+}}
 
-.green-card {
+.green-card {{
     background-color: #6B7A68 !important;
     border-radius: 20px;
     padding: 35px 25px;
     margin: 25px auto;
     text-align: center;
     box-shadow: 0 10px 25px rgba(107, 122, 104, 0.2);
-}
-.green-card * {
+}}
+.green-card * {{
     color: #FFFFFF !important;
-}
+}}
 
-.title-names {
+.title-names {{
     font-family: 'Great Vibes', cursive !important;
     font-size: 3.8rem !important;
     color: #4A5A48 !important;
     margin-bottom: 5px;
     line-height: 1.2;
-}
+}}
 
-.subtitle-cinzel {
+.subtitle-cinzel {{
     font-family: 'Cinzel', serif !important;
     letter-spacing: 3px;
     font-size: 1rem !important;
     color: #4A5A48 !important;
     font-weight: 600 !important;
     text-transform: uppercase;
-}
+}}
 
 /* Versículo Bíblico */
-.verse-card {
+.verse-card {{
     background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(244,239,232,0.9) 100%) !important;
     border-left: 4px solid #A3B18A;
     border-right: 4px solid #A3B18A;
-}
+}}
 
-.verse-text {
+.verse-text {{
     font-family: 'Montserrat', sans-serif;
     font-style: italic;
     font-size: 0.98rem;
     color: #4A5A48 !important;
     line-height: 1.7;
     margin: 0;
-}
-.verse-ref {
+}}
+.verse-ref {{
     font-family: 'Cinzel', serif !important;
     font-size: 0.85rem !important;
     color: #6B7A68 !important;
@@ -142,37 +161,37 @@ html, body, [class*="css"] {
     letter-spacing: 2px;
     margin-top: 10px;
     display: block;
-}
+}}
 
-.timeline-item {
+.timeline-item {{
     padding: 12px 0;
     border-bottom: 1px dashed #CBD5E0;
     font-size: 1rem !important;
     color: #2D3748 !important;
     font-weight: 500 !important;
-}
-.timeline-item:last-child {
+}}
+.timeline-item:last-child {{
     border-bottom: none;
-}
+}}
 
-div[data-baseweb="input"] {
+div[data-baseweb="input"] {{
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E0 !important;
     border-radius: 8px !important;
-}
+}}
 
-div[data-baseweb="input"] input {
+div[data-baseweb="input"] input {{
     color: #1A202C !important;
     background-color: #FFFFFF !important;
-}
+}}
 
-.stRadio label {
+.stRadio label {{
     color: #2D3748 !important;
     font-size: 1rem !important;
     font-weight: 500 !important;
-}
+}}
 
-div.stButton > button:first-child {
+div.stButton > button:first-child {{
     background-color: #6B7A68 !important;
     color: #FFFFFF !important;
     border-radius: 25px !important;
@@ -183,30 +202,31 @@ div.stButton > button:first-child {
     letter-spacing: 1px;
     width: 100%;
     transition: all 0.3s ease;
-}
-div.stButton > button:first-child * {
+}}
+div.stButton > button:first-child * {{
     color: #FFFFFF !important;
-}
-div.stButton > button:first-child:hover {
+}}
+div.stButton > button:first-child:hover {{
     background-color: #556353 !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
+}}
 
 /* SOBRE DE INICIO INTERACTIVO */
-.welcome-envelope {
+.welcome-envelope {{
     background-color: #5B6B58;
     width: 260px;
     height: 170px;
-    margin: 30px auto 20px auto;
+    margin: 20px auto 15px auto;
     border-radius: 12px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
+    z-index: 2;
+}}
 
-.seal-initials {
+.seal-initials {{
     width: 65px;
     height: 65px;
     background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
@@ -220,7 +240,7 @@ div.stButton > button:first-child:hover {
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     border: 2px solid #F3E5AB;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -251,12 +271,12 @@ def asignar_regalo(nombre):
 # ──────────────────────────────────────────────
 if not st.session_state["invitacion_abierta"]:
     st.markdown("""
-    <div class="invitation-card" style="margin-top: 50px; padding: 40px 20px;">
+    <div class="invitation-card" style="margin-top: 30px;">
         <div class="subtitle-cinzel">NUESTRA BODA</div>
         <div class="welcome-envelope">
             <div class="seal-initials">C & E</div>
         </div>
-        <p style="font-size: 0.9rem; color: #6B7A68 !important; margin-top: 15px; font-weight: 500;">
+        <p style="font-size: 0.9rem; color: #6B7A68 !important; margin-top: 10px; font-weight: 500;">
             Has recibido una invitación especial
         </p>
     </div>
@@ -310,22 +330,55 @@ else:
             .card-container {{
                 background-color: #FFFFFF;
                 border-radius: 20px;
-                padding: 20px;
+                padding: 60px 20px 70px 20px;
                 box-shadow: 0 8px 25px rgba(0,0,0,0.04);
                 border: 1px solid #E8E2D9;
                 text-align: center;
                 width: 100%;
                 max-width: 450px;
+                position: relative;
+                overflow: hidden;
+            }}
+            .card-container::before {{
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background-image: url('{flores_src}');
+                background-size: contain;
+                background-position: top center;
+                background-repeat: no-repeat;
+                opacity: 0.9;
+                pointer-events: none;
+            }}
+            .card-container::after {{
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background-image: url('{flores_src}');
+                background-size: contain;
+                background-position: bottom center;
+                background-repeat: no-repeat;
+                transform: rotate(180deg);
+                opacity: 0.9;
+                pointer-events: none;
             }}
             .instructions {{
                 font-size: 13px;
                 color: #6B7A68;
                 margin-bottom: 12px;
                 font-weight: 600;
+                position: relative;
+                z-index: 2;
             }}
             #puzzle-board {{
-                width: 320px;
-                height: 320px;
+                width: 300px;
+                height: 300px;
                 margin: 0 auto;
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
@@ -336,12 +389,14 @@ else:
                 overflow: hidden;
                 border: 2px solid #6B7A68;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                position: relative;
+                z-index: 2;
             }}
             .tile {{
                 width: 100%;
                 height: 100%;
                 background-image: url('{img_b64}');
-                background-size: 320px 320px;
+                background-size: 300px 300px;
                 cursor: pointer;
                 transition: transform 0.2s, border 0.2s;
                 border: 1px solid rgba(255,255,255,0.4);
@@ -360,6 +415,8 @@ else:
                 font-size: 12px;
                 cursor: pointer;
                 font-weight: 600;
+                position: relative;
+                z-index: 2;
             }}
             .success-msg {{
                 display: none;
@@ -367,6 +424,8 @@ else:
                 font-weight: bold;
                 margin-top: 10px;
                 font-size: 14px;
+                position: relative;
+                z-index: 2;
             }}
         </style>
         </head>
@@ -385,9 +444,9 @@ else:
             let selectedTile = null;
 
             const correctPositions = [
-                '0px 0px', '-106px 0px', '-213px 0px',
-                '0px -106px', '-106px -106px', '-213px -106px',
-                '0px -213px', '-106px -213px', '-213px -213px'
+                '0px 0px', '-100px 0px', '-200px 0px',
+                '0px -100px', '-100px -100px', '-200px -100px',
+                '0px -200px', '-100px -200px', '-200px -200px'
             ];
 
             let currentPositions = [...correctPositions];
@@ -450,11 +509,11 @@ else:
         </body>
         </html>
         """
-        components.html(puzzle_html, height=460)
+        components.html(puzzle_html, height=520)
 
     # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 10px;">
+    <div class="invitation-card" style="padding-bottom: 80px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
@@ -492,7 +551,7 @@ else:
         <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
-            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
+            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
                 📍 Ver ubicación en GPS
             </div>
         </a>
@@ -506,7 +565,7 @@ else:
         <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
         <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
         <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
-        <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 20:30 hrs — Fiesta y Baile</div>
     </div>
     """, unsafe_allow_html=True)
 
