@@ -10,7 +10,7 @@ import streamlit.components.v1 as components
 # CONFIGURACIÓN DE LA PÁGINA
 # ──────────────────────────────────────────────
 st.set_page_config(
-    page_title="Carlos & Eunice ❤️💍", 
+    page_title="Carlos & Eunice 💍", 
     page_icon="🌿", 
     layout="centered"
 )
@@ -40,7 +40,7 @@ img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
 flores_src = get_image_base64_or_url(IMAGEN_FLORES_LOCAL, URL_FLORES_GITHUB)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CORREGIDOS (FLORES DESPLAZADAS Y PADDING AUMENTADO)
+# ESTILOS CSS CORREGIDOS
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -64,7 +64,7 @@ html, body, [class*="css"] {{
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 80px 25px 80px 25px; /* Aumentado arriba y abajo para no tapar letras */
+    padding: 80px 25px 80px 25px;
     margin: 30px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
@@ -73,7 +73,7 @@ html, body, [class*="css"] {{
     overflow: hidden;
 }}
 
-/* RAMO FLORAL SUPERIOR UBICADO BIEN ARRIBA */
+/* RAMO FLORAL SUPERIOR */
 .invitation-card::before {{
     content: "";
     position: absolute;
@@ -91,7 +91,7 @@ html, body, [class*="css"] {{
     z-index: 1;
 }}
 
-/* RAMO FLORAL INFERIOR UBICADO BIEN ABAJO */
+/* RAMO FLORAL INFERIOR */
 .invitation-card::after {{
     content: "";
     position: absolute;
@@ -111,7 +111,7 @@ html, body, [class*="css"] {{
 
 .invitation-card * {{
     position: relative;
-    z-index: 2; /* Para asegurar que todo el texto quede por ENCIMA de las flores */
+    z-index: 2;
 }}
 
 .green-card {{
@@ -123,6 +123,21 @@ html, body, [class*="css"] {{
     box-shadow: 0 10px 25px rgba(107, 122, 104, 0.2);
 }}
 .green-card * {{
+    color: #FFFFFF !important;
+}}
+
+/* TARJETA DE RESULTADO / SOBRE CONFIRMADO */
+.confirmation-envelope-card {{
+    background: linear-gradient(135deg, #5B6B58 0%, #4A5A48 100%);
+    border-radius: 20px;
+    padding: 35px 25px;
+    margin: 25px auto;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    border: 2px solid #D4AF37;
+    position: relative;
+}}
+.confirmation-envelope-card * {{
     color: #FFFFFF !important;
 }}
 
@@ -300,7 +315,7 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
-        <div class="title-names">Carlos & Eunice ❤️💍 </div>
+        <div class="title-names">Carlos & Eunice</div>
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
             18 DE JUNIO DE 2027
         </div>
@@ -311,7 +326,7 @@ else:
     st.markdown("""
     <div class="invitation-card verse-card">
         <p class="verse-text">
-            «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser ❤️.»
+            «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser.»
         </p>
         <span class="verse-ref">1 CORINTIOS 13:4, 7-8</span>
     </div>
@@ -503,10 +518,10 @@ else:
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
             <div>
-                <strong>Padres del Novio</strong><br>Carlos M & Diana P ❤️
+                <strong>Padres del Novio</strong><br>Carlos M  & Diana ❤️
             </div>
             <div>
-                <strong>Padres de la Novia</strong><br> Emilio M & Prisila C ❤️
+                <strong>Padres de la Novia</strong><br> Emilio M & Pricila C ❤️
             </div>
         </div>
     </div>
@@ -516,7 +531,7 @@ else:
     st.markdown("""
     <div class="green-card">
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
-        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JUNIO</h2>
+        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
         <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
     </div>
     """, unsafe_allow_html=True)
@@ -524,8 +539,8 @@ else:
     # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">⛪ Ceremonia ❤️💍</div>
-        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">  </p>
+        <div class="subtitle-cinzel">⛪ Ceremonia </div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">   </p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
             <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
@@ -540,9 +555,9 @@ else:
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
         <div class="timeline-item">⛪ 16:00 hrs — Ceremonia </div>
-        <div class="timeline-item">🥂 20:30 hrs — Bienvenida y Felicitaciones A Los Recien Casados</div>
-        <div class="timeline-item">🍽️ 21:00 hrs — Cena de Gala</div>
-        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Festejo </div>
+        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones  A Los Recien Casados </div>
+        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -567,13 +582,13 @@ else:
 
     # FORMULARIO
     with st.form("form_invitacion"):
-        nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: CARLOS & EUNICE")
+        nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
         asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
         submit = st.form_submit_button("Enviar Confirmación ✉️")
 
     if submit:
         if not nombre.strip():
-            st.error("Por favor ingresa tu nombre .")
+            st.error("Por favor ingresa tu nombre.")
         else:
             df_resp = cargar_respuestas()
             if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
@@ -598,13 +613,32 @@ else:
                 st.success("¡Respuesta guardada con éxito!")
                 if asiste_val == "Sí":
                     st.balloons()
+                    # MUESTRA DEL SOBRE CERRADO DE CONFIRMACIÓN CON LA FRASE SOLICITADA
                     st.markdown(f"""
-                    <div class="green-card">
-                        <h3 style="color:#FFFFFF !important;">🎁 Tu sugerencia de regalo:</h3>
-                        <h1 style="font-size: 2rem; color:#FFFFFF !important;">{regalo}</h1>
-                        <p style="font-size: 0.85rem; color:#FFFFFF !important;">Código de confirmación: {codigo}</p>
+                    <div class="confirmation-envelope-card">
+                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
+                            <div class="seal-initials" style="width: 45px; height: 45px; font-size: 13px;">✉️</div>
+                        </div>
+                        <h3 style="font-family: 'Great Vibes', cursive !important; font-size: 2.3rem; margin-top: 15px; color: #F3E5AB !important;">
+                            ¡Gracias por confirmar! 💖
+                        </h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; font-weight: 500; margin: 15px 0; color: #FFFFFF !important;">
+                            Te esperamos con ansias para celebrar este hermoso día con nosotros ✨🥂🎉💒
+                        </p>
+                        <hr style="border: 0; border-top: 1px dashed rgba(255,255,255,0.4); margin: 20px 0;">
+                        <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #F3E5AB !important;">
+                            🎁 Sugerencia de Regalo Asignada:
+                        </p>
+                        <h2 style="font-size: 1.8rem; margin: 8px 0; font-family: 'Cinzel', serif !important; color: #FFFFFF !important;">
+                            {regalo}
+                        </h2>
+                        <p style="font-size: 0.8rem; opacity: 0.85; margin-top: 12px; color: #FFFFFF !important;">
+                            Código de Confirmación: <strong>{codigo}</strong>
+                        </p>
                     </div>
                     """, unsafe_allow_html=True)
+                else:
+                    st.info("Lamentamos que no puedas acompañarnos, ¡agradecemos mucho tu respuesta!")
 
     # ADMIN PANEL
     st.markdown("<br><br>", unsafe_allow_html=True)
