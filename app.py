@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 import base64
 import uuid
+import streamlit.components.v1 as components
 
 # ──────────────────────────────────────────────
 # CONFIGURACIÓN DE LA PÁGINA
@@ -31,31 +32,26 @@ def get_image_base64(path):
 img_b64 = get_image_base64(IMAGEN_HEADER)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS ESTILO CANVA / VERDE OLIVA (LEGIBILIDAD MEJORADA)
+# ESTILOS CSS
 # ──────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap');
 
-/* Fondo general suave */
 .stApp {
     background-color: #FAF8F5 !important;
 }
 
-/* Ocultar elementos sobrantes de Streamlit */
 #MainMenu, footer, header {visibility: hidden;}
 
-/* Forzar color oscuro legible en TODOS los textos */
 p, span, label, div, h1, h2, h3, h4, h5, h6 {
     color: #2D3748 !important;
 }
 
-/* Tipografía general */
 html, body, [class*="css"] {
     font-family: 'Montserrat', sans-serif !important;
 }
 
-/* Contenedores tipo tarjeta */
 .invitation-card {
     background-color: #FFFFFF !important;
     border-radius: 16px;
@@ -78,7 +74,6 @@ html, body, [class*="css"] {
     color: #FFFFFF !important;
 }
 
-/* Títulos elegantes */
 .title-names {
     font-family: 'Great Vibes', cursive !important;
     font-size: 3.5rem !important;
@@ -96,7 +91,6 @@ html, body, [class*="css"] {
     text-transform: uppercase;
 }
 
-/* Agenda / Itinerario */
 .timeline-item {
     padding: 12px 0;
     border-bottom: 1px dashed #CBD5E0;
@@ -108,7 +102,6 @@ html, body, [class*="css"] {
     border-bottom: none;
 }
 
-/* Estilos de Formulario (Labels, Inputs y Radio) */
 div[data-baseweb="input"] {
     background-color: #FFFFFF !important;
     border: 1px solid #CBD5E0 !important;
@@ -126,7 +119,6 @@ div[data-baseweb="input"] input {
     font-weight: 500 !important;
 }
 
-/* Botones con estilo oliva */
 div.stButton > button:first-child {
     background-color: #6B7A68 !important;
     color: #FFFFFF !important;
@@ -147,7 +139,6 @@ div.stButton > button:first-child:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Sobre animado */
 .envelope-box {
     background-color: #5B6B58;
     width: 220px;
@@ -198,29 +189,186 @@ def asignar_regalo(nombre):
     return regalo
 
 # ──────────────────────────────────────────────
-# VISTA PRINCIPAL DE LA INVITACIÓN
-# ──────────────────────────────────────────────
-
 # HEADER CON NOMBRES
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel">NUESTRA BODA 😍💍</div>
-    <div class="title-names">Carlos & Eunice 😍 </div>
+    <div class="title-names">Carlos & Eunice 😍</div>
     <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
         18 DE JULIO DE 2027
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# FOTO DE LOS NOVIOS
+# ──────────────────────────────────────────────
+# FOTO EN FORMA DE ROMPECABEZAS (PUZZLE INTERACTIVO)
+# ──────────────────────────────────────────────
 if img_b64:
-    st.markdown(f"""
-    <div class="invitation-card" style="padding: 10px; overflow: hidden;">
-        <img src="{img_b64}" style="width: 100%; border-radius: 12px; display: block;" />
+    puzzle_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{
+            background-color: transparent;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }}
+        .card-container {{
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+            border: 1px solid #E2E8F0;
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+        }}
+        .instructions {{
+            font-size: 13px;
+            color: #6B7A68;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }}
+        #puzzle-board {{
+            width: 320px;
+            height: 320px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            background: #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #6B7A68;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }}
+        .tile {{
+            width: 100%;
+            height: 100%;
+            background-image: url('{img_b64}');
+            background-size: 320px 320px;
+            cursor: pointer;
+            transition: transform 0.2s, border 0.2s;
+            border: 1px solid rgba(255,255,255,0.4);
+        }}
+        .tile.selected {{
+            border: 3px solid #D4AF37;
+            transform: scale(0.95);
+        }}
+        .btn-resolve {{
+            margin-top: 12px;
+            background-color: #6B7A68;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }}
+        .success-msg {{
+            display: none;
+            color: #4A5A48;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 14px;
+        }}
+    </style>
+    </head>
+    <body>
+    <div class="card-container">
+        <div class="instructions">🧩 haz clic en dos piezas para intercambiarlas y armar la foto</div>
+        <div id="puzzle-board"></div>
+        <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
+        <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
     </div>
-    """, unsafe_allow_html=True)
 
-# MÚSICA DE FONDO (ROMÁNTICA DE VIOLÍN)
+    <script>
+        const board = document.getElementById('puzzle-board');
+        const successMsg = document.getElementById('success');
+        let tiles = [];
+        let selectedTile = null;
+
+        // Posiciones originales (3x3 grid)
+        const correctPositions = [
+            '0px 0px', '-106px 0px', '-213px 0px',
+            '0px -106px', '-106px -106px', '-213px -106px',
+            '0px -213px', '-106px -213px', '-213px -213px'
+        ];
+
+        let currentPositions = [...correctPositions];
+
+        function shuffle(array) {{
+            for (let i = array.length - 1; i > 0; i--) {{
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }}
+        }}
+
+        function initPuzzle() {{
+            shuffle(currentPositions);
+            renderBoard();
+        }}
+
+        function renderBoard() {{
+            board.innerHTML = '';
+            currentPositions.forEach((pos, index) => {{
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.style.backgroundPosition = pos;
+                tile.dataset.index = index;
+                tile.addEventListener('click', () => onTileClick(tile, index));
+                board.appendChild(tile);
+            }});
+            checkWin();
+        }}
+
+        function onTileClick(tile, index) {{
+            if (selectedTile === null) {{
+                selectedTile = index;
+                board.children[index].classList.add('selected');
+            }} else {{
+                let prevIndex = selectedTile;
+                // Intercambiar posiciones
+                let temp = currentPositions[prevIndex];
+                currentPositions[prevIndex] = currentPositions[index];
+                currentPositions[index] = temp;
+
+                selectedTile = null;
+                renderBoard();
+            }}
+        }}
+
+        function checkWin() {{
+            let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
+            if (isWin) {{
+                successMsg.style.display = 'block';
+                board.style.border = '3px solid #28a745';
+            }}
+        }}
+
+        function autoSolve() {{
+            currentPositions = [...correctPositions];
+            renderBoard();
+        }}
+
+        initPuzzle();
+    </script>
+    </body>
+    </html>
+    """
+    components.html(puzzle_html, height=460)
+
+# ──────────────────────────────────────────────
+# MÚSICA DE FONDO (YOUTUBE)
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card" style="padding-bottom: 10px;">
     <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
@@ -229,36 +377,42 @@ st.markdown("""
 
 st.video("https://youtu.be/js2MkCAmTJY")
 
+# ──────────────────────────────────────────────
 # PADRES Y PADRINOS
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
     <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
         <div>
-            <strong>Padres del Novio</strong><br>Carlos M & Diana P
+            <strong>Padres del Novio</strong><br>Carlos Sr. & María
         </div>
         <div>
-            <strong>Padres de la Novia</strong><br>Emilio M & Pricila C
+            <strong>Padres de la Novia</strong><br>José & Juana
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
+# ──────────────────────────────────────────────
 # DÍA Y CALENDARIO
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="green-card">
     <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
     <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
-    <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 20:00 HRS</p>
+    <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
 </div>
 """, unsafe_allow_html=True)
 
+# ──────────────────────────────────────────────
 # UBICACIÓN Y CEREMONIA
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card">
-    <div class="subtitle-cinzel">⛪ Boda Civil </div>
-    <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Registro  civil del Canton Babahoyo </p>
-    <p style="font-size: 0.9rem; color: #4A5568 !important;">15:30 HRS</p>
+    <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
+    <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
+    <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
     <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
         <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
             📍 Ver ubicación en GPS
@@ -267,18 +421,22 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# ──────────────────────────────────────────────
 # ITINERARIO
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-    <div class="timeline-item">⛪ 15:30 hrs — Boda Civil </div>
-    <div class="timeline-item">🥂 20:30 hrs — Bienvenida y felicitaciones a los recien casados </div>
-    <div class="timeline-item">🍽️ 21:00 hrs — Cena de Gala</div>
-    <div class="timeline-item">💃 21:30 hrs — Evento Musical</div>
+    <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
+    <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
+    <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
+    <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
 </div>
 """, unsafe_allow_html=True)
 
+# ──────────────────────────────────────────────
 # DRESS CODE & NOTAS
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card">
     <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
@@ -289,7 +447,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# ──────────────────────────────────────────────
 # SECCIÓN DE CONFIRMACIÓN Y REGALOS
+# ──────────────────────────────────────────────
 st.markdown("""
 <div class="invitation-card" id="confirmacion">
     <div class="envelope-box">
@@ -341,7 +501,7 @@ if submit:
                 </div>
                 """, unsafe_allow_html=True)
 
-# ADMIN PANEL (EXPANDIBLE)
+# ADMIN PANEL
 st.markdown("<br><br>", unsafe_allow_html=True)
 with st.expander("📊 Panel Admin (Ver invitados)"):
     df_ver = cargar_respuestas()
