@@ -10,7 +10,7 @@ import streamlit.components.v1 as components
 # CONFIGURACIÓN DE LA PÁGINA
 # ──────────────────────────────────────────────
 st.set_page_config(
-    page_title="Carlos & Eunice 💍", 
+    page_title="Carlos & Eunice 😍💍", 
     page_icon="🌿", 
     layout="centered"
 )
@@ -314,10 +314,10 @@ else:
     # 1. HEADER CON NOMBRES
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
-        <div class="title-names">Carlos & Eunice</div>
+        <div class="subtitle-cinzel">NUESTRA BODA 🥰💍</div>
+        <div class="title-names">Carlos & Eunice 💏💖</div>
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
-            18 DE JULIO DE 2027
+            18 DE JUNIO DE 2027
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -518,10 +518,10 @@ else:
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
             <div>
-                <strong>Padres del Novio</strong><br>Carlos Sr. & María
+                <strong>Padres del Novio</strong><br>Carlos M & Diana P 🥰
             </div>
             <div>
-                <strong>Padres de la Novia</strong><br>José & Juana
+                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C 🥰
             </div>
         </div>
     </div>
@@ -539,8 +539,8 @@ else:
     # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
-        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
+        <div class="subtitle-cinzel">⛪ Ceremonia </div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">   </p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
             <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
@@ -555,9 +555,9 @@ else:
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
         <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
-        <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
-        <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
-        <div class="timeline-item" style="border-bottom:none;">💃 20:30 hrs — Fiesta y Baile</div>
+        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Brindis</div>
+        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 20:30 hrs — Fiesta </div>
     </div>
     """, unsafe_allow_html=True)
 
