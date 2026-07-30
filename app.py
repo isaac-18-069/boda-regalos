@@ -516,7 +516,7 @@ else:
     st.markdown("""
     <div class="green-card">
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
-        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
+        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JUNIO</h2>
         <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
     </div>
     """, unsafe_allow_html=True)
@@ -567,13 +567,13 @@ else:
 
     # FORMULARIO
     with st.form("form_invitacion"):
-        nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
+        nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: CARLOS & EUNICE")
         asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
         submit = st.form_submit_button("Enviar Confirmación ✉️")
 
     if submit:
         if not nombre.strip():
-            st.error("Por favor ingresa tu nombre.")
+            st.error("Por favor ingresa tu nombre .")
         else:
             df_resp = cargar_respuestas()
             if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
