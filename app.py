@@ -60,11 +60,11 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS CON ESPACIO AMPLIO PARA LAS FLORES */
+/* TARJETAS CON ESPACIO SUFICIENTE PARA LAS FLORES */
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 90px 25px 90px 25px; /* Espacio superior e inferior ampliado para evitar solapamientos */
+    padding: 80px 25px 80px 25px;
     margin: 30px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
@@ -77,13 +77,13 @@ html, body, [class*="css"] {{
 .invitation-card::before {{
     content: "";
     position: absolute;
-    top: -15px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 280px;
-    height: 100px;
+    width: 250px;
+    height: 75px;
     background-image: url('{flores_src}');
-    background-size: contain;
+    background-size: 100% auto;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
@@ -95,13 +95,13 @@ html, body, [class*="css"] {{
 .invitation-card::after {{
     content: "";
     position: absolute;
-    bottom: -15px;
+    bottom: -10px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 280px;
-    height: 100px;
+    width: 250px;
+    height: 75px;
     background-image: url('{flores_src}');
-    background-size: contain;
+    background-size: 100% auto;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
@@ -126,6 +126,7 @@ html, body, [class*="css"] {{
     color: #FFFFFF !important;
 }}
 
+/* TARJETA DE RESULTADO / SOBRE CONFIRMADO */
 .confirmation-envelope-card {{
     background: linear-gradient(135deg, #5B6B58 0%, #4A5A48 100%);
     border-radius: 20px;
@@ -158,6 +159,7 @@ html, body, [class*="css"] {{
     margin-top: 5px;
 }}
 
+/* Versículo Bíblico */
 .verse-card {{
     background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,239,232,0.95) 100%) !important;
     border-left: 4px solid #A3B18A;
@@ -230,6 +232,7 @@ div.stButton > button:first-child:hover {{
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }}
 
+/* SOBRE DE INICIO INTERACTIVO */
 .welcome-envelope {{
     background-color: #5B6B58;
     width: 260px;
@@ -314,7 +317,7 @@ else:
         <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
         <div class="title-names">Carlos & Eunice</div>
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
-            18 DE JUNIO DE 2027
+            18 DE JULIO DE 2027
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -329,7 +332,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. FOTO INTERACTIVA CON MARCO CORREGIDO Y FLORES EXTERIORES (ESTILO IMAGEN DE REFERENCIA)
+    # 3. FOTO INTERACTIVA (MARCO DE ROMPECABEZAS)
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -348,87 +351,38 @@ else:
             .card-container {{
                 background-color: #FFFFFF;
                 border-radius: 20px;
-                padding: 40px 20px 30px 20px;
+                padding: 40px 20px 40px 20px;
                 box-shadow: 0 8px 25px rgba(0,0,0,0.04);
                 border: 1px solid #E8E2D9;
                 text-align: center;
                 width: 100%;
-                max-width: 480px;
+                max-width: 450px;
                 position: relative;
-                overflow: visible;
+                overflow: hidden;
             }}
             .instructions {{
                 font-size: 13px;
                 color: #6B7A68;
-                margin-bottom: 25px;
+                margin-bottom: 12px;
                 font-weight: 600;
                 position: relative;
-                z-index: 5;
-            }}
-
-            /* CONTENEDOR RELATIVO PARA POSICIONAR LAS FLORES EXTERIORES ALREDEDOR DEL MARCO */
-            .puzzle-outer-wrapper {{
-                position: relative;
-                width: 320px;
-                height: 320px;
-                margin: 0 auto;
-            }}
-
-            /* MARCO POLIGONAL */
-            .frame-wrapper {{
-                position: relative;
-                width: 310px;
-                height: 310px;
-                margin: 0 auto;
-                padding: 5px;
-                background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 50%, #F3E5AB 100%);
-                clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
                 z-index: 2;
             }}
-
-            /* FLORES EXTERIORES: ARRIBA A LA IZQUIERDA */
-            .floral-corner-left {{
-                position: absolute;
-                top: -20px;
-                left: -35px;
-                width: 140px;
-                height: 140px;
-                background-image: url('{flores_src}');
-                background-size: contain;
-                background-repeat: no-repeat;
-                z-index: 4;
-                pointer-events: none;
-            }}
-
-            /* FLORES EXTERIORES: ABAJO A LA DERECHA */
-            .floral-corner-right {{
-                position: absolute;
-                bottom: -20px;
-                right: -35px;
-                width: 140px;
-                height: 140px;
-                background-image: url('{flores_src}');
-                background-size: contain;
-                background-repeat: no-repeat;
-                transform: rotate(180deg);
-                z-index: 4;
-                pointer-events: none;
-            }}
-
             #puzzle-board {{
                 width: 300px;
                 height: 300px;
+                margin: 0 auto;
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
                 grid-template-rows: repeat(3, 1fr);
                 gap: 2px;
-                background: #FAF6F0;
-                clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
+                background: #E2E8F0;
+                border-radius: 14px;
+                overflow: hidden;
+                border: 2px solid #6B7A68;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
                 position: relative;
-                z-index: 3;
+                z-index: 2;
             }}
             .tile {{
                 width: 100%;
@@ -441,44 +395,36 @@ else:
             }}
             .tile.selected {{
                 border: 3px solid #D4AF37;
-                transform: scale(0.92);
+                transform: scale(0.95);
             }}
             .btn-resolve {{
-                margin-top: 25px;
+                margin-top: 14px;
                 background-color: #6B7A68;
                 color: white;
                 border: none;
-                padding: 10px 24px;
+                padding: 8px 20px;
                 border-radius: 20px;
                 font-size: 12px;
                 cursor: pointer;
                 font-weight: 600;
                 position: relative;
-                z-index: 5;
+                z-index: 2;
             }}
             .success-msg {{
                 display: none;
                 color: #4A5A48;
                 font-weight: bold;
-                margin-top: 12px;
+                margin-top: 10px;
                 font-size: 14px;
                 position: relative;
-                z-index: 5;
+                z-index: 2;
             }}
         </style>
         </head>
         <body>
         <div class="card-container">
-            <div class="instructions">🧩 Haz clic en dos piezas para intercambiarlas y armar la foto</div>
-            
-            <div class="puzzle-outer-wrapper">
-                <div class="floral-corner-left"></div>
-                <div class="floral-corner-right"></div>
-                <div class="frame-wrapper">
-                    <div id="puzzle-board"></div>
-                </div>
-            </div>
-
+            <div class="instructions">🧩 haz clic en dos piezas para intercambiarlas y armar la foto</div>
+            <div id="puzzle-board"></div>
             <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
             <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
         </div>
@@ -541,6 +487,7 @@ else:
                 let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
                 if (isWin) {{
                     successMsg.style.display = 'block';
+                    board.style.border = '3px solid #28a745';
                 }}
             }}
 
@@ -554,11 +501,11 @@ else:
         </body>
         </html>
         """
-        components.html(puzzle_html, height=530)
+        components.html(puzzle_html, height=480)
 
     # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 25px; padding-top: 75px;">
+    <div class="invitation-card" style="padding-bottom: 30px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
@@ -571,10 +518,10 @@ else:
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
             <div>
-                <strong>Padres del Novio</strong><br>Carlos M & Diana ❤️
+                <strong>Padres del Novio</strong><br>Carlos Sr. & María
             </div>
             <div>
-                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️
+                <strong>Padres de la Novia</strong><br>José & Juana
             </div>
         </div>
     </div>
@@ -584,7 +531,7 @@ else:
     st.markdown("""
     <div class="green-card">
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
-        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JUNIO</h2>
+        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JULIO</h2>
         <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
     </div>
     """, unsafe_allow_html=True)
@@ -592,8 +539,8 @@ else:
     # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">⛪ Ceremonia</div>
-        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;"></p>
+        <div class="subtitle-cinzel">⛪ Ceremonia Religiosa</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Iglesia Nuestra Señora de Guadalupe</p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
             <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
@@ -607,10 +554,10 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia</div>
-        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones A Los Recién Casados</div>
-        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
-        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
+        <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Brindis</div>
+        <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 20:30 hrs — Fiesta y Baile</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -666,6 +613,7 @@ else:
                 st.success("¡Respuesta guardada con éxito!")
                 if asiste_val == "Sí":
                     st.balloons()
+                    # MUESTRA DEL SOBRE CERRADO DE CONFIRMACIÓN CON LA FRASE SOLICITADA
                     st.markdown(f"""
                     <div class="confirmation-envelope-card">
                         <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
