@@ -554,7 +554,7 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia de Boda Civil </div>
         <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Brindis</div>
         <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
         <div class="timeline-item" style="border-bottom:none;">💃 20:30 hrs — Fiesta </div>
