@@ -26,10 +26,7 @@ CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
 
-# Nombre exacto de tu archivo subido a GitHub
 IMAGEN_FLORES_LOCAL = Path("Cet article n'est pas disponible - Etsy.jpg")
-
-# Enlace RAW directo desde tu repositorio de GitHub
 URL_FLORES_GITHUB = "https://raw.githubusercontent.com/isaac-18-069/boda-regalos/main/Cet%20article%20n'est%20pas%20disponible%20-%20Etsy.jpg"
 
 def get_image_base64_or_url(path_local, url_github):
@@ -43,7 +40,7 @@ img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
 flores_src = get_image_base64_or_url(IMAGEN_FLORES_LOCAL, URL_FLORES_GITHUB)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CON ARCO Y DETALLES FLORALES
+# ESTILOS CSS CORREGIDOS (FLORES BIEN POSICIONADAS)
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -63,11 +60,11 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS CON MARCO FLORAL ARRIBA Y ABAJO */
+/* TARJETAS CON FLORAL RECORRIDO DE MANERA ELEGANTE */
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 90px 25px 90px 25px; /* Espacio para las flores arriba y abajo */
+    padding: 60px 25px 60px 25px;
     margin: 25px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
@@ -76,35 +73,36 @@ html, body, [class*="css"] {{
     overflow: hidden;
 }}
 
-/* FLORES DECORATIVAS SUPERIORES (ARCO) */
+/* RAMO FLORAL SUPERIOR EN TAMAÑO PROPORCIONAL Y CENTRADO */
 .invitation-card::before {{
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 85px;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    height: 100px;
     background-image: url('{flores_src}');
-    background-size: contain;
+    background-size: 100% auto;
     background-position: top center;
     background-repeat: no-repeat;
     opacity: 0.95;
     pointer-events: none;
 }}
 
-/* FLORES DECORATIVAS INFERIORES */
+/* RAMO FLORAL INFERIOR */
 .invitation-card::after {{
     content: "";
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 85px;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    width: 280px;
+    height: 100px;
     background-image: url('{flores_src}');
-    background-size: contain;
-    background-position: bottom center;
+    background-size: 100% auto;
+    background-position: top center;
     background-repeat: no-repeat;
-    transform: rotate(180deg);
     opacity: 0.95;
     pointer-events: none;
 }}
@@ -330,7 +328,7 @@ else:
             .card-container {{
                 background-color: #FFFFFF;
                 border-radius: 20px;
-                padding: 60px 20px 70px 20px;
+                padding: 40px 20px 40px 20px;
                 box-shadow: 0 8px 25px rgba(0,0,0,0.04);
                 border: 1px solid #E8E2D9;
                 text-align: center;
@@ -338,35 +336,6 @@ else:
                 max-width: 450px;
                 position: relative;
                 overflow: hidden;
-            }}
-            .card-container::before {{
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 60px;
-                background-image: url('{flores_src}');
-                background-size: contain;
-                background-position: top center;
-                background-repeat: no-repeat;
-                opacity: 0.9;
-                pointer-events: none;
-            }}
-            .card-container::after {{
-                content: "";
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: 60px;
-                background-image: url('{flores_src}');
-                background-size: contain;
-                background-position: bottom center;
-                background-repeat: no-repeat;
-                transform: rotate(180deg);
-                opacity: 0.9;
-                pointer-events: none;
             }}
             .instructions {{
                 font-size: 13px;
@@ -509,11 +478,11 @@ else:
         </body>
         </html>
         """
-        components.html(puzzle_html, height=520)
+        components.html(puzzle_html, height=480)
 
     # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 80px;">
+    <div class="invitation-card" style="padding-bottom: 30px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
