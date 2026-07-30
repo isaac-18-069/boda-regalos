@@ -332,7 +332,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. FOTO INTERACTIVA (MARCO DE ROMPECABEZAS)
+    # 3. FOTO INTERACTIVA CON EL NUEVO MARCO PERSONALIZADO Y PUZZLE
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -351,7 +351,7 @@ else:
             .card-container {{
                 background-color: #FFFFFF;
                 border-radius: 20px;
-                padding: 40px 20px 40px 20px;
+                padding: 45px 20px 40px 20px;
                 box-shadow: 0 8px 25px rgba(0,0,0,0.04);
                 border: 1px solid #E8E2D9;
                 text-align: center;
@@ -363,26 +363,67 @@ else:
             .instructions {{
                 font-size: 13px;
                 color: #6B7A68;
-                margin-bottom: 12px;
+                margin-bottom: 15px;
                 font-weight: 600;
                 position: relative;
+                z-index: 5;
+            }}
+
+            /* CONTENEDOR DEL MARCO CORTADO CON DETALLES DORADOS Y FLORALES VERDE OLIVA */
+            .frame-wrapper {{
+                position: relative;
+                width: 310px;
+                height: 310px;
+                margin: 0 auto;
+                padding: 5px;
+                background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 50%, #F3E5AB 100%);
+                clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 z-index: 2;
             }}
+
+            /* ADORNOS FLORALES VERDE OLIVA */
+            .floral-corner-left {{
+                position: absolute;
+                top: 25px;
+                left: 10px;
+                width: 70px;
+                height: 70px;
+                background-image: url('{flores_src}');
+                background-size: contain;
+                background-repeat: no-repeat;
+                z-index: 4;
+                pointer-events: none;
+                filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
+            }}
+            .floral-corner-right {{
+                position: absolute;
+                bottom: 25px;
+                right: 10px;
+                width: 70px;
+                height: 70px;
+                background-image: url('{flores_src}');
+                background-size: contain;
+                background-repeat: no-repeat;
+                transform: rotate(180deg);
+                z-index: 4;
+                pointer-events: none;
+                filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
+            }}
+
             #puzzle-board {{
                 width: 300px;
                 height: 300px;
-                margin: 0 auto;
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
                 grid-template-rows: repeat(3, 1fr);
                 gap: 2px;
-                background: #E2E8F0;
-                border-radius: 14px;
-                overflow: hidden;
-                border: 2px solid #6B7A68;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                background: #FAF6F0;
+                clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
                 position: relative;
-                z-index: 2;
+                z-index: 3;
             }}
             .tile {{
                 width: 100%;
@@ -395,36 +436,40 @@ else:
             }}
             .tile.selected {{
                 border: 3px solid #D4AF37;
-                transform: scale(0.95);
+                transform: scale(0.92);
             }}
             .btn-resolve {{
-                margin-top: 14px;
+                margin-top: 18px;
                 background-color: #6B7A68;
                 color: white;
                 border: none;
-                padding: 8px 20px;
+                padding: 9px 22px;
                 border-radius: 20px;
                 font-size: 12px;
                 cursor: pointer;
                 font-weight: 600;
                 position: relative;
-                z-index: 2;
+                z-index: 5;
             }}
             .success-msg {{
                 display: none;
                 color: #4A5A48;
                 font-weight: bold;
-                margin-top: 10px;
+                margin-top: 12px;
                 font-size: 14px;
                 position: relative;
-                z-index: 2;
+                z-index: 5;
             }}
         </style>
         </head>
         <body>
         <div class="card-container">
-            <div class="instructions">🧩 haz clic en dos piezas para intercambiarlas y armar la foto</div>
-            <div id="puzzle-board"></div>
+            <div class="instructions">🧩 Haz clic en dos piezas para intercambiarlas y armar la foto</div>
+            <div class="floral-corner-left"></div>
+            <div class="floral-corner-right"></div>
+            <div class="frame-wrapper">
+                <div id="puzzle-board"></div>
+            </div>
             <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
             <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
         </div>
@@ -487,7 +532,6 @@ else:
                 let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
                 if (isWin) {{
                     successMsg.style.display = 'block';
-                    board.style.border = '3px solid #28a745';
                 }}
             }}
 
@@ -501,7 +545,7 @@ else:
         </body>
         </html>
         """
-        components.html(puzzle_html, height=480)
+        components.html(puzzle_html, height=510)
 
     # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
@@ -518,10 +562,10 @@ else:
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
             <div>
-                <strong>Padres del Novio</strong><br>Carlos M  & Diana ❤️
+                <strong>Padres del Novio</strong><br>Carlos M & Diana ❤️
             </div>
             <div>
-                <strong>Padres de la Novia</strong><br> Emilio M & Pricila C ❤️
+                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️
             </div>
         </div>
     </div>
@@ -539,8 +583,8 @@ else:
     # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
     <div class="invitation-card">
-        <div class="subtitle-cinzel">⛪ Ceremonia </div>
-        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">   </p>
+        <div class="subtitle-cinzel">⛪ Ceremonia</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;"></p>
         <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
         <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
             <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
@@ -554,8 +598,8 @@ else:
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
-        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia </div>
-        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones  A Los Recien Casados </div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia</div>
+        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones A Los Recién Casados</div>
         <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
         <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
     </div>
