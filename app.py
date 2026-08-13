@@ -37,10 +37,10 @@ def get_image_base64(path_local):
 img_b64 = get_image_base64(IMAGEN_HEADER)
 
 # Ilustración floral SVG pura
-SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5-30-2-40 5-5 3-8 7-10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9 13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4 6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
+SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5-30-2-40 5-5 3-8 7-10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9-13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4-6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CORREGIDOS (TEMA Y ORGANIZADOR DE MESAS)
+# ESTILOS CSS CORREGIDOS
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -54,21 +54,20 @@ st.markdown(f"""
 /* Ocultar elementos predeterminados de Streamlit */
 #MainMenu, footer, header {{visibility: hidden;}}
 
-/* Color de texto predeterminado para toda la página (Verde Oliva Oscuro) */
+/* Color de texto predeterminado */
 p, span, label, div, h1, h2, h3, h4, h5, h6, input, textarea, button {{
     color: #4A5A48 !important;
 }}
 
-/* Fuentes para elementos CSS */
 html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS PRINCIPALES CON MARGEN PARA LAS FLORES ARRIBA Y ABAJO */
+/* TARJETAS PRINCIPALES */
 .invitation-card, .dress-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 70px 25px 70px 25px; /* Espacio superior e inferior para las flores */
+    padding: 70px 25px 70px 25px;
     margin: 35px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
@@ -113,7 +112,6 @@ html, body, [class*="css"] {{
     z-index: 1;
 }}
 
-/* Asegurar que el contenido de la tarjeta esté sobre las flores */
 .invitation-card *, .dress-card * {{
     position: relative;
     z-index: 2;
@@ -156,7 +154,7 @@ html, body, [class*="css"] {{
     line-height: 1.2;
 }}
 
-/* SUBTÍTULOS CINZEL (FECHAS, TÍTULOS DE SECCIÓN) */
+/* SUBTÍTULOS CINZEL */
 .subtitle-cinzel {{
     font-family: 'Cinzel', serif !important;
     letter-spacing: 3px;
@@ -204,179 +202,41 @@ html, body, [class*="css"] {{
     border-bottom: none;
 }}
 
-/* ESTILOS DEL ORGANIZADOR DE MESAS (MAPA INTERACTIVO) */
-.table-organizer-container {{
-    margin-top: 50px;
+/* SOBRE DE INICIO INTERACTIVO */
+.welcome-envelope {{
     background-color: #FAF6F0;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    border: 1px solid #E8E2D9;
-}}
-
-.tab-bar {{
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid #E8E2D9;
-    padding-bottom: 10px;
-}}
-
-.tab-button {{
-    background: none;
-    border: none;
-    font-size: 0.9rem;
-    cursor: pointer;
-    color: #CBD5E0 !important;
-    font-weight: 500;
-    padding: 8px 15px;
-    transition: all 0.3s ease;
-}}
-
-.tab-button.active {{
-    color: #6B7A68 !important;
-    border-bottom: 2px solid #6B7A68;
-    font-weight: 600;
-}}
-
-.search-container {{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
-}}
-
-.search-input {{
-    width: 100%;
-    max-width: 400px;
-    padding: 12px 20px;
-    border: 1px solid #E8E2D9;
-    border-radius: 25px;
-    background-color: white;
-    font-size: 0.9rem;
-}}
-
-.salon-floor-plan {{
+    width: 260px;
+    height: 170px;
+    margin: 15px auto 15px auto;
+    border-radius: 12px;
     position: relative;
-    width: 100%;
-    height: 500px;
-    background-color: white;
-    border-radius: 20px;
-    border: 1px solid #E8E2D9;
-    padding: 20px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-content: flex-start;
-    gap: 15px;
-    overflow-y: auto;
-}}
-
-.altar-area {{
-    width: 100%;
-    height: 100px;
-    border: 1px dashed #E8E2D9;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
-    font-size: 1.2rem;
-    color: #CBD5E0 !important;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 2;
 }}
 
-.table-polygon {{
-    background-color: #FAF6F0;
-    border: 1px solid #E8E2D9;
-    border-radius: 10px;
-    width: calc(33% - 15px);
-    height: 130px;
-    position: relative;
-    padding: 15px 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}}
-
-.special-parents-table {{
-    background-color: white;
-    border: 2px solid #D4AF37;
-    width: calc(48% - 15px);
-    height: 110px;
-    margin-bottom: 25px;
-}}
-
-.parents-table-left {{
-    position: relative;
-}}
-
-.parents-table-right {{
-    position: relative;
-}}
-
-.guest-avatar {{
-    width: 25px;
-    height: 25px;
-    background-color: #6B7A68;
-    color: white;
+.seal-initials {{
+    width: 65px;
+    height: 65px;
+    background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
     border-radius: 50%;
-    font-size: 0.8rem;
-    font-weight: bold;
     display: flex;
-    justify-content: center;
     align-items: center;
-    border: 2px solid white;
-}}
-
-.table-info {{
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-}}
-
-.table-controls {{
-    width: 100%;
-    max-width: 500px;
-    margin: 30px auto 0 auto;
-    display: flex;
-    gap: 15px;
-}}
-
-.input-group {{
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-}}
-
-.input-label {{
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #4A5A48 !important;
-}}
-
-.stTextInput > div > div > input, .stSelectbox > div > div > div > div {{
-    background-color: white !important;
-    border-color: #E8E2D9 !important;
-    border-radius: 8px !important;
-    padding-left: 15px !important;
-    color: #4A5A48 !important;
-}}
-
-div.stButton > button.save-button {{
-    background-color: #6B7A68 !important;
-    color: #FFFFFF !important;
-    border-radius: 20px !important;
-    padding: 10px 25px !important;
-    width: 100%;
-    border: none !important;
+    justify-content: center;
+    color: white !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid #F3E5AB;
 }}
 
 /* BOTÓN DE CONFIRMACIÓN PRINCIPAL */
 div.stButton > button:first-child {{
-    background-color: #6B7A68 !important; /* Verde Oliva Oscuro */
-    color: #FFFFFF !important; /* Texto Blanco */
+    background-color: #6B7A68 !important;
+    color: #FFFFFF !important;
     border-radius: 25px !important;
     border: none !important;
     padding: 14px 35px !important;
@@ -514,18 +374,8 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 7. CÓDIGO DE VESTIMENTA (CORREGIDO Y SIN CÓDIGO NEGRO)
-    st.markdown("""
-    <div class="dress-card">
-        <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
-        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 8px;">FORMAL / ELEGANTE</p>
-        <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
-        
-        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
-        
-        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # 7. CÓDIGO DE VESTIMENTA (CORREGIDO SIN CAJA NEGRA)
+    st.markdown('<div class="dress-card"><div class="subtitle-cinzel">👗 Código de Vestimenta</div><p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 8px;">FORMAL / ELEGANTE</p><p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p><hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;"><p style="font-size: 0.9rem; font-weight: 600; color: #4A5A48 !important;">🔞 Evento de Adultos (Sin Niños)</p></div>', unsafe_allow_html=True)
 
     # 8. MÚSICA DE FONDO
     st.markdown("""
@@ -536,14 +386,14 @@ else:
 
     st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
 
-    # 9. FOTO DE LOS NOVIOS
-    if img_b64:
-        st.markdown("""
-        <div class="invitation-card" style="padding: 20px;">
-            <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">📸 Nuestra Foto</p>
+    # 9. FOTO DE LOS NOVIOS (CORREGIDA PARA EVITAR ERROR DE PYTHON 3.14 / STREAMLIT)
+    if IMAGEN_HEADER.exists():
+        st.markdown(f"""
+        <div class="invitation-card">
+            <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 15px;">📸 Nuestra Foto</p>
+            <img src="{img_b64}" style="width: 100%; max-width: 500px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
         </div>
         """, unsafe_allow_html=True)
-        st.image(img_b64, caption="Carlos & Eunice", use_column_width=True)
 
     # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
     st.markdown("""
@@ -581,14 +431,13 @@ else:
                     "Asiste": asiste_val,
                     "Regalo": regalo,
                     "Codigo": codigo,
-                    "Mesa": "Mesa 1" # Por defecto
+                    "Mesa": "Mesa 3"
                 }])
                 nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
 
                 st.success("¡Respuesta guardada con éxito!")
                 if asiste_val == "Sí":
                     st.balloons()
-                    # MUESTRA DEL SOBRE CERRADO DE CONFIRMACIÓN
                     st.markdown(f"""
                     <div class="confirmation-envelope-card">
                         <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
@@ -618,7 +467,6 @@ else:
     # ADMIN PANEL Y ORGANIZADOR DE MESAS (AL FINAL)
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
-        # tabs predeterminados de Streamlit, pero estilizados con CSS
         tab1, tab2 = st.tabs(["🗺️ Organización del Salón", "📋 Lista de Invitados"])
 
         with tab1:
@@ -628,7 +476,6 @@ else:
             else:
                 st.write("### Mapa Interactivo del Salón")
                 
-                # Buscador de mesa por nombre
                 busqueda_nombre = st.text_input("🔍 Ingresa tu nombre para buscar tu mesa:", placeholder="Ej: María López")
                 
                 if busqueda_nombre.strip():
@@ -639,25 +486,15 @@ else:
                     else:
                         st.info("No se encontró tu nombre en la lista confirmada o aún no tienes mesa asignada.")
 
-                st.write("") # Espacio
+                st.write("")
                 
-                # HTML gráfico del salón (Estilo Bodas.net)
                 salon_html = """
                 <!DOCTYPE html>
                 <html>
                 <head>
                 <style>
-                    /* Asegurar que las fuentes de la plantilla principal se heredan o definen */
                     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
                     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap');
-
-                    /* Tema de colores global */
-                    :root {
-                        --crema-boda: #FAF6F0;
-                        --verde-oliva: #6B7A68;
-                        --verde-oliva-oscuro: #4A5A48;
-                        --dorado-boda: #D4AF37;
-                    }
 
                     body { 
                         font-family: 'Montserrat', sans-serif;
@@ -671,7 +508,7 @@ else:
                         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
                         gap: 25px;
                         padding: 15px;
-                        background-color: #FAF6F0; /* Fondo crema global */
+                        background-color: #FAF6F0;
                         border-radius: 15px;
                         border: 1px solid #E8E2D9;
                     }
@@ -734,8 +571,8 @@ else:
                 </head>
                 <body>
                 <div class="salon-grid">
-                    <!-- Mesa de Padres Novio (especial cerca del altar) -->
-                    <div class="table-card special-parents-table parents-table-left">
+                    <!-- Mesa de Padres Novio -->
+                    <div class="table-card special-parents-table">
                         <div class="table-center">
                             <div class="table-title">Padres del Novio</div>
                             <div class="table-count">Mesa 1</div>
@@ -744,8 +581,8 @@ else:
                         <div class="guest-avatar" style="left: 172px; top: 16px;" title="Diana G.">D.G.</div>
                     </div>
                     
-                    <!-- Mesa de Padres Novia (especial cerca del altar) -->
-                    <div class="table-card special-parents-table parents-table-right">
+                    <!-- Mesa de Padres Novia -->
+                    <div class="table-card special-parents-table">
                         <div class="table-center">
                             <div class="table-title">Padres de la Novia</div>
                             <div class="table-count">Mesa 2</div>
@@ -753,15 +590,10 @@ else:
                         <div class="guest-avatar" style="left: 84px; top: -16px;" title="Emilio M.">E.M.</div>
                         <div class="guest-avatar" style="left: 172px; top: 16px;" title="Pricila C.">P.C.</div>
                     </div>
-
-                    <!-- Mesas de invitados comunes -->
                 """
 
-                # Obtener confirmados y agrupar por mesa (Mesa 3, Mesa 4, etc.)
                 confirmados = df_respuestas[df_respuestas["Asiste"] == "Sí"]
                 invitados_mesa = confirmados.groupby("Mesa")
-
-                # Lista de mesas predeterminadas para invitados comunes
                 mesas_comunes = [f"Mesa {i}" for i in range(3, 11)]
 
                 for mesa in mesas_comunes:
@@ -774,12 +606,9 @@ else:
                                 <div class="table-count">{len(personas)} Personas</div>
                             </div>
                         """
-                        # Distribuir invitados comunes alrededor de la mesa
                         num_personas = len(personas)
                         for idx, row in personas.iterrows():
-                            # Usar math.sin/cos para distribuir circularmente si hay espacio
                             iniciales = "".join([w[0].upper() for w in row["Nombre"].split()[:2]])
-                            # Posicionamiento simplificado por índice
                             angle = (2 * math.pi / max(num_personas, 1)) * (personas.index.get_loc(idx))
                             x = 84 + 80 * math.cos(angle)
                             y = 84 + 80 * math.sin(angle)
@@ -790,28 +619,25 @@ else:
                             """
                         salon_html += "</div>"
                     else:
-                        # Mesa vacía
                         salon_html += f"""
                         <div class="table-card">
                             <div class="table-center">
                                 <div class="table-title">{mesa}</div>
-                                <div class="table-count">Vacia</div>
+                                <div class="table-count">Vacía</div>
                             </div>
                         </div>
                         """
                         
                 salon_html += "</div></body></html>"
                 
-                # Renderizar HTML del salón
                 components.html(salon_html, height=520, scrolling=True)
                 
-                # Sección de controles para el admin
                 st.write("### Asignación Manual de Mesas")
                 col1, col2 = st.columns(2)
                 with col1:
                     nombre_invitado = st.selectbox("Selecciona Invitado:", confirmados["Nombre"].unique() if not confirmados.empty else [])
                 with col2:
-                    opciones_mesas = [f"Mesa {i}" for i in range(1, 11)] + ["Mesa Presidencial"]
+                    opciones_mesas = [f"Mesa {i}" for i in range(1, 11)]
                     mesa_destino = st.selectbox("Asignar Mesa:", opciones_mesas)
                 
                 if st.button("Asignar Mesa", key="save_table_button"):
