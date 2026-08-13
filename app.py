@@ -40,7 +40,7 @@ img_b64 = get_image_base64(IMAGEN_HEADER)
 flores_b64 = get_image_base64(IMAGEN_FLORES)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CON FLORES Y CORAZONES
+# ESTILOS CSS
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -65,12 +65,12 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETA CON MARGEN FLORES ROSADAS Y SOMBRA ELEGANTE */
+/* TARJETA PRINCIPAL CON FLORES Y DISEÑO ELEGANTE */
 .invitation-card, .dress-card {{
     background-color: #FFFFFF !important;
     border-radius: 25px;
-    padding: 85px 25px 85px 25px;
-    margin: 20px auto;
+    padding: 70px 25px 50px 25px;
+    margin: 10px auto;
     box-shadow: 0 15px 35px rgba(107, 122, 104, 0.12);
     border: 1px solid #E8E2D9;
     text-align: center;
@@ -81,12 +81,12 @@ html, body, [class*="css"] {{
 .invitation-card::before, .dress-card::before {{
     content: "";
     position: absolute;
-    top: 5px;
+    top: 0px;
     left: 50%;
     transform: translateX(-50%);
     width: 320px;
-    height: 85px;
-    background-image: url("{flores_b64}");
+    height: 80px;
+    background-image: url('{flores_b64}');
     background-size: contain;
     background-position: center top;
     background-repeat: no-repeat;
@@ -97,12 +97,12 @@ html, body, [class*="css"] {{
 .invitation-card::after, .dress-card::after {{
     content: "";
     position: absolute;
-    bottom: 5px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
     width: 320px;
-    height: 85px;
-    background-image: url("{flores_b64}");
+    height: 80px;
+    background-image: url('{flores_b64}');
     background-size: contain;
     background-position: center top;
     background-repeat: no-repeat;
@@ -110,36 +110,35 @@ html, body, [class*="css"] {{
     z-index: 1;
 }}
 
-.invitation-card *, .dress-card * {{
+.card-content {{
     position: relative;
     z-index: 2;
 }}
 
 .title-names {{
     font-family: 'Great Vibes', cursive !important;
-    font-size: 4rem !important;
+    font-size: 3.8rem !important;
     color: #4A5A48 !important;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
 }}
 
 .welcome-envelope {{
     background: linear-gradient(145deg, #FAF6F0 0%, #F5EFE6 100%);
-    width: 230px;
-    height: 145px;
-    margin: 20px auto;
+    width: 200px;
+    height: 125px;
+    margin: 15px auto;
     border-radius: 15px;
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
     border: 1px solid #E8E2D9;
 }}
 
 .seal-initials {{
-    width: 65px;
-    height: 65px;
+    width: 60px;
+    height: 60px;
     background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
     border-radius: 50%;
     display: flex;
@@ -147,9 +146,9 @@ html, body, [class*="css"] {{
     justify-content: center;
     color: white !important;
     font-family: 'Cinzel', serif !important;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: bold;
-    box-shadow: 0 5px 15px rgba(170, 124, 17, 0.3);
+    box-shadow: 0 4px 12px rgba(170, 124, 17, 0.3);
 }}
 
 /* BOTÓN DORADO/VERDE ELEGANTE */
@@ -158,21 +157,21 @@ div.stButton > button:first-child {{
     color: #FFFFFF !important;
     border-radius: 30px !important;
     border: none !important;
-    padding: 14px 35px !important;
-    font-size: 1.1rem !important;
+    padding: 12px 30px !important;
+    font-size: 1.05rem !important;
     font-weight: 600 !important;
     letter-spacing: 1px;
     width: 100%;
-    max-width: 300px;
-    margin: 15px auto 0 auto;
+    max-width: 280px;
+    margin: 10px auto 0 auto;
     display: block;
-    box-shadow: 0 6px 20px rgba(170, 124, 17, 0.25);
+    box-shadow: 0 6px 18px rgba(170, 124, 17, 0.25);
     transition: all 0.3s ease;
 }}
 
 div.stButton > button:first-child:hover {{
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(170, 124, 17, 0.35);
+    box-shadow: 0 8px 22px rgba(170, 124, 17, 0.35);
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -235,29 +234,30 @@ def reorganizar_mesas_alfabetico(df):
     return df
 
 # ──────────────────────────────────────────────
-# PANTALLA INICIAL (PORTADA DECORADA)
+# PANTALLA INICIAL (PORTADA CORREGIDA)
 # ──────────────────────────────────────────────
 if not st.session_state["invitacion_abierta"]:
-    st.markdown("""
-    <div class="invitation-card" style="margin-top: 15px;">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 4px; font-size: 0.95rem; text-transform: uppercase; color: #6B7A68 !important; font-weight: 600;">
-            ✨ ¡Nuestra Boda! ✨
+    portada_html = """
+    <div class="invitation-card">
+        <div class="card-content">
+            <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 0.9rem; text-transform: uppercase; color: #6B7A68; font-weight: 600;">
+                ✨ ¡Nuestra Boda! ✨
+            </div>
+            <div class="title-names">Carlos & Eunice</div>
+            <p style="font-size: 1.1rem; margin: 2px 0 10px 0;">💖 🕊️ 💖</p>
+            <div class="welcome-envelope">
+                <div class="seal-initials">C & E</div>
+            </div>
+            <p style="font-size: 0.95rem; color: #6B7A68; margin-top: 10px; font-weight: 600;">
+                Has recibido una invitación muy especial
+            </p>
+            <p style="font-size: 0.85rem; color: #8A9A88; font-style: italic;">
+                Haz clic en el botón para abrir tu sobre
+            </p>
         </div>
-        <div class="title-names">Carlos & Eunice</div>
-        <p style="font-size: 1.2rem; margin: -10px 0 10px 0;">💖 🕊️ 💖</p>
-        
-        <div class="welcome-envelope">
-            <div class="seal-initials">C & E</div>
-        </div>
-        
-        <p style="font-size: 1rem; color: #6B7A68 !important; margin-top: 15px; font-weight: 600;">
-            Has recibido una invitación muy especial
-        </p>
-        <p style="font-size: 0.85rem; color: #8A9A88 !important; font-style: italic;">
-            Haz clic abajo para abrir tu sobre
-        </p>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    st.markdown(portada_html, unsafe_allow_html=True)
     
     if st.button("✉️ Abrir Invitación ✨"):
         st.session_state["invitacion_abierta"] = True
@@ -270,10 +270,12 @@ else:
     # 1. NOMBRES Y FECHA
     st.markdown("""
     <div class="invitation-card">
-        <div style="font-size: 1.3rem;">🌸 💖 🌸</div>
-        <div class="title-names">Carlos & Eunice</div>
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; color: #6B7A68 !important; font-weight: 600; font-size: 1.1rem; margin-top: 10px;">
-            18 DE JUNIO DE 2027
+        <div class="card-content">
+            <div style="font-size: 1.2rem;">🌸 💖 🌸</div>
+            <div class="title-names">Carlos & Eunice</div>
+            <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; color: #6B7A68; font-weight: 600; font-size: 1rem; margin-top: 10px;">
+                18 DE JUNIO DE 2027
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -282,14 +284,18 @@ else:
     if IMAGEN_HEADER.exists():
         st.markdown(f"""
         <div class="invitation-card">
-            <img src="{img_b64}" style="width: 100%; max-width: 500px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div class="card-content">
+                <img src="{img_b64}" style="width: 100%; max-width: 480px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
     # 3. MÚSICA
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 25px;">
-        <p style="font-size: 1rem; font-weight: 600; margin-bottom: 5px;">🎵 Escucha nuestra canción de amor 💕</p>
+    <div class="invitation-card" style="padding-bottom: 20px;">
+        <div class="card-content">
+            <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 0px;">🎵 Escucha nuestra canción de amor 💕</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
@@ -297,12 +303,14 @@ else:
     # 4. PADRES DE LOS NOVIOS
     st.markdown("""
     <div class="invitation-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
-            Con la bendición de Dios y nuestros padres
-        </div>
-        <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 20px;">
-            <div><strong>Padres del Novio</strong><br>Carlos M & Diana ❤️</div>
-            <div><strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️</div>
+        <div class="card-content">
+            <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.95rem; font-weight: 600; text-transform: uppercase;">
+                Con la bendición de Dios y nuestros padres
+            </div>
+            <div style="display: flex; justify-content: space-around; font-size: 0.88rem; margin-top: 18px;">
+                <div><strong>Padres del Novio</strong><br>Carlos M & Diana ❤️</div>
+                <div><strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️</div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -310,23 +318,27 @@ else:
     # 5. DRESS CODE
     st.markdown("""
     <div class="dress-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
-            👗 Código de Vestimenta
+        <div class="card-content">
+            <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.95rem; font-weight: 600; text-transform: uppercase;">
+                👗 Código de Vestimenta
+            </div>
+            <p style="font-size: 1rem; font-weight: 600; margin-top: 8px;">FORMAL / ELEGANTE</p>
+            <p style="font-size: 0.82rem;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+            <hr style="margin: 12px 0; border: none; border-top: 1px solid #E8E2D9;">
+            <p style="font-size: 0.88rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
         </div>
-        <p style="font-size: 1.1rem; font-weight: 600; margin-top: 10px;">FORMAL / ELEGANTE</p>
-        <p style="font-size: 0.85rem;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
-        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E8E2D9;">
-        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
     </div>
     """, unsafe_allow_html=True)
 
     # 6. FORMULARIO DE CONFIRMACIÓN
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
-            💌 Confirmar Asistencia
+        <div class="card-content">
+            <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.95rem; font-weight: 600; text-transform: uppercase;">
+                💌 Confirmar Asistencia
+            </div>
+            <p style="font-size: 0.85rem; margin-top: 8px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
         </div>
-        <p style="font-size: 0.88rem; margin-top: 10px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
     </div>
     """, unsafe_allow_html=True)
 
