@@ -40,7 +40,7 @@ img_b64 = get_image_base64(IMAGEN_HEADER)
 flores_b64 = get_image_base64(IMAGEN_FLORES)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CORREGIDOS
+# ESTILOS CSS
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -205,6 +205,31 @@ def convertir_excel(df):
         df.to_excel(writer, index=False, sheet_name='Invitados')
     return output.getvalue()
 
+def obtener_apellido(nombre_completo):
+    partes = nombre_completo.strip().split()
+    return partes[-1] if len(partes) > 1 else partes[0]
+
+def reorganizar_mesas_alfabetico(df):
+    """Ordena los asistentes por apellido y asigna mesas del 1 al 6 dinámicamente."""
+    if df.empty:
+        return df
+    
+    asistentes = df[df["Asiste"] == "Sí"].copy()
+    if asistentes.empty:
+        return df
+
+    # Ordenar A-Z por apellido
+    asistentes["Apellido_Tmp"] = asistentes["Nombre"].apply(obtener_apellido)
+    asistentes = asistentes.sort_values(by="Apellido_Tmp", key=lambda col: col.str.lower()).reset_index(drop=True)
+    
+    mesas_disponibles = ["Mesa 1", "Mesa 2", "Mesa 3", "Mesa 4", "Mesa 5", "Mesa 6"]
+    
+    for i, idx in enumerate(asistentes.index):
+        mesa_num = mesas_disponibles[i % len(mesas_disponibles)]
+        df.loc[df["Nombre"] == asistentes.loc[idx, "Nombre"], "Mesa"] = mesa_num
+
+    return df
+
 # ──────────────────────────────────────────────
 # PANTALLA INICIAL (PORTADA)
 # ──────────────────────────────────────────────
@@ -311,7 +336,7 @@ else:
                 if asistencia == "¡Sí, allí estaré! 🎉":
                     regalo = asignar_regalo(nombre.strip())
                     asiste_val = "Sí"
-                    mesa_asistente = "Mesa 1 (Cuadrada)"
+                    mesa_asistente = "Mesa 1"
                 else:
                     regalo = "N/A"
                     asiste_val = "No"
@@ -325,47 +350,66 @@ else:
                     "Mesa": mesa_asistente
                 }])
                 df_actualizado = pd.concat([df_resp, nueva_fila], ignore_index=True)
+                
+                # Reorganizar automáticamente por apellido A-Z
+                df_actualizado = reorganizar_mesas_alfabetico(df_actualizado)
                 guardar_respuestas(df_actualizado)
 
                 st.success("¡Respuesta guardada con éxito!")
                 st.balloons()
 
-    # 7. PANEL ADMIN (2 CUADRADAS + 4 REDONDAS)
+    # 7. PANEL ADMIN INTERACTIVO (DISTRIBUCIÓN REAL A-Z)
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
         df_ver = cargar_respuestas()
         
-        st.write("### 🗺️ Distribución del Salón")
+        st.write("### 🗺️ Distribución Interactiva del Salón (A-Z por Apellido)")
         
-        salon_html = """
+        # Agrupar nombres por mesa
+        mesas_dict = {f"Mesa {i}": [] for i in range(1, 7)}
+        if not df_ver.empty:
+            for _, row in df_ver[df_ver["Asiste"] == "Sí"].iterrows():
+                m_nombre = str(row["Mesa"]).split(" ")[0] + " " + str(row["Mesa"]).split(" ")[1] if "Mesa" in str(row["Mesa"]) else "Mesa 1"
+                if m_nombre in mesas_dict:
+                    mesas_dict[m_nombre].append(row["Nombre"])
+
+        def generar_html_m(m_key):
+            lista = mesas_dict.get(m_key, [])
+            if not lista:
+                return "<em style='color:#A0AEC0; font-size:10px;'>Vacía</em>"
+            items = "".join([f"<li style='font-size:10px; line-height:1.2; text-align:left;'>{n}</li>" for n in lista])
+            return f"<ul style='margin:2px 0 0 0; padding-left:14px;'>{items}</ul>"
+
+        salon_html = f"""
         <!DOCTYPE html>
         <html>
         <head>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Cinzel:wght@600&display=swap');
-            body { font-family: 'Montserrat', sans-serif; background: transparent; margin:0; padding:10px; }
-            .salon-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-            .separated-section {
+            body {{ font-family: 'Montserrat', sans-serif; background: transparent; margin:0; padding:10px; }}
+            .salon-container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
+            .separated-section {{
                 width: 100%; display: flex; justify-content: space-around;
-                padding: 15px; border: 2px dashed #D4AF37; border-radius: 15px; background: rgba(255, 255, 255, 0.6);
-            }
-            .square-table {
-                width: 110px; height: 100px; background: #FFFFFF;
+                padding: 15px; border: 2px dashed #D4AF37; border-radius: 15px; background: rgba(255, 255, 255, 0.8);
+            }}
+            .square-table {{
+                width: 130px; min-height: 110px; background: #FFFFFF;
                 border: 2px solid #D4AF37; border-radius: 8px;
-                display: flex; flex-direction: column; align-items: center; justify-content: center;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.06); text-align: center; padding: 5px;
-            }
-            .round-section {
-                display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 10px;
-            }
-            .round-table {
-                width: 110px; height: 110px; border-radius: 50%; background: #FFFFFF;
+                display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 8px; overflow-y: auto;
+            }}
+            .round-section {{
+                display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;
+            }}
+            .round-table {{
+                width: 130px; height: 130px; border-radius: 50%; background: #FFFFFF;
                 border: 2px solid #A3B18A; display: flex; flex-direction: column;
                 align-items: center; justify-content: center;
-                text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 5px;
-            }
-            .table-title { font-family: 'Cinzel', serif; font-size: 11px; font-weight: bold; color: #4A5A48; }
-            .badge { font-size: 9px; color: #6B7A68; margin-top: 3px; font-weight: 600; }
+                box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 10px; overflow: hidden;
+            }}
+            .table-title {{ font-family: 'Cinzel', serif; font-size: 11px; font-weight: bold; color: #4A5A48; border-bottom: 1px solid #E2E8F0; width: 100%; text-align: center; padding-bottom: 2px; }}
+            .badge {{ font-size: 9px; color: #6B7A68; font-weight: 600; }}
+            .guest-list {{ max-height: 70px; overflow-y: auto; width: 100%; color: #4A5A48; }}
         </style>
         </head>
         <body>
@@ -374,10 +418,12 @@ else:
                     <div class="square-table">
                         <div class="table-title">Mesa 1</div>
                         <div class="badge">🔲 Cuadrada</div>
+                        <div class="guest-list">{generar_html_m('Mesa 1')}</div>
                     </div>
                     <div class="square-table">
                         <div class="table-title">Mesa 2</div>
                         <div class="badge">🔲 Cuadrada</div>
+                        <div class="guest-list">{generar_html_m('Mesa 2')}</div>
                     </div>
                 </div>
 
@@ -385,50 +431,37 @@ else:
                     <div class="round-table">
                         <div class="table-title">Mesa 3</div>
                         <div class="badge">⚪ Redonda</div>
+                        <div class="guest-list">{generar_html_m('Mesa 3')}</div>
                     </div>
                     <div class="round-table">
                         <div class="table-title">Mesa 4</div>
                         <div class="badge">⚪ Redonda</div>
+                        <div class="guest-list">{generar_html_m('Mesa 4')}</div>
                     </div>
                     <div class="round-table">
                         <div class="table-title">Mesa 5</div>
                         <div class="badge">⚪ Redonda</div>
+                        <div class="guest-list">{generar_html_m('Mesa 5')}</div>
                     </div>
                     <div class="round-table">
                         <div class="table-title">Mesa 6</div>
                         <div class="badge">⚪ Redonda</div>
+                        <div class="guest-list">{generar_html_m('Mesa 6')}</div>
                     </div>
                 </div>
             </div>
         </body>
         </html>
         """
-        components.html(salon_html, height=420)
+        components.html(salon_html, height=480)
 
         if not df_ver.empty:
-            st.write("### Asignación de Mesas")
-            invitados_lista = df_ver[df_ver["Asiste"] == "Sí"]["Nombre"].tolist()
-            
-            if invitados_lista:
-                col1, col2 = st.columns(2)
-                with col1:
-                    invitado_sel = st.selectbox("Seleccionar Invitado:", invitados_lista)
-                with col2:
-                    opciones_mesas = [
-                        "Mesa 1 (Cuadrada Apartada)", 
-                        "Mesa 2 (Cuadrada Apartada)", 
-                        "Mesa 3 (Redonda)", 
-                        "Mesa 4 (Redonda)", 
-                        "Mesa 5 (Redonda)", 
-                        "Mesa 6 (Redonda)"
-                    ]
-                    nueva_mesa = st.selectbox("Asignar a:", opciones_mesas)
-                
-                if st.button("Guardar Mesa"):
-                    df_ver.loc[df_ver["Nombre"] == invitado_sel, "Mesa"] = nueva_mesa
-                    guardar_respuestas(df_ver)
-                    st.success(f"¡{invitado_sel} asignado a {nueva_mesa}!")
-                    st.rerun()
+            st.write("### Reorganizar Manualmente o Reordenar")
+            if st.button("🔄 Reordenar Lista Completa por Apellidos (A-Z)"):
+                df_ver = reorganizar_mesas_alfabetico(df_ver)
+                guardar_respuestas(df_ver)
+                st.success("¡Lista y mesas reorganizadas de la A a la Z!")
+                st.rerun()
 
             st.write("### Lista General de Confirmados")
             st.dataframe(df_ver, use_container_width=True)
