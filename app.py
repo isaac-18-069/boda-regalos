@@ -5,8 +5,7 @@ from pathlib import Path
 import base64
 import uuid
 import streamlit.components.v1 as components
-import math
-import io # Necesario para la descarga de Excel
+import io
 
 # ──────────────────────────────────────────────
 # CONFIGURACIÓN DE LA PÁGINA Y TEMA
@@ -17,7 +16,6 @@ st.set_page_config(
     layout="centered"
 )
 
-# Control de estado de la sesión para el sobre
 if "invitacion_abierta" not in st.session_state:
     st.session_state["invitacion_abierta"] = False
 
@@ -27,58 +25,51 @@ if "invitacion_abierta" not in st.session_state:
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
+IMAGEN_FLORES = Path("Este artículo no está disponible - Etsy.jpg")
 
 def get_image_base64(path_local):
     if path_local.exists():
         with open(path_local, "rb") as f:
             encoded = base64.b64encode(f.read()).decode()
-            return f"data:image/jpeg;base64,{encoded}"
+            ext = path_local.suffix.replace('.', '').lower()
+            mime = "image/jpeg" if ext in ["jpg", "jpeg"] else "image/png"
+            return f"data:{mime};base64,{encoded}"
     return ""
 
 img_b64 = get_image_base64(IMAGEN_HEADER)
-
-# Ilustración floral SVG pura
-SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5 30-2 40 5 5 3 8 7 10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9 13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4 6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
+flores_b64 = get_image_base64(IMAGEN_FLORES)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CORREGIDOS (FLORES Y COLOR AL ESCRIBIR)
+# ESTILOS CSS CON TUS FLORES Y TEXTO CLARO
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
-/* Color de fondo de la aplicación */
 .stApp {{
     background-color: #FAF6F0 !important;
 }}
 
-/* Ocultar elementos predeterminados de Streamlit */
 #MainMenu, footer, header {{visibility: hidden;}}
 
-/* Color de texto predeterminado para p y span */
 p, span, div, h1, h2, h3, h4, h5, h6 {{
     color: #4A5A48 !important;
 }}
 
-/* CAMBIO SOLICITADO: Color de texto claro al escribir en inputs y textareas */
+/* COLOR CLARO AL ESCRIBIR EN LOS CAMPOS */
 input, textarea, [data-baseweb="input"] input, [data-baseweb="textarea"] textarea {{
-    color: #A3B18A !important; /* Verde Oliva Claro */
-}}
-
-/* Asegurar que las etiquetas (labels) de inputs se mantengan oscuras */
-[data-baseweb="input"] label, [data-baseweb="select"] label, [data-baseweb="radio"] label {{
-    color: #4A5A48 !important;
+    color: #6B7A68 !important;
+    font-weight: 600 !important;
 }}
 
 html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS PRINCIPALES */
 .invitation-card, .dress-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 70px 25px 70px 25px;
+    padding: 85px 25px 85px 25px;
     margin: 35px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
@@ -87,38 +78,35 @@ html, body, [class*="css"] {{
     overflow: hidden;
 }}
 
-/* RAMO FLORAL SUPERIOR CENTRADO */
+/* MARGEN CON TU IMAGEN REAL DE FLORES ROSADAS */
 .invitation-card::before, .dress-card::before {{
     content: "";
     position: absolute;
-    top: -5px;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 250px;
-    height: 60px;
-    background-image: url("{SVG_FLORES}");
+    width: 320px;
+    height: 80px;
+    background-image: url("{flores_b64}");
     background-size: contain;
     background-position: center top;
     background-repeat: no-repeat;
-    opacity: 0.95;
     pointer-events: none;
     z-index: 1;
 }}
 
-/* RAMO FLORAL INFERIOR CENTRADO */
 .invitation-card::after, .dress-card::after {{
     content: "";
     position: absolute;
-    bottom: -5px;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 250px;
-    height: 60px;
-    background-image: url("{SVG_FLORES}");
+    width: 320px;
+    height: 80px;
+    background-image: url("{flores_b64}");
     background-size: contain;
     background-position: center top;
     background-repeat: no-repeat;
-    opacity: 0.95;
     pointer-events: none;
     z-index: 1;
 }}
@@ -128,29 +116,24 @@ html, body, [class*="css"] {{
     z-index: 2;
 }}
 
-/* TARJETAS CON FONDO VERDE OLIVA */
 .green-card {{
     background-color: #6B7A68 !important;
     border-radius: 20px;
     padding: 35px 25px;
     margin: 25px auto;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(107, 122, 104, 0.2);
 }}
 .green-card * {{
     color: #FFFFFF !important;
 }}
 
-/* TÍTULOS DE NOMBRES PRINCIPALES */
 .title-names {{
     font-family: 'Great Vibes', cursive !important;
     font-size: 3.8rem !important;
     color: #4A5A48 !important;
     margin-bottom: 5px;
-    line-height: 1.2;
 }}
 
-/* SOBRE DE INICIO INTERACTIVO */
 .welcome-envelope {{
     background-color: #FAF6F0;
     width: 260px;
@@ -162,7 +145,6 @@ html, body, [class*="css"] {{
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    z-index: 2;
 }}
 
 .seal-initials {{
@@ -177,11 +159,8 @@ html, body, [class*="css"] {{
     font-family: 'Cinzel', serif !important;
     font-size: 18px;
     font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    border: 2px solid #F3E5AB;
 }}
 
-/* BOTÓN DE CONFIRMACIÓN PRINCIPAL */
 div.stButton > button:first-child {{
     background-color: #6B7A68 !important;
     color: #FFFFFF !important;
@@ -190,7 +169,6 @@ div.stButton > button:first-child {{
     padding: 14px 35px !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
-    letter-spacing: 1px;
     width: 100%;
 }}
 </style>
@@ -228,11 +206,10 @@ def convertir_excel(df):
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, index=False, sheet_name='Invitados')
-    processed_data = output.getvalue()
-    return processed_data
+    return output.getvalue()
 
 # ──────────────────────────────────────────────
-# PASO 1: PANTALLA INICIAL DEL SOBRE
+# PANTALLA INICIAL
 # ──────────────────────────────────────────────
 if not st.session_state["invitacion_abierta"]:
     st.markdown("""
@@ -251,14 +228,14 @@ if not st.session_state["invitacion_abierta"]:
         st.rerun()
 
 # ──────────────────────────────────────────────
-# PASO 2: CONTENIDO DE LA INVITACIÓN
+# CONTENIDO DE LA INVITACIÓN
 # ──────────────────────────────────────────────
 else:
-    # 1. HEADER CON NOMBRES
+    # 1. NOMBRES
     st.markdown("""
     <div class="invitation-card">
         <div class="title-names">Carlos & Eunice</div>
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600;">
             18 DE JUNIO DE 2027
         </div>
     </div>
@@ -272,103 +249,50 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-    # 3. MÚSICA DE FONDO
+    # 3. MÚSICA
     st.markdown("""
     <div class="invitation-card" style="padding-bottom: 30px;">
-        <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
+        <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
     st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
 
-    # 4. VERSÍCULO BÍBLICO DE AMOR
-    st.markdown("""
-    <div class="invitation-card verse-card">
-        <p class="verse-text">
-            «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser.»
-        </p>
-        <span class="verse-ref">1 CORINTIOS 13:4, 7-8</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 5. PADRES DE LOS NOVIOS
+    # 4. PADRES DE LOS NOVIOS
     st.markdown("""
     <div class="invitation-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; color: #4A5A48; font-weight: 600; text-transform: uppercase;">
-            Con la bendición de nuestros padres
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; font-weight: 600; text-transform: uppercase;">
+            Con la bendición de Dios y nuestros padres
         </div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 20px;">
-            <div>
-                <strong>Padres del Novio</strong><br>Carlos M & Diana ❤️
-            </div>
-            <div>
-                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️
-            </div>
+            <div><strong>Padres del Novio</strong><br>Carlos M & Diana ❤️</div>
+            <div><strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # 6. ITINERARIO DE ACTIVIDADES
-    st.markdown("""
-    <div class="invitation-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; color: #4A5A48; font-weight: 600; text-transform: uppercase;">
-            Itinerario de Actividades
-        </div>
-        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia</div>
-        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones</div>
-        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
-        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 7. DÍA Y CALENDARIO
-    st.markdown("""
-    <div class="green-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
-        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JUNIO</h2>
-        <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 8. UBICACIÓN Y CEREMONIA
-    st.markdown("""
-    <div class="invitation-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; color: #4A5A48; font-weight: 600; text-transform: uppercase;">
-            Ceremonia
-        </div>
-        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 10px;">Lugar de la Ceremonia</p>
-        <p style="font-size: 0.85rem; color: #4A5568 !important;">16:00 HRS</p>
-        <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
-            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 10px; font-weight: 500;">
-                📍 Ver ubicación en GPS
-            </div>
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 9. CÓDIGO DE VESTIMENTA (DRESS CODE)
+    # 5. DRESS CODE
     st.markdown("""
     <div class="dress-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; color: #4A5A48; font-weight: 600; text-transform: uppercase;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; font-weight: 600; text-transform: uppercase;">
             👗 Código de Vestimenta
         </div>
-        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 10px;">FORMAL / ELEGANTE</p>
-        <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+        <p style="font-size: 1.1rem; font-weight: 600; margin-top: 10px;">FORMAL / ELEGANTE</p>
+        <p style="font-size: 0.85rem;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
         <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
-        <p style="font-size: 0.9rem; font-weight: 600;">Eventos de Adultos (Sin Niños)</p>
+        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
+    # 6. FORMULARIO DE CONFIRMACIÓN
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; color: #4A5A48; font-weight: 600; text-transform: uppercase;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; font-weight: 600; text-transform: uppercase;">
             Confirmar Asistencia
         </div>
-        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 10px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+        <p style="font-size: 0.9rem; margin-top: 10px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # FORMULARIO DE CONFIRMACIÓN (CORREGIDO COLOR AL ESCRIBIR)
     with st.form("form_invitacion"):
         nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
         asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
@@ -386,7 +310,7 @@ else:
                 if asistencia == "¡Sí, allí estaré! 🎉":
                     regalo = asignar_regalo(nombre.strip())
                     asiste_val = "Sí"
-                    mesa_asistente = "Mesa 1" # Por defecto
+                    mesa_asistente = "Mesa 1 (Cuadrada)"
                 else:
                     regalo = "N/A"
                     asiste_val = "No"
@@ -403,63 +327,128 @@ else:
                 guardar_respuestas(df_actualizado)
 
                 st.success("¡Respuesta guardada con éxito!")
-                if asiste_val == "Sí":
-                    st.balloons()
-                    st.markdown(f"""
-                    <div class="confirmation-envelope-card">
-                        <h3 style="font-family: 'Great Vibes', cursive !important; font-size: 2.3rem; color: #F3E5AB !important;">
-                            ¡Gracias por confirmar! 💖
-                        </h3>
-                        <p style="font-size: 1.1rem; line-height: 1.6; font-weight: 500; margin: 15px 0;">
-                            Te esperamos con ansias para celebrar este hermoso día con nosotros ✨🥂🎉💒
-                        </p>
-                        <hr style="border: 0; border-top: 1px dashed rgba(255,255,255,0.4); margin: 20px 0;">
-                        <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #F3E5AB !important;">
-                            🎁 Sugerencia de Regalo Asignada:
-                        </p>
-                        <h2 style="font-size: 1.8rem; margin: 8px 0; font-family: 'Cinzel', serif !important;">
-                            {regalo}
-                        </h2>
-                        <p style="font-size: 0.8rem; opacity: 0.85; margin-top: 12px;">
-                            Código de Confirmación: <strong>{codigo}</strong>
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.info("Lamentamos que no puedas acompañarnos, ¡agradecemos mucho tu respuesta!")
+                st.balloons()
 
-    # 11. PANEL DE ADMINISTRACIÓN Y ASIGNACIÓN DE MESAS
+    # 7. PANEL ADMIN (DISTRIBUCIÓN: 2 MESAS CUADRADAS APARTADAS + 4 MESAS REDONDAS)
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
         df_ver = cargar_respuestas()
+        
+        st.write("### 🗺️ Distribución del Salón")
+        
+        # CROQUIS DEL SALÓN: 2 CUADRADAS APARTADAS + 4 REDONDAS
+        salon_html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Cinzel:wght@600&display=swap');
+            body { font-family: 'Montserrat', sans-serif; background: transparent; margin:0; padding:10px; }
+            
+            /* CONTENEDOR GENERAL */
+            .salon-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+            /* SECCIÓN ARRIBA: 2 MESAS CUADRADAS SEPARADAS/APARTADAS */
+            .separated-section {
+                width: 100%; display: flex; justify-content: space-around;
+                padding: 15px; border: 2px dashed #D4AF37; border-radius: 15px; background: rgba(255, 255, 255, 0.6);
+            }
+            .square-table {
+                width: 110px; height: 100px; background: #FFFFFF;
+                border: 2px solid #D4AF37; border-radius: 8px;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.06); text-align: center; padding: 5px;
+            }
+
+            /* SECCIÓN ABAJO: 4 MESAS REDONDAS EN CUADRÍCULA */
+            .round-section {
+                display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 10px;
+            }
+            .round-table {
+                width: 110px; height: 110px; border-radius: 50%; background: #FFFFFF;
+                border: 2px solid #A3B18A; display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 5px;
+            }
+
+            .table-title { font-family: 'Cinzel', serif; font-size: 11px; font-weight: bold; color: #4A5A48; }
+            .badge { font-size: 9px; color: #6B7A68; margin-top: 3px; font-weight: 600; }
+        </style>
+        </head>
+        <body>
+            <div class="salon-container">
+                <!-- 2 MESAS CUADRADAS APARTADAS -->
+                <div class="separated-section">
+                    <div class="square-table">
+                        <div class="table-title">Mesa 1</div>
+                        <div class="badge">🔲 Cuadrada</div>
+                    </div>
+                    <div class="square-table">
+                        <div class="table-title">Mesa 2</div>
+                        <div class="badge">🔲 Cuadrada</div>
+                    </div>
+                </div>
+
+                <!-- 4 MESAS REDONDAS PRINCIPALES -->
+                <div class="round-section">
+                    <div class="round-table">
+                        <div class="table-title">Mesa 3</div>
+                        <div class="badge">⚪ Redonda</div>
+                    </div>
+                    <div class="round-table">
+                        <div class="table-title">Mesa 4</div>
+                        <div class="badge">⚪ Redonda</div>
+                    </div>
+                    <div class="round-table">
+                        <div class="table-title">Mesa 5</div>
+                        <div class="badge">⚪ Redonda</div>
+                    </div>
+                    <div class="round-table">
+                        <div class="table-title">Mesa 6</div>
+                        <div class="badge">⚪ Redonda</div>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        components.html(salon_html, height=420)
+
+        # SECCIÓN DE ASIGNACIÓN Y LISTADO DE INVITADOS
         if not df_ver.empty:
-            st.write("### Asignación Rápida de Mesas")
+            st.write("### Asignación de Mesas")
             invitados_lista = df_ver[df_ver["Asiste"] == "Sí"]["Nombre"].tolist()
             
             if invitados_lista:
                 col1, col2 = st.columns(2)
                 with col1:
-                    invitado_sel = st.selectbox("Selecciona Invitado:", invitados_lista)
+                    invitado_sel = st.selectbox("Seleccionar Invitado:", invitados_lista)
                 with col2:
-                    opciones_mesas = [f"Mesa {i}" for i in range(1, 11)] + ["Mesa Presidencial"]
-                    nueva_mesa = st.selectbox("Asignar Mesa:", opciones_mesas)
+                    opciones_mesas = [
+                        "Mesa 1 (Cuadrada Apartada)", 
+                        "Mesa 2 (Cuadrada Apartada)", 
+                        "Mesa 3 (Redonda)", 
+                        "Mesa 4 (Redonda)", 
+                        "Mesa 5 (Redonda)", 
+                        "Mesa 6 (Redonda)"
+                    ]
+                    nueva_mesa = st.selectbox("Asignar a:", opciones_mesas)
                 
-                if st.button("Guardar Mesa Asignada"):
+                if st.button("Guardar Mesa"):
                     df_ver.loc[df_ver["Nombre"] == invitado_sel, "Mesa"] = nueva_mesa
                     guardar_respuestas(df_ver)
-                    st.success(f"¡{invitado_sel} reasignado a {nueva_mesa}!")
+                    st.success(f"¡{invitado_sel} asignado a {nueva_mesa}!")
                     st.rerun()
 
             st.write("### Lista General de Confirmados")
             st.dataframe(df_ver, use_container_width=True)
             
-            # Botón para descargar Excel
             excel_data = convertir_excel(df_ver)
             st.download_button(
                 label="📥 Descargar Lista Completa (Excel)",
                 data=excel_data,
-                file_name="lista_invitados_confirmados.xlsx",
+                file_name="lista_invitados_boda.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         else:
-            st.caption("Aún no hay respuestas.")
+            st.caption("Aún no hay respuestas registradas.")
