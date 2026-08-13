@@ -26,18 +26,17 @@ CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
 IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
 
-IMAGEN_FLORES_LOCAL = Path("Cet article n'est pas disponible - Etsy.jpg")
-URL_FLORES_GITHUB = "https://raw.githubusercontent.com/isaac-18-069/boda-regalos/main/Cet%20article%20n'est%20pas%20disponible%20-%20Etsy.jpg"
-
-def get_image_base64_or_url(path_local, url_github):
+def get_image_base64(path_local):
     if path_local.exists():
         with open(path_local, "rb") as f:
             encoded = base64.b64encode(f.read()).decode()
             return f"data:image/jpeg;base64,{encoded}"
-    return url_github
+    return ""
 
-img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
-flores_src = get_image_base64_or_url(IMAGEN_FLORES_LOCAL, URL_FLORES_GITHUB)
+img_b64 = get_image_base64(IMAGEN_HEADER)
+
+# SVG limpios de flores vectoriales (para evitar marcos/círculos recortados)
+FLOWER_TOP_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'><path fill='%23C58B95' d='M100 35c-15 0-25-10-25-20s10-15 25-15 25 5 25 15-10 20-25 20z'/><path fill='%23E1B3BD' d='M80 30c-10 0-18-8-18-15s8-12 18-12 18 5 18 12-8 15-18 15z'/><path fill='%23E1B3BD' d='M120 30c-10 0-18-8-18-15s8-12 18-12 18 5 18 12-8 15-18 15z'/><path fill='%237D8D78' d='M60 30c-15 5-25 0-30-10 10 0 20 5 30 10z'/><path fill='%237D8D78' d='M140 30c15 5 25 0 30-10-10 0-20 5-30 10z'/></svg>"
 
 # ──────────────────────────────────────────────
 # ESTILOS CSS CORREGIDOS
@@ -60,12 +59,12 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETAS CON ESPACIO AMPLIO PARA LAS FLORES */
+/* TARJETAS CON ESPACIO CORRECTO PARA LAS FLORES */
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
-    padding: 90px 25px 90px 25px; /* Espacio superior e inferior ampliado para evitar solapamientos */
-    margin: 30px auto;
+    padding: 60px 25px;
+    margin: 35px auto;
     box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
     border: 1px solid #E8E2D9;
     text-align: center;
@@ -73,38 +72,38 @@ html, body, [class*="css"] {{
     overflow: hidden;
 }}
 
-/* RAMO FLORAL SUPERIOR */
+/* FLORES SUPERIORES CENTRADAS Y LIMPIAS */
 .invitation-card::before {{
     content: "";
     position: absolute;
-    top: -15px;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 280px;
-    height: 100px;
-    background-image: url('{flores_src}');
+    width: 180px;
+    height: 45px;
+    background-image: url("{FLOWER_TOP_SVG}");
     background-size: contain;
-    background-position: top center;
+    background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.95;
+    opacity: 0.9;
     pointer-events: none;
     z-index: 1;
 }}
 
-/* RAMO FLORAL INFERIOR */
+/* FLORES INFERIORES CENTRADAS Y LIMPIAS */
 .invitation-card::after {{
     content: "";
     position: absolute;
-    bottom: -15px;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 280px;
-    height: 100px;
-    background-image: url('{flores_src}');
+    width: 180px;
+    height: 45px;
+    background-image: url("{FLOWER_TOP_SVG}");
     background-size: contain;
-    background-position: top center;
+    background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.95;
+    opacity: 0.9;
     pointer-events: none;
     z-index: 1;
 }}
@@ -329,7 +328,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. FOTO INTERACTIVA CON MARCO CORREGIDO Y FLORES EXTERIORES (ESTILO IMAGEN DE REFERENCIA)
+    # 3. FOTO INTERACTIVA CON MARCO Y FLORES LIMPIAS EN LAS ESQUINAS
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -366,7 +365,6 @@ else:
                 z-index: 5;
             }}
 
-            /* CONTENEDOR RELATIVO PARA POSICIONAR LAS FLORES EXTERIORES ALREDEDOR DEL MARCO */
             .puzzle-outer-wrapper {{
                 position: relative;
                 width: 320px;
@@ -374,7 +372,6 @@ else:
                 margin: 0 auto;
             }}
 
-            /* MARCO POLIGONAL */
             .frame-wrapper {{
                 position: relative;
                 width: 310px;
@@ -389,31 +386,32 @@ else:
                 z-index: 2;
             }}
 
-            /* FLORES EXTERIORES: ARRIBA A LA IZQUIERDA */
+            /* FLORES EN ESQUINA SUPERIOR IZQUIERDA */
             .floral-corner-left {{
                 position: absolute;
                 top: -20px;
-                left: -35px;
-                width: 140px;
-                height: 140px;
-                background-image: url('{flores_src}');
+                left: -20px;
+                width: 110px;
+                height: 110px;
+                background-image: url("{FLOWER_TOP_SVG}");
                 background-size: contain;
                 background-repeat: no-repeat;
+                transform: rotate(-30deg);
                 z-index: 4;
                 pointer-events: none;
             }}
 
-            /* FLORES EXTERIORES: ABAJO A LA DERECHA */
+            /* FLORES EN ESQUINA INFERIOR DERECHA */
             .floral-corner-right {{
                 position: absolute;
                 bottom: -20px;
-                right: -35px;
-                width: 140px;
-                height: 140px;
-                background-image: url('{flores_src}');
+                right: -20px;
+                width: 110px;
+                height: 110px;
+                background-image: url("{FLOWER_TOP_SVG}");
                 background-size: contain;
                 background-repeat: no-repeat;
-                transform: rotate(180deg);
+                transform: rotate(150deg);
                 z-index: 4;
                 pointer-events: none;
             }}
@@ -558,7 +556,7 @@ else:
 
     # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 25px; padding-top: 75px;">
+    <div class="invitation-card" style="padding: 50px 25px 20px 25px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
