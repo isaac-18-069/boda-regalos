@@ -437,8 +437,7 @@ else:
             invitados_lista = df_ver[df_ver["Asiste"] == "Sí"]["Nombre"].tolist()
             
             if invitados_lista:
-                col1, col2 =
-                st.columns(2)
+                col1, col2 = st.columns(2)
                 with col1:
                     invitado_sel = st.selectbox("Selecciona Invitado:", invitados_lista)
                 with col2:
