@@ -1,418 +1,326 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import json
-import io
-from datetime import date, time
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Estás Invitado/a a Nuestro Evento!</title>
 
-# Configuración inicial de la página Streamlit
-st.set_page_config(
-    page_title="Gestión de Boda - Sistema Completo",
-    page_icon="💒",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+  <!-- META TAGS PARA LA VISTA PREVIA EN WHATSAPP -->
+  <meta property="og:title" content="¡Estás Invitado/a a Nuestra Celebración! 🎉">
+  <meta property="og:description" content="Haz clic para ver los detalles, la ubicación y confirmar tu asistencia.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?w=800">
+  <meta property="og:url" content="https://tu-usuario.github.io/mi-invitacion/">
 
-# Estilos CSS personalizados
-st.markdown("""
-<style>
-    .main-header {
-        font-family: 'Playfair Display', Georgia, serif;
-        color: #4A3E3D;
-        text-align: center;
-        padding: 20px;
-        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        margin-bottom: 25px;
+  <!-- Fuentes de Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Estilos CSS -->
+  <style>
+    :root {
+      --primary: #d4af37; /* Color dorado principal */
+      --text: #2c2c2c;
+      --bg: #faf8f5;
+      --card-bg: #ffffff;
     }
-    .sub-title {
-        color: #8B5E3C;
-        font-weight: 600;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Portada / Hero */
+    .hero {
+      padding: 60px 20px 40px;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      margin-bottom: 25px;
+    }
+
+    .subtitle {
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .title {
+      font-family: 'Alex Brush', cursive;
+      font-size: 3.5rem;
+      color: var(--primary);
+      margin: 15px 0;
+    }
+
+    /* Botón de Música */
+    .music-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    /* Contador */
+    .countdown-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .time-box {
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 12px;
+      flex: 1;
+      margin: 0 5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .time-box span {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .time-box label {
+      font-size: 0.75rem;
+      color: #777;
+      text-transform: uppercase;
+    }
+
+    /* Secciones de Información */
     .card {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        margin-bottom: 15px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# -----------------------------------------------------------------------------
-# PERSISTENCIA Y DATOS INICIALES (Session State)
-# -----------------------------------------------------------------------------
-if 'datos_boda' not in st.session_state:
-    st.session_state.datos_boda = {
-        "novia": "María Elena Rodríguez",
-        "novio": "Carlos Alberto Mendoza",
-        "padre_novia": "Fernando Rodríguez",
-        "madre_novia": "Elena Gómez de Rodríguez",
-        "padre_novio": "Carlos Mendoza Sr.",
-        "madre_novio": "Beatriz Silva de Mendoza",
-        "fecha": date(2027, 10, 16),
-        "hora": time(17, 0),
-        "lugar_ceremonia": "Catedral Metropolitana",
-        "lugar_recepcion": "Hacienda Los Olivos",
-        "frase": "Unidos por el amor, guiados por nuestras familias."
+      background: var(--card-bg);
+      padding: 30px 20px;
+      border-radius: 16px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     }
 
-if 'invitados' not in st.session_state:
-    st.session_state.invitados = pd.DataFrame([
-        {
-            "ID": 1,
-            "Nombre Completo": "Roberto Gómez",
-            "Acompañantes Permitidos": 2,
-            "Acompañantes Confirmados": 2,
-            "Estado RSVP": "Confirmado",
-            "Mesa": "Mesa 1 - Familia Novia",
-            "Dieta/Restricciones": "Ninguna",
-            "Telefono": "+593 99 123 4567"
-        },
-        {
-            "ID": 2,
-            "Nombre Completo": "Ana Lucía Martínez",
-            "Acompañantes Permitidos": 1,
-            "Acompañantes Confirmados": 0,
-            "Estado RSVP": "Pendiente",
-            "Mesa": "Mesa 2 - Amigos Novio",
-            "Dieta/Restricciones": "Vegetariano",
-            "Telefono": "+593 98 765 4321"
-        },
-        {
-            "ID": 3,
-            "Nombre Completo": "Javier Silva",
-            "Acompañantes Permitidos": 1,
-            "Acompañantes Confirmados": 0,
-            "Estado RSVP": "Cancelado",
-            "Mesa": "Sin Asignar",
-            "Dieta/Restricciones": "Sin gluten",
-            "Telefono": "+593 99 888 7777"
-        }
-    ])
+    .card h3 {
+      font-family: 'Alex Brush', cursive;
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
 
-if 'regalos' not in st.session_state:
-    st.session_state.regalos = pd.DataFrame([
-        {
-            "ID": 1,
-            "Artículo / Concepto": "Juego de Vajilla de Porcelana (12 pzas)",
-            "Categoría": "Hogar & Cocina",
-            "Precio Estimado ($)": 250.0,
-            "Monto Recaudado ($)": 250.0,
-            "Estado": "Comprado / Reservado",
-            "Comprador / Contribuyente": "Roberto Gómez"
-        },
-        {
-            "ID": 2,
-            "Artículo / Concepto": "Fondo Luna de Miel (Aéreos)",
-            "Categoría": "Fondo Luna de Miel",
-            "Precio Estimado ($)": 1200.0,
-            "Monto Recaudado ($)": 600.0,
-            "Estado": "Parcialmente Financiado",
-            "Comprador / Contribuyente": "Familia Silva"
-        },
-        {
-            "ID": 3,
-            "Artículo / Concepto": "Cafetera Express Automática",
-            "Categoría": "Electrodomésticos",
-            "Precio Estimado ($)": 180.0,
-            "Monto Recaudado ($)": 0.0,
-            "Estado": "Disponible",
-            "Comprador / Contribuyente": "-"
-        }
-    ])
+    /* Botones de Acción */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px 20px;
+      margin-top: 15px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: transform 0.2s, opacity 0.2s;
+      border: none;
+      cursor: pointer;
+    }
 
-# -----------------------------------------------------------------------------
-# MENÚ DE NAVEGACIÓN
-# -----------------------------------------------------------------------------
-st.sidebar.title("💒 Menú Boda")
-opcion = st.sidebar.radio(
-    "Selecciona una sección:",
-    [
-        "📌 Información General & Padres",
-        "👥 Gestión de Invitados & Mesas",
-        "🎁 Mesa de Regalos",
-        "📊 Estadísticas & Métricas",
-        "📁 Importar / Exportar Datos"
-    ]
-)
+    .btn:active {
+      transform: scale(0.98);
+    }
 
-# -----------------------------------------------------------------------------
-# SECCIÓN 1: INFORMACIÓN GENERAL Y PADRES DE LOS NOVIOS
-# -----------------------------------------------------------------------------
-if opcion == "📌 Información General & Padres":
-    st.markdown("<div class='main-header'><h1>💍 Detalles del Evento y Padres de los Novios</h1></div>", unsafe_allow_html=True)
-    
-    with st.form("form_info_boda"):
-        st.subheader("💑 Datos de los Novios")
-        col1, col2 = st.columns(2)
-        with col1:
-            novia = st.text_input("Nombre de la Novia", value=st.session_state.datos_boda["novia"])
-        with col2:
-            novio = st.text_input("Nombre del Novio", value=st.session_state.datos_boda["novio"])
-            
-        st.markdown("---")
-        st.subheader("👨‍👩‍👧‍👦 Padres de los Novios")
-        col_p1, col_p2 = st.columns(2)
-        
-        with col_p1:
-            st.markdown("<h4 class='sub-title'>Padres de la Novia</h4>", unsafe_allow_html=True)
-            padre_novia = st.text_input("Padre de la Novia", value=st.session_state.datos_boda["padre_novia"])
-            madre_novia = st.text_input("Madre de la Novia", value=st.session_state.datos_boda["madre_novia"])
-            
-        with col_p2:
-            st.markdown("<h4 class='sub-title'>Padres del Novio</h4>", unsafe_allow_html=True)
-            padre_novio = st.text_input("Padre del Novio", value=st.session_state.datos_boda["padre_novio"])
-            madre_novio = st.text_input("Madre del Novio", value=st.session_state.datos_boda["madre_novio"])
-            
-        st.markdown("---")
-        st.subheader("📅 Logística del Evento")
-        col3, col4 = st.columns(2)
-        with col3:
-            fecha = st.date_input("Fecha de la Boda", value=st.session_state.datos_boda["fecha"])
-            lugar_ceremonia = st.text_input("Lugar de la Ceremonia", value=st.session_state.datos_boda["lugar_ceremonia"])
-        with col4:
-            hora = st.time_input("Hora del Evento", value=st.session_state.datos_boda["hora"])
-            lugar_recepcion = st.text_input("Lugar de la Recepción", value=st.session_state.datos_boda["lugar_recepcion"])
-            
-        frase = st.text_area("Frase o Lema de la Invitación", value=st.session_state.datos_boda["frase"])
-        
-        guardar_info = st.form_submit_button("💾 Guardar Cambios")
-        if guardar_info:
-            st.session_state.datos_boda.update({
-                "novia": novia, "novio": novio,
-                "padre_novia": padre_novia, "madre_novia": madre_novia,
-                "padre_novio": padre_novio, "madre_novio": madre_novio,
-                "fecha": fecha, "hora": hora,
-                "lugar_ceremonia": lugar_ceremonia, "lugar_recepcion": lugar_recepcion,
-                "frase": frase
-            })
-            st.success("¡Información actualizada con éxito!")
+    .btn-primary {
+      background-color: #25D366; /* Verde WhatsApp */
+      color: white;
+    }
 
-    # Vista previa de la tarjeta
-    st.markdown("### 💌 Vista Previa de la Tarjeta Digital")
-    st.info(f"""
-    **{st.session_state.datos_boda['novia']} & {st.session_state.datos_boda['novio']}**
-    
-    *Con la bendición de nuestros padres:*
-    * **Padres de la Novia:** {st.session_state.datos_boda['padre_novia']} y {st.session_state.datos_boda['madre_novia']}
-    * **Padres del Novio:** {st.session_state.datos_boda['padre_novio']} y {st.session_state.datos_boda['madre_novio']}
-    
-    📅 **Fecha:** {st.session_state.datos_boda['fecha'].strftime('%d de %B de %Y')} | ⏰ **Hora:** {st.session_state.datos_boda['hora'].strftime('%H:%M')}
-    💒 **Ceremonia:** {st.session_state.datos_boda['lugar_ceremonia']}
-    🥂 **Recepción:** {st.session_state.datos_boda['lugar_recepcion']}
-    
-    > *"{st.session_state.datos_boda['frase']}"*
-    """)
+    .btn-secondary {
+      background-color: var(--primary);
+      color: white;
+    }
 
-# -----------------------------------------------------------------------------
-# SECCIÓN 2: GESTIÓN DE INVITADOS & MESAS
-# -----------------------------------------------------------------------------
-elif opcion == "👥 Gestión de Invitados & Mesas":
-    st.markdown("<div class='main-header'><h1>👥 Gestión de Invitados, RSVP y Mesas</h1></div>", unsafe_allow_html=True)
-    
-    tab1, tab2 = st.tabs(["📋 Lista & Edición Directa", "➕ Registrar Nuevo Invitado"])
-    
-    with tab1:
-        st.subheader("Lista Completa de Invitados")
-        edited_df = st.data_editor(
-            st.session_state.invitados,
-            num_rows="dynamic",
-            use_container_width=True,
-            column_config={
-                "Estado RSVP": st.column_config.SelectboxColumn(
-                    "Estado RSVP",
-                    options=["Confirmado", "Pendiente", "Cancelado"],
-                    required=True
-                )
-            },
-            key="editor_invitados"
-        )
-        st.session_state.invitados = edited_df
+    .btn-outline {
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      background: transparent;
+    }
 
-    with tab2:
-        st.subheader("Añadir Invitado")
-        with st.form("form_add_invitado"):
-            nombre = st.text_input("Nombre Completo")
-            col_a, col_b = st.columns(2)
-            with col_a:
-                permitidos = st.number_input("Acompañantes Permitidos", min_value=0, max_value=10, value=1)
-                estado = st.selectbox("Estado RSVP Inicial", ["Pendiente", "Confirmado", "Cancelado"])
-            with col_b:
-                confirmados = st.number_input("Acompañantes Confirmados", min_value=0, max_value=10, value=0)
-                mesa = st.text_input("Mesa / Asiento", value="Mesa 1")
-            
-            dieta = st.text_input("Restricciones Alimentarias", value="Ninguna")
-            telefono = st.text_input("Teléfono de Contacto")
-            
-            btn_add = st.form_submit_button("Añadir Invitado")
-            if btn_add and nombre:
-                new_id = len(st.session_state.invitados) + 1
-                nueva_fila = {
-                    "ID": new_id,
-                    "Nombre Completo": nombre,
-                    "Acompañantes Permitidos": permitidos,
-                    "Acompañantes Confirmados": confirmados,
-                    "Estado RSVP": estado,
-                    "Mesa": mesa,
-                    "Dieta/Restricciones": dieta,
-                    "Telefono": telefono
-                }
-                st.session_state.invitados = pd.concat([st.session_state.invitados, pd.DataFrame([nueva_fila])], ignore_index=True)
-                st.success(f"Invitado {nombre} registrado correctamente.")
-                st.rerun()
+    /* Modal para Regalos / Cuenta bancaria */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
 
-# -----------------------------------------------------------------------------
-# SECCIÓN 3: MESA DE REGALOS
-# -----------------------------------------------------------------------------
-elif opcion == "🎁 Mesa de Regalos":
-    st.markdown("<div class='main-header'><h1>🎁 Gestión de Mesa de Regalos</h1></div>", unsafe_allow_html=True)
-    
-    t_reg1, t_reg2 = st.tabs(["🎁 Lista de Regalos & Aportes", "➕ Registrar Nuevo Regalo / Opción"])
-    
-    with t_reg1:
-        st.subheader("Estado de la Mesa de Regalos")
-        edited_reg = st.data_editor(
-            st.session_state.regalos,
-            num_rows="dynamic",
-            use_container_width=True,
-            column_config={
-                "Estado": st.column_config.SelectboxColumn(
-                    "Estado",
-                    options=["Disponible", "Parcialmente Financiado", "Comprado / Reservado"],
-                    required=True
-                )
-            },
-            key="editor_regalos"
-        )
-        st.session_state.regalos = edited_reg
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 90%;
+      width: 380px;
+    }
+  </style>
+</head>
+<body>
 
-    with t_reg2:
-        st.subheader("Añadir Nuevo Artículo / Fondo")
-        with st.form("form_add_regalo"):
-            articulo = st.text_input("Artículo o Concepto (ej. Licuadora, Fondo Viaje)")
-            categoria = st.selectbox("Categoría", ["Hogar & Cocina", "Electrodomésticos", "Fondo Luna de Miel", "Experiencias", "Otro"])
-            col_r1, col_r2 = st.columns(2)
-            with col_r1:
-                precio = st.number_input("Precio / Meta Estimada ($)", min_value=0.0, value=100.0)
-            with col_r2:
-                recaudado = st.number_input("Monto Recaudado Inicial ($)", min_value=0.0, value=0.0)
-            
-            estado_r = st.selectbox("Estado", ["Disponible", "Parcialmente Financiado", "Comprado / Reservado"])
-            comprador = st.text_input("Nombre de quien regala / aporta", value="-")
-            
-            btn_add_r = st.form_submit_button("Añadir a la Mesa de Regalos")
-            if btn_add_r and articulo:
-                new_r_id = len(st.session_state.regalos) + 1
-                nueva_r = {
-                    "ID": new_r_id,
-                    "Artículo / Concepto": articulo,
-                    "Categoría": categoria,
-                    "Precio Estimado ($)": precio,
-                    "Monto Recaudado ($)": recaudado,
-                    "Estado": estado_r,
-                    "Comprador / Contribuyente": comprador
-                }
-                st.session_state.regalos = pd.concat([st.session_state.regalos, pd.DataFrame([nueva_r])], ignore_index=True)
-                st.success(f"Regalo '{articulo}' añadido con éxito.")
-                st.rerun()
+  <!-- Reproductor de música de fondo (opcional) -->
+  <audio id="bgMusic" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+  <button class="music-btn" onclick="toggleMusic()" id="musicBtn">🎵</button>
 
-# -----------------------------------------------------------------------------
-# SECCIÓN 4: ESTADÍSTICAS & MÉTRICAS
-# -----------------------------------------------------------------------------
-elif opcion == "📊 Estadísticas & Métricas":
-    st.markdown("<div class='main-header'><h1>📊 Panel Estadístico & Métricas de la Boda</h1></div>", unsafe_allow_html=True)
+  <div class="container">
     
-    df_inv = st.session_state.invitados
-    df_reg = st.session_state.regalos
-    
-    col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-    
-    total_invitados = len(df_inv)
-    confirmados = len(df_inv[df_inv["Estado RSVP"] == "Confirmado"])
-    asistentes_totales = df_inv[df_inv["Estado RSVP"] == "Confirmado"]["Acompañantes Confirmados"].sum() + confirmados
-    monto_recaudado = df_reg["Monto Recaudado ($)"].sum()
-    
-    col_m1.metric("Invitaciones Enviadas", total_invitados)
-    col_m2.metric("Pases Confirmados", confirmados)
-    col_m3.metric("Total Asistentes Estimados", asistentes_totales)
-    col_m4.metric("Recaudado Regalos", f"${monto_recaudado:,.2f}")
-    
-    st.markdown("---")
-    
-    col_g1, col_g2 = st.columns(2)
-    
-    with col_g1:
-        st.subheader("Estado de Confirmaciones (RSVP)")
-        fig_rsvp = px.pie(
-            df_inv, 
-            names="Estado RSVP", 
-            title="Distribución de Respuestas RSVP",
-            color_discrete_sequence=px.colors.qualitative.Pastel
-        )
-        st.plotly_chart(fig_rsvp, use_container_width=True)
+    <!-- Encabezado / Portada -->
+    <div class="hero">
+      <p class="subtitle">¡Nos Casamos! / Mis 15 Años</p>
+      <h1 class="title">María & Juan</h1>
+      <p>Queremos compartir este día tan especial contigo.</p>
+    </div>
 
-    with col_g2:
-        st.subheader("Avance de Regalos por Categoría")
-        fig_reg = px.bar(
-            df_reg, 
-            x="Categoría", 
-            y=["Precio Estimado ($)", "Monto Recaudado ($)"],
-            barmode="group",
-            title="Comparativo Meta vs Recaudado por Categoría",
-            color_discrete_sequence=["#D3D3D3", "#2ECC71"]
-        )
-        st.plotly_chart(fig_reg, use_container_width=True)
+    <!-- Cuenta Regresiva -->
+    <div class="card">
+      <p class="countdown-title">FALTAN SÓLO</p>
+      <div class="countdown">
+        <div class="time-box"><span id="days">00</span><label>Días</label></div>
+        <div class="time-box"><span id="hours">00</span><label>Hs</label></div>
+        <div class="time-box"><span id="minutes">00</span><label>Min</label></div>
+        <div class="time-box"><span id="seconds">00</span><label>Seg</label></div>
+      </div>
+    </div>
 
-# -----------------------------------------------------------------------------
-# SECCIÓN 5: IMPORTAR / EXPORTAR DATOS
-# -----------------------------------------------------------------------------
-elif opcion == "📁 Importar / Exportar Datos":
-    st.markdown("<div class='main-header'><h1>📁 Importación y Exportación de Datos</h1></div>", unsafe_allow_header=True)
-    
-    col_exp1, col_exp2 = st.columns(2)
-    
-    with col_exp1:
-        st.subheader("📥 Exportar Datos")
-        
-        buffer_excel = io.BytesIO()
-        with pd.ExcelWriter(buffer_excel, engine='openpyxl') as writer:
-            st.session_state.invitados.to_excel(writer, sheet_name='Invitados', index=False)
-            st.session_state.regalos.to_excel(writer, sheet_name='Regalos', index=False)
-            df_info = pd.DataFrame([st.session_state.datos_boda])
-            df_info.to_excel(writer, sheet_name='Informacion_General', index=False)
-            
-        st.download_button(
-            label="📄 Descargar Todo en Excel (.xlsx)",
-            data=buffer_excel.getvalue(),
-            file_name="boda_datos_completos.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-        
-        json_data = {
-            "datos_boda": {k: str(v) for k, v in st.session_state.datos_boda.items()},
-            "invitados": st.session_state.invitados.to_dict(orient="records"),
-            "regalos": st.session_state.regalos.to_dict(orient="records")
-        }
-        st.download_button(
-            label="📌 Descargar Copia Backup (.json)",
-            data=json.dumps(json_data, indent=4, ensure_ascii=False),
-            file_name="boda_backup.json",
-            mime="application/json"
-        )
-        
-    with col_exp2:
-        st.subheader("📤 Cargar Datos Backup")
-        uploaded_file = st.file_uploader("Cargar archivo JSON de respaldo", type=["json"])
-        if uploaded_file is not None:
-            try:
-                data = json.load(uploaded_file)
-                st.session_state.invitados = pd.DataFrame(data["invitados"])
-                st.session_state.regalos = pd.DataFrame(data["regalos"])
-                st.success("¡Backup de datos restaurado exitosamente!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Error al cargar archivo: {e}")
+    <!-- Fecha y Hora -->
+    <div class="card">
+      <h3>¿Cuándo & Dónde?</h3>
+      <p><strong>Fecha:</strong> Sábado, 15 de Noviembre de 2026</p>
+      <p><strong>Hora:</strong> 18:00 Hs</p>
+      <p style="margin-top: 10px;"><strong>Lugar:</strong> Salón de Eventos "El Paraíso"</p>
+      <p>Av. Principal #123, Ciudad</p>
+
+      <a href="https://maps.google.com/?q=-0.180653,-78.467838" target="_blank" class="btn btn-secondary">
+        📍 Ver Ubicación en Google Maps
+      </a>
+      
+      <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Maria+y+Juan&dates=20261115T180000Z/20261116T020000Z&details=Invitacion+especial" target="_blank" class="btn btn-outline">
+        📅 Agendar en Google Calendar
+      </a>
+    </div>
+
+    <!-- Dress Code / Vestimenta -->
+    <div class="card">
+      <h3>Código de Vestimenta</h3>
+      <p><strong>Formal / Elegante</strong></p>
+      <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Nos reservamos el color blanco para la novia.</p>
+    </div>
+
+    <!-- Mesa de Regalos / Cuenta bancaria -->
+    <div class="card">
+      <h3>Mesa de Regalos</h3>
+      <p>Tu presencia es nuestro mejor regalo, pero si deseas realizar un detalle:</p>
+      <button class="btn btn-outline" onclick="openModal()">🎁 Datos Bancarios / Regalo</button>
+    </div>
+
+    <!-- Confirmación por WhatsApp -->
+    <div class="card">
+      <h3>Confirmación de Asistencia</h3>
+      <p>Por favor, confírmanos tu asistencia antes del 1 de Noviembre.</p>
+      <button onclick="sendRSVP()" class="btn btn-primary">
+        💬 Confirmar Asistencia por WhatsApp
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Modal Datos Bancarios -->
+  <div class="modal" id="bankModal">
+    <div class="modal-content">
+      <h3>Datos Bancarios</h3>
+      <p style="margin-top: 10px;"><strong>Banco:</strong> Banco Pichincha / Guayaquil</p>
+      <p><strong>Tipo de Cuenta:</strong> Ahorros</p>
+      <p><strong>Número:</strong> 1234567890</p>
+      <p><strong>Titular:</strong> Juan Pérez</p>
+      <p><strong>C.I.:</strong> 1712345678</p>
+      <button class="btn btn-secondary" onclick="closeModal()" style="margin-top: 20px;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // 1. Configuración de Fecha del Evento
+    const eventDate = new Date("Nov 15, 2026 18:00:00").getTime();
+
+    // Cuenta Regresiva
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = eventDate - now;
+
+      if (distance < 0) {
+        clearInterval(timer);
+        document.querySelector(".countdown").innerHTML = "<b>¡Hoy es el gran día!</b>";
+        return;
+      }
+
+      document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+      document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+    }, 1000);
+
+    // 2. Reproductor de Música
+    const music = document.getElementById("bgMusic");
+    let isPlaying = false;
+
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+        document.getElementById("musicBtn").innerText = "🎵";
+      } else {
+        music.play();
+        document.getElementById("musicBtn").innerText = "⏸️";
+      }
+      isPlaying = !isPlaying;
+    }
+
+    // 3. Confirmación por WhatsApp (Cambia el número de teléfono con tu código de país)
+    function sendRSVP() {
+      const phone = "593999999999"; // Ejemplo: Ecuador (+593), México (+52), Colombia (+57)
+      const text = encodeURIComponent("¡Hola! Confirmo mi asistencia para el evento. ¡Muchas gracias por la invitación! 🎉");
+      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    }
+
+    // 4. Abrir y Cerrar Modal
+    function openModal() { document.getElementById("bankModal").style.display = "flex"; }
+    function closeModal() { document.getElementById("bankModal").style.display = "none"; }
+  </script>
+</body>
+</html>
