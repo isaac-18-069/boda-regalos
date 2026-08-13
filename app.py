@@ -5,7 +5,6 @@ from pathlib import Path
 import base64
 import uuid
 import streamlit.components.v1 as components
-import math
 
 # ──────────────────────────────────────────────
 # CONFIGURACIÓN DE LA PÁGINA
@@ -21,99 +20,182 @@ if "invitacion_abierta" not in st.session_state:
     st.session_state["invitacion_abierta"] = False
 
 # ──────────────────────────────────────────────
-# ARCHIVOS Y RUTAS
+# ARCHIVOS Y RUTAS EN GITHUB
 # ──────────────────────────────────────────────
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
-IMAGEN_FLORES = Path("flores.png") 
+IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
 
-def get_image_base64(path):
-    if path.exists():
-        with open(path, "rb") as f:
+def get_image_base64_or_url(path_local, url_github):
+    if path_local.exists():
+        with open(path_local, "rb") as f:
             encoded = base64.b64encode(f.read()).decode()
-            return f"data:image/png;base64,{encoded}"
-    return None
+            return f"data:image/jpeg;base64,{encoded}"
+    return url_github
 
-flores_base64 = get_image_base64(IMAGEN_FLORES)
+img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
+
+# Adorno floral SVG limpio (para evitar bloques de código negros)
+SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5-30-2-40 5-5 3-8 7-10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9 13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4-6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS PERSONALIZADOS
+# ESTILOS CSS CORREGIDOS (COLORES Y FLORES)
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
+/* Color de fondo de la aplicación */
 .stApp {{
-    background-color: #FAF8F5 !important;
+    background-color: #FAF6F0 !important;
 }}
 
+/* Ocultar elementos predeterminados de Streamlit */
 #MainMenu, footer, header {{visibility: hidden;}}
 
-.invitation-card, .dress-card {{
-    background-color: #FFFFFF;
-    border-radius: 16px;
-    padding: 35px 20px 25px 20px;
-    margin: 25px auto;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.04);
-    border: 1px solid #E2E8F0;
-    text-align: center;
-    position: relative;
+/* Color de texto predeterminado para toda la página (Verde Oliva Oscuro) */
+p, span, label, div, h1, h2, h3, h4, h5, h6 {{
+    color: #4A5A48 !important;
 }}
 
-/* Flores decorativas en las tarjetas */
-{f'''
+/* Fuentes para elementos CSS */
+html, body, [class*="css"] {{
+    font-family: 'Montserrat', sans-serif !important;
+}}
+
+/* TARJETAS PRINCIPALES CON MARGEN PARA LAS FLORES ARRIBA Y ABAJO */
+.invitation-card, .dress-card {{
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 20px;
+    padding: 70px 25px 70px 25px; /* Espacio superior e inferior para las flores */
+    margin: 35px auto;
+    box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
+    border: 1px solid #E8E2D9;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}}
+
+/* RAMO FLORAL SUPERIOR CENTRADO */
 .invitation-card::before, .dress-card::before {{
     content: "";
     position: absolute;
-    top: 5px;
+    top: -5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 100px;
-    height: 35px;
-    background-image: url("{flores_base64}");
+    width: 250px;
+    height: 60px;
+    background-image: url("{SVG_FLORES}");
     background-size: contain;
-    background-position: center;
+    background-position: center top;
     background-repeat: no-repeat;
-    opacity: 0.8;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 1;
 }}
+
+/* RAMO FLORAL INFERIOR CENTRADO */
 .invitation-card::after, .dress-card::after {{
     content: "";
     position: absolute;
-    bottom: 5px;
+    bottom: -5px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 100px;
-    height: 35px;
-    background-image: url("{flores_base64}");
+    width: 250px;
+    height: 60px;
+    background-image: url("{SVG_FLORES}");
     background-size: contain;
-    background-position: center;
+    background-position: center top;
     background-repeat: no-repeat;
-    opacity: 0.8;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 1;
 }}
-''' if flores_base64 else ""}
 
-.title-elegant {{
+/* Asegurar que el contenido de la tarjeta esté sobre las flores */
+.invitation-card *, .dress-card * {{
+    position: relative;
+    z-index: 2;
+}}
+
+/* TARJETAS CON FONDO VERDE */
+.green-card {{
+    background-color: #6B7A68 !important;
+    border-radius: 20px;
+    padding: 35px 25px;
+    margin: 25px auto;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(107, 122, 104, 0.2);
+}}
+.green-card * {{
+    color: #FFFFFF !important;
+}}
+
+/* TARJETA DE RESULTADO / SOBRE CONFIRMADO */
+.confirmation-envelope-card {{
+    background: linear-gradient(135deg, #5B6B58 0%, #4A5A48 100%);
+    border-radius: 20px;
+    padding: 35px 25px;
+    margin: 25px auto;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    border: 2px solid #D4AF37;
+    position: relative;
+}}
+.confirmation-envelope-card * {{
+    color: #FFFFFF !important;
+}}
+
+/* TÍTULOS DE NOMBRES PRINCIPALES */
+.title-names {{
+    font-family: 'Great Vibes', cursive !important;
+    font-size: 3.8rem !important;
+    color: #4A5A48 !important;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}}
+
+/* SUBTÍTULOS CINZEL (FECHAS, TÍTULOS DE SECCIÓN) */
+.subtitle-cinzel {{
     font-family: 'Cinzel', serif !important;
     letter-spacing: 3px;
-    font-size: 1rem !important;
+    font-size: 1.1rem !important;
     color: #4A5A48 !important;
     font-weight: 600 !important;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-top: 5px;
 }}
 
-.title-names {{
-    font-family: 'Great Vibes', cursive !important;
-    font-size: 3.5rem !important;
-    color: #4A5A48 !important;
-    margin-bottom: 15px;
+/* Versículo Bíblico */
+.verse-card {{
+    background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,239,232,0.95) 100%) !important;
+    border-left: 4px solid #A3B18A;
+    border-right: 4px solid #A3B18A;
 }}
 
-.timeline-item {{
-    padding: 10px 0;
-    border-bottom: 1px dashed #CBD5E0;
+.verse-text {{
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.95rem !important;
+    font-style: italic;
+    font-size: 0.98rem;
+    color: #4A5A48 !important;
+    line-height: 1.7;
+    margin: 0;
+}}
+.verse-ref {{
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.85rem !important;
+    color: #6B7A68 !important;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-top: 10px;
+    display: block;
+}}
+
+/* Elementos del Itinerario */
+.timeline-item {{
+    padding: 12px 0;
+    border-bottom: 1px dashed #CBD5E0;
+    font-size: 1rem !important;
     color: #2D3748 !important;
     font-weight: 500 !important;
 }}
@@ -121,20 +203,56 @@ st.markdown(f"""
     border-bottom: none;
 }}
 
-.welcome-envelope {{
-    background-color: #FAF8F5;
-    border: 1px solid #E2E8F0;
-    border-radius: 12px;
-    padding: 30px;
-    text-align: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
-    margin: 50px auto;
+/* BOTÓN DE CONFIRMACIÓN PRINCIPAL */
+div.stButton > button:first-child {{
+    background-color: #6B7A68 !important; /* Verde Oliva Oscuro */
+    color: #FFFFFF !important; /* Texto Blanco */
+    border-radius: 25px !important;
+    border: none !important;
+    padding: 14px 35px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: all 0.3s ease;
+}}
+div.stButton > button:first-child * {{
+    color: #FFFFFF !important;
+}}
+div.stButton > button:first-child:hover {{
+    background-color: #556353 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }}
 
-div.stButton > button:first-child {{
-    background-color: #6B7A68 !important;
-    color: #FFFFFF !important;
-    border-radius: 25px !important;
+/* SOBRE DE INICIO INTERACTIVO */
+.welcome-envelope {{
+    background-color: #FAF6F0;
+    width: 260px;
+    height: 170px;
+    margin: 15px auto 15px auto;
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 2;
+}}
+
+.seal-initials {{
+    width: 65px;
+    height: 65px;
+    background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid #F3E5AB;
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -142,18 +260,15 @@ div.stButton > button:first-child {{
 # ──────────────────────────────────────────────
 # FUNCIONES AUXILIARES DE DATOS
 # ──────────────────────────────────────────────
-def cargar_respuestas():
-    if CSV_RESPUESTAS.exists():
-        df = pd.read_csv(CSV_RESPUESTAS)
-        if "Mesa" not in df.columns:
-            df["Mesa"] = "Mesa 1"
-        return df
-    return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo", "Mesa"])
-
 def cargar_regalos():
     if not CSV_REGALOS.exists():
         return pd.DataFrame(columns=["Regalo"])
     return pd.read_csv(CSV_REGALOS)
+
+def cargar_respuestas():
+    if CSV_RESPUESTAS.exists():
+        return pd.read_csv(CSV_RESPUESTAS)
+    return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
 
 def asignar_regalo(nombre):
     df = cargar_regalos()
@@ -164,18 +279,19 @@ def asignar_regalo(nombre):
     df.to_csv(CSV_REGALOS, index=False)
     return regalo
 
-def guardar_respuestas(df):
-    df.to_csv(CSV_RESPUESTAS, index=False)
-
 # ──────────────────────────────────────────────
 # PASO 1: PANTALLA INICIAL DEL SOBRE
 # ──────────────────────────────────────────────
 if not st.session_state["invitacion_abierta"]:
     st.markdown("""
-    <div class="welcome-envelope">
-        <div class="title-elegant" style="font-size: 0.8rem; letter-spacing: 2px;">NUESTRA BODA</div>
-        <div style="font-family: 'Cinzel', serif; font-size: 2rem; color: #AA7C11; margin: 20px 0;">💍</div>
-        <p style="font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: #4A5568;">Has recibido una invitación</p>
+    <div class="invitation-card" style="margin-top: 30px;">
+        <div class="subtitle-cinzel">NUESTRA BODA</div>
+        <div class="welcome-envelope">
+            <div class="seal-initials">C & E</div>
+        </div>
+        <p style="font-size: 0.9rem; color: #6B7A68 !important; margin-top: 10px; font-weight: 500;">
+            Has recibido una invitación especial
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -187,239 +303,187 @@ if not st.session_state["invitacion_abierta"]:
 # PASO 2: CONTENIDO DE LA INVITACIÓN
 # ──────────────────────────────────────────────
 else:
-    # --- HEADER ---
+    # 1. HEADER CON NOMBRES
     st.markdown("""
     <div class="invitation-card">
-        <div class="title-elegant" style="font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 5px;">NUESTRA BODA</div>
+        <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
         <div class="title-names">Carlos & Eunice</div>
-        <p style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #718096; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">
-            Te invitamos a celebrar con nosotros
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # --- ITINERARIO ---
-    st.markdown("""
-    <div class="invitation-card">
-        <div class="title-elegant">ITINERARIO DE ACTIVIDADES</div>
-        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia Religiosa</div>
-        <div class="timeline-item">🥂 17:30 hrs — Bienvenida y Felicitaciones</div>
-        <div class="timeline-item">🍽️ 19:00 hrs — Cena de Gala</div>
-        <div class="timeline-item">💃 20:30 hrs — Fiesta y Baile</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # --- CÓDIGO DE VESTIMENTA (CORREGIDO) ---
-    st.markdown("""
-    <div class="dress-card">
-        <div class="title-elegant">👗 CÓDIGO DE VESTIMENTA</div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: #2D3748; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">FORMAL / ELEGANTE</div>
-        <div style="font-family: 'Montserrat', sans-serif; color: #2D3748; font-size: 0.9rem; margin-bottom: 15px;">Por favor, reservar el color blanco para la novia y el verde oliva para el cortejo.</div>
-        
-        <div style="border-top: 1px solid #E2E8F0; margin: 15px 0;"></div>
-        
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #4A5568; font-weight: 500;">
-            🔞 Evento de Adultos (Sin Niños)
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
+            18 DE JUNIO DE 2027
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # --- ORGANIZACIÓN DEL SALÓN Y MESAS (REINSERTADO) ---
+    # 2. VERSÍCULO BÍBLICO DE AMOR (MENSAJE REINSERTADO)
     st.markdown("""
-    <div class="invitation-card" id="mesas">
-        <div class="title-elegant">🍽️ ORGANIZACIÓN DEL SALÓN</div>
-        <p style="font-family: 'Montserrat', sans-serif; font-size: 0.88rem; color: #6B7A68 !important; margin-top: 5px;">
-            Consulta la mesa asignada para tu lugar en la recepción
+    <div class="invitation-card verse-card">
+        <p class="verse-text">
+            «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser.»
         </p>
+        <span class="verse-ref">1 CORINTIOS 13:4, 7-8</span>
     </div>
     """, unsafe_allow_html=True)
 
-    df_invitados = cargar_respuestas()
-    
-    # Buscador de mesa por nombre
-    busqueda_nombre = st.text_input("🔍 Ingresa tu nombre para buscar tu mesa:", placeholder="Ej: María López")
-    
-    if busqueda_nombre.strip():
-        coincidencias = df_invitados[df_invitados["Nombre"].str.lower().str.contains(busqueda_nombre.strip().lower(), na=False)]
-        if not coincidencias.empty:
-            for idx, row in coincidencias.iterrows():
-                mesa = row.get("Mesa", "Mesa 1")
-                st.success(f"📍 **{row['Nombre']}**, estás en la **{mesa}**.")
-        else:
-            st.info("No se encontró tu nombre en la lista confirmada o aún no tienes mesa asignada.")
-
-    # Visualización gráfica interactiva del mapa de salón (Estilo Bodas.net)
-    st.write("")
-    if st.checkbox("🗺️ Ver Mapa Completo del Salón", value=True):
-        confirmados = df_invitados[df_invitados["Asiste"] == "Sí"] if not df_invitados.empty else pd.DataFrame()
-        
-        mesas_dict = {}
-        # Inicializar mesas base
-        for i in range(1, 7):
-            mesas_dict[f"Mesa {i}"] = []
-        mesas_dict["Mesa Presidencial"] = ["Carlos (Novio)", "Eunice (Novia)"]
-
-        if not confirmados.empty:
-            for _, row in confirmados.iterrows():
-                m = row.get("Mesa", "Mesa 1")
-                if m not in mesas_dict:
-                    mesas_dict[m] = []
-                mesas_dict[m].append(row["Nombre"])
-
-        # HTML/CSS del Mapa Interactivo
-        html_mesas = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <style>
-            .salon-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 20px;
-                padding: 15px;
-                background-color: #F7F5F0;
-                border-radius: 15px;
-                border: 1px solid #E2E8F0;
-            }
-            .table-card {
-                background: white;
-                border-radius: 50%;
-                width: 180px;
-                height: 180px;
-                margin: 0 auto;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-                border: 2px solid #A3B18A;
-            }
-            .table-center { text-align: center; z-index: 2; }
-            .table-title { font-family: 'Cinzel', serif; font-weight: bold; font-size: 12px; color: #4A5A48; }
-            .table-count { font-family: 'Montserrat', sans-serif; font-size: 10px; color: #718096; }
-            .guest-avatar {
-                position: absolute;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                background: #6B7A68;
-                color: white;
-                font-size: 9px;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 2px solid white;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-                overflow: hidden;
-                text-align: center;
-                font-family: 'Montserrat', sans-serif;
-            }
-        </style>
-        </head>
-        <body>
-        <div class="salon-grid">
-        """
-
-        for mesa_nombre, personas in mesas_dict.items():
-            html_mesas += f"""
-            <div class="table-card">
-                <div class="table-center">
-                    <div class="table-title">{mesa_nombre}</div>
-                    <div class="table-count">{len(personas)} Personas</div>
-                </div>
-            """
-            num_p = len(personas)
-            radius = 70 
-            for idx, p in enumerate(personas):
-                angle = (2 * math.pi / max(num_p, 1)) * idx
-                x = 75 + radius * math.cos(angle)
-                y = 75 + radius * math.sin(angle)
-                iniciales = "".join([w[0].upper() for w in p.split()[:2]])
-                html_mesas += f"""
-                <div class="guest-avatar" style="left: {x}px; top: {y}px;" title="{p}">
-                    {iniciales}
-                </div>
-                """
-            html_mesas += "</div>"
-
-        html_mesas += "</div></body></html>"
-        components.html(html_mesas, height=500, scrolling=True)
-
-    # --- CONFIRMACIÓN ---
+    # 3. ITINERARIO DE ACTIVIDADES
     st.markdown("""
     <div class="invitation-card">
-        <div class="title-elegant">CONFIRMAR ASISTENCIA</div>
-        <p style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #4A5568;">Por favor confirma tu presencia y recibe tu sugerencia de regalo.</p>
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia</div>
+        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones A Los Recién Casados</div>
+        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
     </div>
     """, unsafe_allow_html=True)
 
+    # 4. APARTADO DE PADRES (NUEVA SECCIÓN REINSERTADA)
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
+        <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
+            <div>
+                <strong>Padres del Novio</strong><br>
+                Carlos M. & Diana G. ❤️
+            </div>
+            <div>
+                <strong>Padres de la Novia</strong><br>
+                Emilio M. & Pricila C. ❤️
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 5. DÍA Y CALENDARIO
+    st.markdown("""
+    <div class="green-card">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
+        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JUNIO</h2>
+        <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 6. UBICACIÓN Y CEREMONIA
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">⛪ Ceremonia</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;">Lugar de la Ceremonia</p>
+        <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
+        <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500;">
+                📍 Ver ubicación en GPS
+            </div>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 7. CÓDIGO DE VESTIMENTA (CORREGIDO Y SIN CÓDIGO NEGRO)
+    st.markdown("""
+    <div class="dress-card">
+        <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
+        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 8px;">FORMAL / ELEGANTE</p>
+        <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+        
+        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
+        
+        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 8. MÚSICA DE FONDO (REINSERTADO)
+    st.markdown("""
+    <div class="invitation-card" style="padding-bottom: 30px;">
+        <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Reemplazar con el ID de video real de YouTube
+    st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
+
+    # 9. FOTO DE LOS NOVIOS (REINSERTADO)
+    if img_b64:
+        st.markdown("""
+        <div class="invitation-card" style="padding: 20px;">
+            <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">📸 Nuestra Foto</p>
+        </div>
+        """, unsafe_allow_html=True)
+        # st.image(img_b64, caption="Carlos & Eunice", use_column_width=True)
+    else:
+        # Espacio alternativo si no hay imagen en GitHub
+        st.caption("Añade tu foto en GitHub para que aparezca aquí.")
+
+    # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
+    st.markdown("""
+    <div class="invitation-card" id="confirmacion">
+        <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
+        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 8px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # FORMULARIO DE CONFIRMACIÓN
     with st.form("form_invitacion"):
         nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
         asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
         submit = st.form_submit_button("Enviar Confirmación ✉️")
 
+    # PROCESAR CONFIRMACIÓN
     if submit:
         if not nombre.strip():
-            st.error("Por favor, ingresa tu nombre.")
+            st.error("Por favor ingresa tu nombre.")
         else:
             df_resp = cargar_respuestas()
             if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
-                st.warning(f"El nombre {nombre.strip()} ya ha sido registrado.")
+                st.warning(f"El nombre {nombre.strip()} ya ha sido registrado previamente.")
             else:
                 codigo = uuid.uuid4().hex[:8].upper()
                 if asistencia == "¡Sí, allí estaré! 🎉":
                     regalo = asignar_regalo(nombre.strip())
                     asiste_val = "Sí"
-                    mesa_asistente = "Mesa 1" # Por defecto
                 else:
                     regalo = "N/A"
                     asiste_val = "No"
-                    mesa_asistente = "Sin Mesa"
 
                 nueva_fila = pd.DataFrame([{
                     "Nombre": nombre.strip(),
                     "Asiste": asiste_val,
                     "Regalo": regalo,
-                    "Codigo": codigo,
-                    "Mesa": mesa_asistente
+                    "Codigo": codigo
                 }])
-                df_actualizado = pd.concat([df_resp, nueva_fila], ignore_index=True)
-                guardar_respuestas(df_actualizado)
+                nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
 
                 st.success("¡Respuesta guardada con éxito!")
                 if asiste_val == "Sí":
+                    st.balloons()
+                    # MUESTRA DEL SOBRE CERRADO DE CONFIRMACIÓN
                     st.markdown(f"""
-                    <div class="green-card" style="padding: 20px; border-radius: 12px; margin-top: 15px;">
-                        <div class="title-elegant" style="color: #FFFFFF !important; font-size: 0.9rem;">TU SUGERENCIA DE REGALO</div>
-                        <p style="font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #FFFFFF !important; font-weight: 600; margin: 10px 0;">{regalo}</p>
-                        <p style="font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #E2E8F0 !important;">Código de confirmación: {codigo}</p>
+                    <div class="confirmation-envelope-card">
+                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
+                            <div class="seal-initials" style="width: 45px; height: 45px; font-size: 13px;">✉️</div>
+                        </div>
+                        <h3 style="font-family: 'Great Vibes', cursive !important; font-size: 2.3rem; margin-top: 15px; color: #F3E5AB !important;">
+                            ¡Gracias por confirmar! 💖
+                        </h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; font-weight: 500; margin: 15px 0;">
+                            Te esperamos con ansias para celebrar este hermoso día con nosotros ✨🥂🎉💒
+                        </p>
+                        <hr style="border: 0; border-top: 1px dashed rgba(255,255,255,0.4); margin: 20px 0;">
+                        <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #F3E5AB !important;">
+                            🎁 Sugerencia de Regalo Asignada:
+                        </p>
+                        <h2 style="font-size: 1.8rem; margin: 8px 0; font-family: 'Cinzel', serif !important;">
+                            {regalo}
+                        </h2>
+                        <p style="font-size: 0.8rem; opacity: 0.85; margin-top: 12px;">
+                            Código de Confirmación: <strong>{codigo}</strong>
+                        </p>
                     </div>
                     """, unsafe_allow_html=True)
+                else:
+                    st.info("Lamentamos que no puedas acompañarnos, ¡agradecemos mucho tu respuesta!")
 
-    # --- PANEL ADMIN Y GESTOR DE MESAS ---
+    # ADMIN PANEL
     st.markdown("<br><br>", unsafe_allow_html=True)
-    with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
+    with st.expander("📊 Panel Admin (Ver invitados)"):
         df_ver = cargar_respuestas()
         if not df_ver.empty:
-            st.write("### Asignación Rápida de Mesas")
-            invitados_lista = df_ver[df_ver["Asiste"] == "Sí"]["Nombre"].tolist()
-            
-            if invitados_lista:
-                col1, col2 = st.columns(2)
-                with col1:
-                    invitado_sel = st.selectbox("Selecciona Invitado:", invitados_lista)
-                with col2:
-                    opciones_mesas = [f"Mesa {i}" for i in range(1, 11)] + ["Mesa Presidencial"]
-                    nueva_mesa = st.selectbox("Asignar Mesa:", opciones_mesas)
-                
-                if st.button("Guardar Mesa Asignada"):
-                    df_ver.loc[df_ver["Nombre"] == invitado_sel, "Mesa"] = nueva_mesa
-                    guardar_respuestas(df_ver)
-                    st.success(f"¡{invitado_sel} reasignado a {nueva_mesa}!")
-                    st.rerun()
-
-            st.write("### Lista General")
-            st.dataframe(df_ver, use_container_width=True)
+            st.dataframe(df_ver)
         else:
             st.caption("Aún no hay respuestas.")
