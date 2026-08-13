@@ -1,326 +1,702 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>¡Estás Invitado/a a Nuestro Evento!</title>
+import streamlit as st
+import pandas as pd
+import random
+from pathlib import Path
+import base64
+import uuid
+import streamlit.components.v1 as components
 
-  <!-- META TAGS PARA LA VISTA PREVIA EN WHATSAPP -->
-  <meta property="og:title" content="¡Estás Invitado/a a Nuestra Celebración! 🎉">
-  <meta property="og:description" content="Haz clic para ver los detalles, la ubicación y confirmar tu asistencia.">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?w=800">
-  <meta property="og:url" content="https://tu-usuario.github.io/mi-invitacion/">
+# ──────────────────────────────────────────────
+# CONFIGURACIÓN DE LA PÁGINA
+# ──────────────────────────────────────────────
+st.set_page_config(
+    page_title="Carlos & Eunice 💍", 
+    page_icon="🌿", 
+    layout="centered"
+)
 
-  <!-- Fuentes de Google -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+# Initialize Session State para controlar la apertura del sobre
+if "invitacion_abierta" not in st.session_state:
+    st.session_state["invitacion_abierta"] = False
 
-  <!-- Estilos CSS -->
-  <style>
-    :root {
-      --primary: #d4af37; /* Color dorado principal */
-      --text: #2c2c2c;
-      --bg: #faf8f5;
-      --card-bg: #ffffff;
-    }
+# ──────────────────────────────────────────────
+# ARCHIVOS Y RUTAS EN GITHUB / LOCAL
+# ──────────────────────────────────────────────
+CSV_REGALOS = Path("regalos.csv")
+CSV_RESPUESTAS = Path("respuestas.csv")
+IMAGEN_HEADER = Path("WhatsApp Image 2026-07-27 at 15.26.46.jpeg")
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+IMAGEN_FLORES_LOCAL = Path("Cet article n'est pas disponible - Etsy.jpg")
+URL_FLORES_GITHUB = "https://raw.githubusercontent.com/isaac-18-069/boda-regalos/main/Cet%20article%20n'est%20pas%20disponible%20-%20Etsy.jpg"
 
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      text-align: center;
-      line-height: 1.6;
-    }
+def get_image_base64_or_url(path_local, url_github):
+    if path_local.exists():
+        with open(path_local, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode()
+            return f"data:image/jpeg;base64,{encoded}"
+    return url_github
 
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
+flores_src = get_image_base64_or_url(IMAGEN_FLORES_LOCAL, URL_FLORES_GITHUB)
 
-    /* Portada / Hero */
-    .hero {
-      padding: 60px 20px 40px;
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      margin-bottom: 25px;
-    }
+# ──────────────────────────────────────────────
+# ESTILOS CSS CORREGIDOS
+# ──────────────────────────────────────────────
+st.markdown(f"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 
-    .subtitle {
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      font-size: 0.85rem;
-      color: #888;
-    }
+.stApp {{
+    background-color: #FAF6F0 !important;
+}}
 
-    .title {
-      font-family: 'Alex Brush', cursive;
-      font-size: 3.5rem;
-      color: var(--primary);
-      margin: 15px 0;
-    }
+#MainMenu, footer, header {{visibility: hidden;}}
 
-    /* Botón de Música */
-    .music-btn {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
+p, span, label, div, h1, h2, h3, h4, h5, h6 {{
+    color: #2D3748 !important;
+}}
 
-    /* Contador */
-    .countdown-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 15px;
-    }
+html, body, [class*="css"] {{
+    font-family: 'Montserrat', sans-serif !important;
+}}
 
-    .countdown {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 30px;
-    }
+/* TARJETAS CON ESPACIO AMPLIO PARA LAS FLORES */
+.invitation-card {{
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 20px;
+    padding: 90px 25px 90px 25px; /* Espacio superior e inferior ampliado para evitar solapamientos */
+    margin: 30px auto;
+    box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
+    border: 1px solid #E8E2D9;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}}
 
-    .time-box {
-      background: var(--card-bg);
-      padding: 12px;
-      border-radius: 12px;
-      flex: 1;
-      margin: 0 5px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+/* RAMO FLORAL SUPERIOR */
+.invitation-card::before {{
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    height: 100px;
+    background-image: url('{flores_src}');
+    background-size: contain;
+    background-position: top center;
+    background-repeat: no-repeat;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 1;
+}}
 
-    .time-box span {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
+/* RAMO FLORAL INFERIOR */
+.invitation-card::after {{
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    width: 280px;
+    height: 100px;
+    background-image: url('{flores_src}');
+    background-size: contain;
+    background-position: top center;
+    background-repeat: no-repeat;
+    opacity: 0.95;
+    pointer-events: none;
+    z-index: 1;
+}}
 
-    .time-box label {
-      font-size: 0.75rem;
-      color: #777;
-      text-transform: uppercase;
-    }
+.invitation-card * {{
+    position: relative;
+    z-index: 2;
+}}
 
-    /* Secciones de Información */
-    .card {
-      background: var(--card-bg);
-      padding: 30px 20px;
-      border-radius: 16px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-    }
+.green-card {{
+    background-color: #6B7A68 !important;
+    border-radius: 20px;
+    padding: 35px 25px;
+    margin: 25px auto;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(107, 122, 104, 0.2);
+}}
+.green-card * {{
+    color: #FFFFFF !important;
+}}
 
-    .card h3 {
-      font-family: 'Alex Brush', cursive;
-      font-size: 2.2rem;
-      color: var(--primary);
-      margin-bottom: 10px;
-    }
+.confirmation-envelope-card {{
+    background: linear-gradient(135deg, #5B6B58 0%, #4A5A48 100%);
+    border-radius: 20px;
+    padding: 35px 25px;
+    margin: 25px auto;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    border: 2px solid #D4AF37;
+    position: relative;
+}}
+.confirmation-envelope-card * {{
+    color: #FFFFFF !important;
+}}
 
-    /* Botones de Acción */
-    .btn {
-      display: inline-block;
-      width: 100%;
-      padding: 14px 20px;
-      margin-top: 15px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: transform 0.2s, opacity 0.2s;
-      border: none;
-      cursor: pointer;
-    }
+.title-names {{
+    font-family: 'Great Vibes', cursive !important;
+    font-size: 3.8rem !important;
+    color: #4A5A48 !important;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}}
 
-    .btn:active {
-      transform: scale(0.98);
-    }
+.subtitle-cinzel {{
+    font-family: 'Cinzel', serif !important;
+    letter-spacing: 3px;
+    font-size: 1.1rem !important;
+    color: #4A5A48 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    margin-top: 5px;
+}}
 
-    .btn-primary {
-      background-color: #25D366; /* Verde WhatsApp */
-      color: white;
-    }
+.verse-card {{
+    background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(244,239,232,0.95) 100%) !important;
+    border-left: 4px solid #A3B18A;
+    border-right: 4px solid #A3B18A;
+}}
 
-    .btn-secondary {
-      background-color: var(--primary);
-      color: white;
-    }
+.verse-text {{
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-size: 0.98rem;
+    color: #4A5A48 !important;
+    line-height: 1.7;
+    margin: 0;
+}}
+.verse-ref {{
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.85rem !important;
+    color: #6B7A68 !important;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-top: 10px;
+    display: block;
+}}
 
-    .btn-outline {
-      border: 2px solid var(--primary);
-      color: var(--primary);
-      background: transparent;
-    }
+.timeline-item {{
+    padding: 12px 0;
+    border-bottom: 1px dashed #CBD5E0;
+    font-size: 1rem !important;
+    color: #2D3748 !important;
+    font-weight: 500 !important;
+}}
+.timeline-item:last-child {{
+    border-bottom: none;
+}}
 
-    /* Modal para Regalos / Cuenta bancaria */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
+div[data-baseweb="input"] {{
+    background-color: #FFFFFF !important;
+    border: 1px solid #CBD5E0 !important;
+    border-radius: 8px !important;
+}}
 
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      max-width: 90%;
-      width: 380px;
-    }
-  </style>
-</head>
-<body>
+div[data-baseweb="input"] input {{
+    color: #1A202C !important;
+    background-color: #FFFFFF !important;
+}}
 
-  <!-- Reproductor de música de fondo (opcional) -->
-  <audio id="bgMusic" loop>
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-  </audio>
-  <button class="music-btn" onclick="toggleMusic()" id="musicBtn">🎵</button>
+.stRadio label {{
+    color: #2D3748 !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}}
 
-  <div class="container">
+div.stButton > button:first-child {{
+    background-color: #6B7A68 !important;
+    color: #FFFFFF !important;
+    border-radius: 25px !important;
+    border: none !important;
+    padding: 14px 35px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: all 0.3s ease;
+}}
+div.stButton > button:first-child * {{
+    color: #FFFFFF !important;
+}}
+div.stButton > button:first-child:hover {{
+    background-color: #556353 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}}
+
+.welcome-envelope {{
+    background-color: #5B6B58;
+    width: 260px;
+    height: 170px;
+    margin: 15px auto 15px auto;
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 2;
+}}
+
+.seal-initials {{
+    width: 65px;
+    height: 65px;
+    background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 2px solid #F3E5AB;
+}}
+</style>
+""", unsafe_allow_html=True)
+
+# ──────────────────────────────────────────────
+# FUNCIONES AUXILIARES
+# ──────────────────────────────────────────────
+def cargar_regalos():
+    if not CSV_REGALOS.exists():
+        return pd.DataFrame(columns=["Regalo"])
+    return pd.read_csv(CSV_REGALOS)
+
+def cargar_respuestas():
+    if CSV_RESPUESTAS.exists():
+        return pd.read_csv(CSV_RESPUESTAS)
+    return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
+
+def asignar_regalo(nombre):
+    df = cargar_regalos()
+    if df.empty:
+        return "Detalle de boda a elección personal"
+    regalo = random.choice(df["Regalo"].tolist())
+    df = df[df["Regalo"] != regalo]
+    df.to_csv(CSV_REGALOS, index=False)
+    return regalo
+
+# ──────────────────────────────────────────────
+# PASO 1: PANTALLA INICIAL DEL SOBRE
+# ──────────────────────────────────────────────
+if not st.session_state["invitacion_abierta"]:
+    st.markdown("""
+    <div class="invitation-card" style="margin-top: 30px;">
+        <div class="subtitle-cinzel">NUESTRA BODA</div>
+        <div class="welcome-envelope">
+            <div class="seal-initials">C & E</div>
+        </div>
+        <p style="font-size: 0.9rem; color: #6B7A68 !important; margin-top: 10px; font-weight: 500;">
+            Has recibido una invitación especial
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    <!-- Encabezado / Portada -->
-    <div class="hero">
-      <p class="subtitle">¡Nos Casamos! / Mis 15 Años</p>
-      <h1 class="title">María & Juan</h1>
-      <p>Queremos compartir este día tan especial contigo.</p>
+    if st.button("✉️ Click para abrir la invitación"):
+        st.session_state["invitacion_abierta"] = True
+        st.rerun()
+
+# ──────────────────────────────────────────────
+# PASO 2: CONTENIDO DE LA INVITACIÓN
+# ──────────────────────────────────────────────
+else:
+    # 1. HEADER CON NOMBRES
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
+        <div class="title-names">Carlos & Eunice</div>
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; margin-top: 5px;">
+            18 DE JUNIO DE 2027
+        </div>
     </div>
+    """, unsafe_allow_html=True)
 
-    <!-- Cuenta Regresiva -->
-    <div class="card">
-      <p class="countdown-title">FALTAN SÓLO</p>
-      <div class="countdown">
-        <div class="time-box"><span id="days">00</span><label>Días</label></div>
-        <div class="time-box"><span id="hours">00</span><label>Hs</label></div>
-        <div class="time-box"><span id="minutes">00</span><label>Min</label></div>
-        <div class="time-box"><span id="seconds">00</span><label>Seg</label></div>
-      </div>
+    # 2. VERSÍCULO BÍBLICO DE AMOR
+    st.markdown("""
+    <div class="invitation-card verse-card">
+        <p class="verse-text">
+            «El amor es paciente, es bondadoso. Todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser.»
+        </p>
+        <span class="verse-ref">1 CORINTIOS 13:4, 7-8</span>
     </div>
+    """, unsafe_allow_html=True)
 
-    <!-- Fecha y Hora -->
-    <div class="card">
-      <h3>¿Cuándo & Dónde?</h3>
-      <p><strong>Fecha:</strong> Sábado, 15 de Noviembre de 2026</p>
-      <p><strong>Hora:</strong> 18:00 Hs</p>
-      <p style="margin-top: 10px;"><strong>Lugar:</strong> Salón de Eventos "El Paraíso"</p>
-      <p>Av. Principal #123, Ciudad</p>
+    # 3. FOTO INTERACTIVA CON MARCO CORREGIDO Y FLORES EXTERIORES (ESTILO IMAGEN DE REFERENCIA)
+    if img_b64:
+        puzzle_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <style>
+            * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+            body {{
+                background-color: transparent;
+                font-family: 'Montserrat', sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }}
+            .card-container {{
+                background-color: #FFFFFF;
+                border-radius: 20px;
+                padding: 40px 20px 30px 20px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+                border: 1px solid #E8E2D9;
+                text-align: center;
+                width: 100%;
+                max-width: 480px;
+                position: relative;
+                overflow: visible;
+            }}
+            .instructions {{
+                font-size: 13px;
+                color: #6B7A68;
+                margin-bottom: 25px;
+                font-weight: 600;
+                position: relative;
+                z-index: 5;
+            }}
 
-      <a href="https://maps.google.com/?q=-0.180653,-78.467838" target="_blank" class="btn btn-secondary">
-        📍 Ver Ubicación en Google Maps
-      </a>
-      
-      <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda+Maria+y+Juan&dates=20261115T180000Z/20261116T020000Z&details=Invitacion+especial" target="_blank" class="btn btn-outline">
-        📅 Agendar en Google Calendar
-      </a>
+            /* CONTENEDOR RELATIVO PARA POSICIONAR LAS FLORES EXTERIORES ALREDEDOR DEL MARCO */
+            .puzzle-outer-wrapper {{
+                position: relative;
+                width: 320px;
+                height: 320px;
+                margin: 0 auto;
+            }}
+
+            /* MARCO POLIGONAL */
+            .frame-wrapper {{
+                position: relative;
+                width: 310px;
+                height: 310px;
+                margin: 0 auto;
+                padding: 5px;
+                background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 50%, #F3E5AB 100%);
+                clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2;
+            }}
+
+            /* FLORES EXTERIORES: ARRIBA A LA IZQUIERDA */
+            .floral-corner-left {{
+                position: absolute;
+                top: -20px;
+                left: -35px;
+                width: 140px;
+                height: 140px;
+                background-image: url('{flores_src}');
+                background-size: contain;
+                background-repeat: no-repeat;
+                z-index: 4;
+                pointer-events: none;
+            }}
+
+            /* FLORES EXTERIORES: ABAJO A LA DERECHA */
+            .floral-corner-right {{
+                position: absolute;
+                bottom: -20px;
+                right: -35px;
+                width: 140px;
+                height: 140px;
+                background-image: url('{flores_src}');
+                background-size: contain;
+                background-repeat: no-repeat;
+                transform: rotate(180deg);
+                z-index: 4;
+                pointer-events: none;
+            }}
+
+            #puzzle-board {{
+                width: 300px;
+                height: 300px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 2px;
+                background: #FAF6F0;
+                clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
+                position: relative;
+                z-index: 3;
+            }}
+            .tile {{
+                width: 100%;
+                height: 100%;
+                background-image: url('{img_b64}');
+                background-size: 300px 300px;
+                cursor: pointer;
+                transition: transform 0.2s, border 0.2s;
+                border: 1px solid rgba(255,255,255,0.4);
+            }}
+            .tile.selected {{
+                border: 3px solid #D4AF37;
+                transform: scale(0.92);
+            }}
+            .btn-resolve {{
+                margin-top: 25px;
+                background-color: #6B7A68;
+                color: white;
+                border: none;
+                padding: 10px 24px;
+                border-radius: 20px;
+                font-size: 12px;
+                cursor: pointer;
+                font-weight: 600;
+                position: relative;
+                z-index: 5;
+            }}
+            .success-msg {{
+                display: none;
+                color: #4A5A48;
+                font-weight: bold;
+                margin-top: 12px;
+                font-size: 14px;
+                position: relative;
+                z-index: 5;
+            }}
+        </style>
+        </head>
+        <body>
+        <div class="card-container">
+            <div class="instructions">🧩 Haz clic en dos piezas para intercambiarlas y armar la foto</div>
+            
+            <div class="puzzle-outer-wrapper">
+                <div class="floral-corner-left"></div>
+                <div class="floral-corner-right"></div>
+                <div class="frame-wrapper">
+                    <div id="puzzle-board"></div>
+                </div>
+            </div>
+
+            <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
+            <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
+        </div>
+
+        <script>
+            const board = document.getElementById('puzzle-board');
+            const successMsg = document.getElementById('success');
+            let tiles = [];
+            let selectedTile = null;
+
+            const correctPositions = [
+                '0px 0px', '-100px 0px', '-200px 0px',
+                '0px -100px', '-100px -100px', '-200px -100px',
+                '0px -200px', '-100px -200px', '-200px -200px'
+            ];
+
+            let currentPositions = [...correctPositions];
+
+            function shuffle(array) {{
+                for (let i = array.length - 1; i > 0; i--) {{
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }}
+            }}
+
+            function initPuzzle() {{
+                shuffle(currentPositions);
+                renderBoard();
+            }}
+
+            function renderBoard() {{
+                board.innerHTML = '';
+                currentPositions.forEach((pos, index) => {{
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.style.backgroundPosition = pos;
+                    tile.dataset.index = index;
+                    tile.addEventListener('click', () => onTileClick(tile, index));
+                    board.appendChild(tile);
+                }});
+                checkWin();
+            }}
+
+            function onTileClick(tile, index) {{
+                if (selectedTile === null) {{
+                    selectedTile = index;
+                    board.children[index].classList.add('selected');
+                }} else {{
+                    let prevIndex = selectedTile;
+                    let temp = currentPositions[prevIndex];
+                    currentPositions[prevIndex] = currentPositions[index];
+                    currentPositions[index] = temp;
+
+                    selectedTile = null;
+                    renderBoard();
+                }}
+            }}
+
+            function checkWin() {{
+                let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
+                if (isWin) {{
+                    successMsg.style.display = 'block';
+                }}
+            }}
+
+            function autoSolve() {{
+                currentPositions = [...correctPositions];
+                renderBoard();
+            }}
+
+            initPuzzle();
+        </script>
+        </body>
+        </html>
+        """
+        components.html(puzzle_html, height=530)
+
+    # 4. MÚSICA DE FONDO (YOUTUBE)
+    st.markdown("""
+    <div class="invitation-card" style="padding-bottom: 25px; padding-top: 75px;">
+        <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
+    """, unsafe_allow_html=True)
 
-    <!-- Dress Code / Vestimenta -->
-    <div class="card">
-      <h3>Código de Vestimenta</h3>
-      <p><strong>Formal / Elegante</strong></p>
-      <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Nos reservamos el color blanco para la novia.</p>
+    st.video("https://youtu.be/js2MkCAmTJY")
+
+    # 5. PADRES Y PADRINOS
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
+        <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
+            <div>
+                <strong>Padres del Novio</strong><br>Carlos M & Diana ❤️
+            </div>
+            <div>
+                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️
+            </div>
+        </div>
     </div>
+    """, unsafe_allow_html=True)
 
-    <!-- Mesa de Regalos / Cuenta bancaria -->
-    <div class="card">
-      <h3>Mesa de Regalos</h3>
-      <p>Tu presencia es nuestro mejor regalo, pero si deseas realizar un detalle:</p>
-      <button class="btn btn-outline" onclick="openModal()">🎁 Datos Bancarios / Regalo</button>
+    # 6. DÍA Y CALENDARIO
+    st.markdown("""
+    <div class="green-card">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
+        <h2 style="font-size: 2.2rem; margin: 10px 0; color: #FFFFFF !important;">SÁBADO 18 DE JUNIO</h2>
+        <p style="font-size: 0.95rem; opacity: 0.9; color: #FFFFFF !important;">2027 • 16:00 HRS</p>
     </div>
+    """, unsafe_allow_html=True)
 
-    <!-- Confirmación por WhatsApp -->
-    <div class="card">
-      <h3>Confirmación de Asistencia</h3>
-      <p>Por favor, confírmanos tu asistencia antes del 1 de Noviembre.</p>
-      <button onclick="sendRSVP()" class="btn btn-primary">
-        💬 Confirmar Asistencia por WhatsApp
-      </button>
+    # 7. UBICACIÓN Y CEREMONIA
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">⛪ Ceremonia</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;"></p>
+        <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
+        <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
+                📍 Ver ubicación en GPS
+            </div>
+        </a>
     </div>
+    """, unsafe_allow_html=True)
 
-  </div>
-
-  <!-- Modal Datos Bancarios -->
-  <div class="modal" id="bankModal">
-    <div class="modal-content">
-      <h3>Datos Bancarios</h3>
-      <p style="margin-top: 10px;"><strong>Banco:</strong> Banco Pichincha / Guayaquil</p>
-      <p><strong>Tipo de Cuenta:</strong> Ahorros</p>
-      <p><strong>Número:</strong> 1234567890</p>
-      <p><strong>Titular:</strong> Juan Pérez</p>
-      <p><strong>C.I.:</strong> 1712345678</p>
-      <button class="btn btn-secondary" onclick="closeModal()" style="margin-top: 20px;">Cerrar</button>
+    # 8. ITINERARIO
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia</div>
+        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones A Los Recién Casados</div>
+        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
     </div>
-  </div>
+    """, unsafe_allow_html=True)
 
-  <!-- JavaScript -->
-  <script>
-    // 1. Configuración de Fecha del Evento
-    const eventDate = new Date("Nov 15, 2026 18:00:00").getTime();
+    # 9. DRESS CODE & NOTAS
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
+        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 8px;">FORMAL / ELEGANTE</p>
+        <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
+        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    // Cuenta Regresiva
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = eventDate - now;
+    # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
+    st.markdown("""
+    <div class="invitation-card" id="confirmacion">
+        <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
+        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 8px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-      if (distance < 0) {
-        clearInterval(timer);
-        document.querySelector(".countdown").innerHTML = "<b>¡Hoy es el gran día!</b>";
-        return;
-      }
+    # FORMULARIO
+    with st.form("form_invitacion"):
+        nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
+        asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
+        submit = st.form_submit_button("Enviar Confirmación ✉️")
 
-      document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
-      document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
-    }, 1000);
+    if submit:
+        if not nombre.strip():
+            st.error("Por favor ingresa tu nombre.")
+        else:
+            df_resp = cargar_respuestas()
+            if any(nombre.strip().lower() == str(n).strip().lower() for n in df_resp["Nombre"].tolist()):
+                st.warning(f"El nombre {nombre.strip()} ya ha sido registrado previamente.")
+            else:
+                codigo = uuid.uuid4().hex[:8].upper()
+                if asistencia == "¡Sí, allí estaré! 🎉":
+                    regalo = asignar_regalo(nombre.strip())
+                    asiste_val = "Sí"
+                else:
+                    regalo = "N/A"
+                    asiste_val = "No"
 
-    // 2. Reproductor de Música
-    const music = document.getElementById("bgMusic");
-    let isPlaying = false;
+                nueva_fila = pd.DataFrame([{
+                    "Nombre": nombre.strip(),
+                    "Asiste": asiste_val,
+                    "Regalo": regalo,
+                    "Codigo": codigo
+                }])
+                nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
 
-    function toggleMusic() {
-      if (isPlaying) {
-        music.pause();
-        document.getElementById("musicBtn").innerText = "🎵";
-      } else {
-        music.play();
-        document.getElementById("musicBtn").innerText = "⏸️";
-      }
-      isPlaying = !isPlaying;
-    }
+                st.success("¡Respuesta guardada con éxito!")
+                if asiste_val == "Sí":
+                    st.balloons()
+                    st.markdown(f"""
+                    <div class="confirmation-envelope-card">
+                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
+                            <div class="seal-initials" style="width: 45px; height: 45px; font-size: 13px;">✉️</div>
+                        </div>
+                        <h3 style="font-family: 'Great Vibes', cursive !important; font-size: 2.3rem; margin-top: 15px; color: #F3E5AB !important;">
+                            ¡Gracias por confirmar! 💖
+                        </h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; font-weight: 500; margin: 15px 0; color: #FFFFFF !important;">
+                            Te esperamos con ansias para celebrar este hermoso día con nosotros ✨🥂🎉💒
+                        </p>
+                        <hr style="border: 0; border-top: 1px dashed rgba(255,255,255,0.4); margin: 20px 0;">
+                        <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #F3E5AB !important;">
+                            🎁 Sugerencia de Regalo Asignada:
+                        </p>
+                        <h2 style="font-size: 1.8rem; margin: 8px 0; font-family: 'Cinzel', serif !important; color: #FFFFFF !important;">
+                            {regalo}
+                        </h2>
+                        <p style="font-size: 0.8rem; opacity: 0.85; margin-top: 12px; color: #FFFFFF !important;">
+                            Código de Confirmación: <strong>{codigo}</strong>
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.info("Lamentamos que no puedas acompañarnos, ¡agradecemos mucho tu respuesta!")
 
-    // 3. Confirmación por WhatsApp (Cambia el número de teléfono con tu código de país)
-    function sendRSVP() {
-      const phone = "593999999999"; // Ejemplo: Ecuador (+593), México (+52), Colombia (+57)
-      const text = encodeURIComponent("¡Hola! Confirmo mi asistencia para el evento. ¡Muchas gracias por la invitación! 🎉");
-      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
-    }
-
-    // 4. Abrir y Cerrar Modal
-    function openModal() { document.getElementById("bankModal").style.display = "flex"; }
-    function closeModal() { document.getElementById("bankModal").style.display = "none"; }
-  </script>
-</body>
-</html>
+    # ADMIN PANEL
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    with st.expander("📊 Panel Admin (Ver invitados)"):
+        df_ver = cargar_respuestas()
+        if not df_ver.empty:
+            st.dataframe(df_ver, use_container_width=True)
+        else:
+            st.caption("Aún no hay respuestas.")
