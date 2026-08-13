@@ -20,7 +20,7 @@ if "invitacion_abierta" not in st.session_state:
     st.session_state["invitacion_abierta"] = False
 
 # ──────────────────────────────────────────────
-# RUTAS DE ARCHIVOS
+# RUTAS DE ARCHIVOS LOCALES
 # ──────────────────────────────────────────────
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
@@ -40,7 +40,7 @@ img_b64 = get_image_base64(IMAGEN_HEADER)
 flores_b64 = get_image_base64(IMAGEN_FLORES)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS
+# ESTILOS CSS CON FLORES Y CORAZONES
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -65,13 +65,13 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
-/* TARJETA PRINCIPAL Y BORDES CON FLORES */
+/* TARJETA CON MARGEN FLORES ROSADAS Y SOMBRA ELEGANTE */
 .invitation-card, .dress-card {{
     background-color: #FFFFFF !important;
-    border-radius: 20px;
-    padding: 80px 25px 80px 25px;
+    border-radius: 25px;
+    padding: 85px 25px 85px 25px;
     margin: 20px auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 15px 35px rgba(107, 122, 104, 0.12);
     border: 1px solid #E8E2D9;
     text-align: center;
     position: relative;
@@ -81,11 +81,11 @@ html, body, [class*="css"] {{
 .invitation-card::before, .dress-card::before {{
     content: "";
     position: absolute;
-    top: 10px;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 290px;
-    height: 75px;
+    width: 320px;
+    height: 85px;
     background-image: url("{flores_b64}");
     background-size: contain;
     background-position: center top;
@@ -97,11 +97,11 @@ html, body, [class*="css"] {{
 .invitation-card::after, .dress-card::after {{
     content: "";
     position: absolute;
-    bottom: 10px;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 290px;
-    height: 75px;
+    width: 320px;
+    height: 85px;
     background-image: url("{flores_b64}");
     background-size: contain;
     background-position: center top;
@@ -117,28 +117,29 @@ html, body, [class*="css"] {{
 
 .title-names {{
     font-family: 'Great Vibes', cursive !important;
-    font-size: 3.8rem !important;
+    font-size: 4rem !important;
     color: #4A5A48 !important;
     margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
 }}
 
 .welcome-envelope {{
-    background-color: #FAF6F0;
-    width: 220px;
-    height: 140px;
+    background: linear-gradient(145deg, #FAF6F0 0%, #F5EFE6 100%);
+    width: 230px;
+    height: 145px;
     margin: 20px auto;
-    border-radius: 12px;
+    border-radius: 15px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     border: 1px solid #E8E2D9;
 }}
 
 .seal-initials {{
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
     border-radius: 50%;
     display: flex;
@@ -146,33 +147,38 @@ html, body, [class*="css"] {{
     justify-content: center;
     color: white !important;
     font-family: 'Cinzel', serif !important;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 15px rgba(170, 124, 17, 0.3);
 }}
 
-/* BOTÓN ELEGANTE */
+/* BOTÓN DORADO/VERDE ELEGANTE */
 div.stButton > button:first-child {{
-    background: linear-gradient(135deg, #6B7A68 0%, #4A5A48 100%) !important;
+    background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%) !important;
     color: #FFFFFF !important;
-    border-radius: 25px !important;
+    border-radius: 30px !important;
     border: none !important;
-    padding: 12px 30px !important;
-    font-size: 1rem !important;
-    font-weight: 500 !important;
+    padding: 14px 35px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
     letter-spacing: 1px;
     width: 100%;
-    box-shadow: 0 4px 12px rgba(74, 90, 72, 0.2);
-    margin-top: 10px;
+    max-width: 300px;
+    margin: 15px auto 0 auto;
+    display: block;
+    box-shadow: 0 6px 20px rgba(170, 124, 17, 0.25);
+    transition: all 0.3s ease;
 }}
+
 div.stButton > button:first-child:hover {{
-    background: linear-gradient(135deg, #586655 0%, #394637 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(170, 124, 17, 0.35);
 }}
 </style>
 """, unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────
-# FUNCIONES AUXILIARES DE DATOS
+# FUNCIONES DE DATOS
 # ──────────────────────────────────────────────
 def cargar_respuestas():
     if CSV_RESPUESTAS.exists():
@@ -210,7 +216,6 @@ def obtener_apellido(nombre_completo):
     return partes[-1] if len(partes) > 1 else partes[0]
 
 def reorganizar_mesas_alfabetico(df):
-    """Ordena los asistentes por apellido y asigna mesas del 1 al 6 dinámicamente."""
     if df.empty:
         return df
     
@@ -218,7 +223,6 @@ def reorganizar_mesas_alfabetico(df):
     if asistentes.empty:
         return df
 
-    # Ordenar A-Z por apellido
     asistentes["Apellido_Tmp"] = asistentes["Nombre"].apply(obtener_apellido)
     asistentes = asistentes.sort_values(by="Apellido_Tmp", key=lambda col: col.str.lower()).reset_index(drop=True)
     
@@ -231,25 +235,31 @@ def reorganizar_mesas_alfabetico(df):
     return df
 
 # ──────────────────────────────────────────────
-# PANTALLA INICIAL (PORTADA)
+# PANTALLA INICIAL (PORTADA DECORADA)
 # ──────────────────────────────────────────────
 if not st.session_state["invitacion_abierta"]:
     st.markdown("""
-    <div class="invitation-card" style="margin-top: 20px;">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 0.9rem; text-transform: uppercase; color: #6B7A68 !important;">
-            Nuestra Boda
+    <div class="invitation-card" style="margin-top: 15px;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 4px; font-size: 0.95rem; text-transform: uppercase; color: #6B7A68 !important; font-weight: 600;">
+            ✨ ¡Nuestra Boda! ✨
         </div>
         <div class="title-names">Carlos & Eunice</div>
+        <p style="font-size: 1.2rem; margin: -10px 0 10px 0;">💖 🕊️ 💖</p>
+        
         <div class="welcome-envelope">
             <div class="seal-initials">C & E</div>
         </div>
-        <p style="font-size: 0.95rem; color: #6B7A68 !important; margin-top: 15px; font-weight: 500;">
-            Has recibido una invitación especial
+        
+        <p style="font-size: 1rem; color: #6B7A68 !important; margin-top: 15px; font-weight: 600;">
+            Has recibido una invitación muy especial
+        </p>
+        <p style="font-size: 0.85rem; color: #8A9A88 !important; font-style: italic;">
+            Haz clic abajo para abrir tu sobre
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("✉️ Abrir Invitación"):
+    if st.button("✉️ Abrir Invitación ✨"):
         st.session_state["invitacion_abierta"] = True
         st.rerun()
 
@@ -260,8 +270,9 @@ else:
     # 1. NOMBRES Y FECHA
     st.markdown("""
     <div class="invitation-card">
+        <div style="font-size: 1.3rem;">🌸 💖 🌸</div>
         <div class="title-names">Carlos & Eunice</div>
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; font-size: 1.1rem; margin-top: 10px;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; color: #6B7A68 !important; font-weight: 600; font-size: 1.1rem; margin-top: 10px;">
             18 DE JUNIO DE 2027
         </div>
     </div>
@@ -271,14 +282,14 @@ else:
     if IMAGEN_HEADER.exists():
         st.markdown(f"""
         <div class="invitation-card">
-            <img src="{img_b64}" style="width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+            <img src="{img_b64}" style="width: 100%; max-width: 500px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
         </div>
         """, unsafe_allow_html=True)
 
     # 3. MÚSICA
     st.markdown("""
     <div class="invitation-card" style="padding-bottom: 25px;">
-        <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 5px;">🎵 Escucha nuestra canción</p>
+        <p style="font-size: 1rem; font-weight: 600; margin-bottom: 5px;">🎵 Escucha nuestra canción de amor 💕</p>
     </div>
     """, unsafe_allow_html=True)
     st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
@@ -313,7 +324,7 @@ else:
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
-            Confirmar Asistencia
+            💌 Confirmar Asistencia
         </div>
         <p style="font-size: 0.88rem; margin-top: 10px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
     </div>
@@ -350,22 +361,19 @@ else:
                     "Mesa": mesa_asistente
                 }])
                 df_actualizado = pd.concat([df_resp, nueva_fila], ignore_index=True)
-                
-                # Reorganizar automáticamente por apellido A-Z
                 df_actualizado = reorganizar_mesas_alfabetico(df_actualizado)
                 guardar_respuestas(df_actualizado)
 
                 st.success("¡Respuesta guardada con éxito!")
                 st.balloons()
 
-    # 7. PANEL ADMIN INTERACTIVO (DISTRIBUCIÓN REAL A-Z)
+    # 7. PANEL ADMIN INTERACTIVO
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
         df_ver = cargar_respuestas()
         
         st.write("### 🗺️ Distribución Interactiva del Salón (A-Z por Apellido)")
         
-        # Agrupar nombres por mesa
         mesas_dict = {f"Mesa {i}": [] for i in range(1, 7)}
         if not df_ver.empty:
             for _, row in df_ver[df_ver["Asiste"] == "Sí"].iterrows():
@@ -390,7 +398,7 @@ else:
             .salon-container {{ display: flex; flex-direction: column; align-items: center; gap: 20px; }}
             .separated-section {{
                 width: 100%; display: flex; justify-content: space-around;
-                padding: 15px; border: 2px dashed #D4AF37; border-radius: 15px; background: rgba(255, 255, 255, 0.8);
+                padding: 15px; border: 2px dashed #D4AF37; border-radius: 15px; background: rgba(255, 255, 255, 0.85);
             }}
             .square-table {{
                 width: 130px; min-height: 110px; background: #FFFFFF;
