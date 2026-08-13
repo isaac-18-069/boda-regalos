@@ -8,7 +8,7 @@ import streamlit.components.v1 as components
 import io
 
 # ──────────────────────────────────────────────
-# CONFIGURACIÓN DE LA PÁGINA Y TEMA
+# CONFIGURACIÓN DE LA PÁGINA
 # ──────────────────────────────────────────────
 st.set_page_config(
     page_title="Carlos & Eunice 💍", 
@@ -20,7 +20,7 @@ if "invitacion_abierta" not in st.session_state:
     st.session_state["invitacion_abierta"] = False
 
 # ──────────────────────────────────────────────
-# ARCHIVOS Y RUTAS LOCALES
+# RUTAS DE ARCHIVOS
 # ──────────────────────────────────────────────
 CSV_REGALOS = Path("regalos.csv")
 CSV_RESPUESTAS = Path("respuestas.csv")
@@ -40,11 +40,11 @@ img_b64 = get_image_base64(IMAGEN_HEADER)
 flores_b64 = get_image_base64(IMAGEN_FLORES)
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS CON TUS FLORES Y TEXTO CLARO
+# ESTILOS CSS CORREGIDOS
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap');
 
 .stApp {{
     background-color: #FAF6F0 !important;
@@ -56,9 +56,8 @@ p, span, div, h1, h2, h3, h4, h5, h6 {{
     color: #4A5A48 !important;
 }}
 
-/* COLOR CLARO AL ESCRIBIR EN LOS CAMPOS */
 input, textarea, [data-baseweb="input"] input, [data-baseweb="textarea"] textarea {{
-    color: #6B7A68 !important;
+    color: #4A5A48 !important;
     font-weight: 600 !important;
 }}
 
@@ -66,27 +65,27 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
+/* TARJETA PRINCIPAL Y BORDES CON FLORES */
 .invitation-card, .dress-card {{
-    background-color: rgba(255, 255, 255, 0.95) !important;
+    background-color: #FFFFFF !important;
     border-radius: 20px;
-    padding: 85px 25px 85px 25px;
-    margin: 35px auto;
-    box-shadow: 0 10px 30px rgba(107, 122, 104, 0.1);
+    padding: 80px 25px 80px 25px;
+    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     border: 1px solid #E8E2D9;
     text-align: center;
     position: relative;
     overflow: hidden;
 }}
 
-/* MARGEN CON TU IMAGEN REAL DE FLORES ROSADAS */
 .invitation-card::before, .dress-card::before {{
     content: "";
     position: absolute;
-    top: 5px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 320px;
-    height: 80px;
+    width: 290px;
+    height: 75px;
     background-image: url("{flores_b64}");
     background-size: contain;
     background-position: center top;
@@ -98,11 +97,11 @@ html, body, [class*="css"] {{
 .invitation-card::after, .dress-card::after {{
     content: "";
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%) rotate(180deg);
-    width: 320px;
-    height: 80px;
+    width: 290px;
+    height: 75px;
     background-image: url("{flores_b64}");
     background-size: contain;
     background-position: center top;
@@ -116,17 +115,6 @@ html, body, [class*="css"] {{
     z-index: 2;
 }}
 
-.green-card {{
-    background-color: #6B7A68 !important;
-    border-radius: 20px;
-    padding: 35px 25px;
-    margin: 25px auto;
-    text-align: center;
-}}
-.green-card * {{
-    color: #FFFFFF !important;
-}}
-
 .title-names {{
     font-family: 'Great Vibes', cursive !important;
     font-size: 3.8rem !important;
@@ -136,20 +124,21 @@ html, body, [class*="css"] {{
 
 .welcome-envelope {{
     background-color: #FAF6F0;
-    width: 260px;
-    height: 170px;
-    margin: 15px auto;
+    width: 220px;
+    height: 140px;
+    margin: 20px auto;
     border-radius: 12px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    border: 1px solid #E8E2D9;
 }}
 
 .seal-initials {{
-    width: 65px;
-    height: 65px;
+    width: 60px;
+    height: 60px;
     background: radial-gradient(circle, #D4AF37 0%, #AA7C11 100%);
     border-radius: 50%;
     display: flex;
@@ -157,19 +146,27 @@ html, body, [class*="css"] {{
     justify-content: center;
     color: white !important;
     font-family: 'Cinzel', serif !important;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }}
 
+/* BOTÓN ELEGANTE */
 div.stButton > button:first-child {{
-    background-color: #6B7A68 !important;
+    background: linear-gradient(135deg, #6B7A68 0%, #4A5A48 100%) !important;
     color: #FFFFFF !important;
     border-radius: 25px !important;
     border: none !important;
-    padding: 14px 35px !important;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
+    padding: 12px 30px !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 1px;
     width: 100%;
+    box-shadow: 0 4px 12px rgba(74, 90, 72, 0.2);
+    margin-top: 10px;
+}}
+div.stButton > button:first-child:hover {{
+    background: linear-gradient(135deg, #586655 0%, #394637 100%) !important;
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -209,33 +206,37 @@ def convertir_excel(df):
     return output.getvalue()
 
 # ──────────────────────────────────────────────
-# PANTALLA INICIAL
+# PANTALLA INICIAL (PORTADA)
 # ──────────────────────────────────────────────
 if not st.session_state["invitacion_abierta"]:
     st.markdown("""
-    <div class="invitation-card" style="margin-top: 30px;">
+    <div class="invitation-card" style="margin-top: 20px;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 0.9rem; text-transform: uppercase; color: #6B7A68 !important;">
+            Nuestra Boda
+        </div>
+        <div class="title-names">Carlos & Eunice</div>
         <div class="welcome-envelope">
             <div class="seal-initials">C & E</div>
         </div>
-        <p style="font-size: 0.9rem; color: #6B7A68 !important; margin-top: 10px; font-weight: 500;">
+        <p style="font-size: 0.95rem; color: #6B7A68 !important; margin-top: 15px; font-weight: 500;">
             Has recibido una invitación especial
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("✉️ Click para abrir la invitación"):
+    if st.button("✉️ Abrir Invitación"):
         st.session_state["invitacion_abierta"] = True
         st.rerun()
 
 # ──────────────────────────────────────────────
-# CONTENIDO DE LA INVITACIÓN
+# CONTENIDO INTERNO DE LA INVITACIÓN
 # ──────────────────────────────────────────────
 else:
-    # 1. NOMBRES
+    # 1. NOMBRES Y FECHA
     st.markdown("""
     <div class="invitation-card">
         <div class="title-names">Carlos & Eunice</div>
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; color: #6B7A68 !important; font-weight: 600; font-size: 1.1rem; margin-top: 10px;">
             18 DE JUNIO DE 2027
         </div>
     </div>
@@ -245,14 +246,14 @@ else:
     if IMAGEN_HEADER.exists():
         st.markdown(f"""
         <div class="invitation-card">
-            <img src="{img_b64}" style="width: 100%; max-width: 500px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="{img_b64}" style="width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         </div>
         """, unsafe_allow_html=True)
 
     # 3. MÚSICA
     st.markdown("""
-    <div class="invitation-card" style="padding-bottom: 30px;">
-        <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
+    <div class="invitation-card" style="padding-bottom: 25px;">
+        <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 5px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
     st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
@@ -260,7 +261,7 @@ else:
     # 4. PADRES DE LOS NOVIOS
     st.markdown("""
     <div class="invitation-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; font-weight: 600; text-transform: uppercase;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
             Con la bendición de Dios y nuestros padres
         </div>
         <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 20px;">
@@ -273,12 +274,12 @@ else:
     # 5. DRESS CODE
     st.markdown("""
     <div class="dress-card">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; font-weight: 600; text-transform: uppercase;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
             👗 Código de Vestimenta
         </div>
         <p style="font-size: 1.1rem; font-weight: 600; margin-top: 10px;">FORMAL / ELEGANTE</p>
         <p style="font-size: 0.85rem;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
-        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
+        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E8E2D9;">
         <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
     </div>
     """, unsafe_allow_html=True)
@@ -286,10 +287,10 @@ else:
     # 6. FORMULARIO DE CONFIRMACIÓN
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
-        <div style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem; font-weight: 600; text-transform: uppercase;">
+        <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 1rem; font-weight: 600; text-transform: uppercase;">
             Confirmar Asistencia
         </div>
-        <p style="font-size: 0.9rem; margin-top: 10px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
+        <p style="font-size: 0.88rem; margin-top: 10px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -329,14 +330,13 @@ else:
                 st.success("¡Respuesta guardada con éxito!")
                 st.balloons()
 
-    # 7. PANEL ADMIN (DISTRIBUCIÓN: 2 MESAS CUADRADAS APARTADAS + 4 MESAS REDONDAS)
+    # 7. PANEL ADMIN (2 CUADRADAS + 4 REDONDAS)
     st.markdown("<br><br>", unsafe_allow_html=True)
     with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
         df_ver = cargar_respuestas()
         
         st.write("### 🗺️ Distribución del Salón")
         
-        # CROQUIS DEL SALÓN: 2 CUADRADAS APARTADAS + 4 REDONDAS
         salon_html = """
         <!DOCTYPE html>
         <html>
@@ -344,11 +344,7 @@ else:
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Cinzel:wght@600&display=swap');
             body { font-family: 'Montserrat', sans-serif; background: transparent; margin:0; padding:10px; }
-            
-            /* CONTENEDOR GENERAL */
             .salon-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-
-            /* SECCIÓN ARRIBA: 2 MESAS CUADRADAS SEPARADAS/APARTADAS */
             .separated-section {
                 width: 100%; display: flex; justify-content: space-around;
                 padding: 15px; border: 2px dashed #D4AF37; border-radius: 15px; background: rgba(255, 255, 255, 0.6);
@@ -359,8 +355,6 @@ else:
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.06); text-align: center; padding: 5px;
             }
-
-            /* SECCIÓN ABAJO: 4 MESAS REDONDAS EN CUADRÍCULA */
             .round-section {
                 display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 10px;
             }
@@ -370,14 +364,12 @@ else:
                 align-items: center; justify-content: center;
                 text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 5px;
             }
-
             .table-title { font-family: 'Cinzel', serif; font-size: 11px; font-weight: bold; color: #4A5A48; }
             .badge { font-size: 9px; color: #6B7A68; margin-top: 3px; font-weight: 600; }
         </style>
         </head>
         <body>
             <div class="salon-container">
-                <!-- 2 MESAS CUADRADAS APARTADAS -->
                 <div class="separated-section">
                     <div class="square-table">
                         <div class="table-title">Mesa 1</div>
@@ -389,7 +381,6 @@ else:
                     </div>
                 </div>
 
-                <!-- 4 MESAS REDONDAS PRINCIPALES -->
                 <div class="round-section">
                     <div class="round-table">
                         <div class="table-title">Mesa 3</div>
@@ -414,7 +405,6 @@ else:
         """
         components.html(salon_html, height=420)
 
-        # SECCIÓN DE ASIGNACIÓN Y LISTADO DE INVITADOS
         if not df_ver.empty:
             st.write("### Asignación de Mesas")
             invitados_lista = df_ver[df_ver["Asiste"] == "Sí"]["Nombre"].tolist()
