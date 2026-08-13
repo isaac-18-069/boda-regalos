@@ -15,6 +15,7 @@ st.set_page_config(
     layout="centered"
 )
 
+# Control de estado de la sesión para el sobre de la invitación
 if "invitacion_abierta" not in st.session_state:
     st.session_state["invitacion_abierta"] = False
 
@@ -34,10 +35,11 @@ def get_image_base64(path_local):
 
 img_b64 = get_image_base64(IMAGEN_HEADER)
 
+# Ilustración floral SVG pura (garantiza cero bordes, recortes o marcos adicionales)
 SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5-30-2-40 5-5 3-8 7-10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9 13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4-6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
 
 # ──────────────────────────────────────────────
-# ESTILOS CSS
+# ESTILOS CSS CORREGIDOS
 # ──────────────────────────────────────────────
 st.markdown(f"""
 <style>
@@ -57,6 +59,7 @@ html, body, [class*="css"] {{
     font-family: 'Montserrat', sans-serif !important;
 }}
 
+/* TARJETAS CON ESPACIO CORRECTO */
 .invitation-card {{
     background-color: rgba(255, 255, 255, 0.95) !important;
     border-radius: 20px;
@@ -69,6 +72,7 @@ html, body, [class*="css"] {{
     overflow: hidden;
 }}
 
+/* FLORES ARRIBA DE CADA TARJETA */
 .invitation-card::before {{
     content: "";
     position: absolute;
@@ -86,6 +90,7 @@ html, body, [class*="css"] {{
     z-index: 1;
 }}
 
+/* FLORES ABAJO DE CADA TARJETA */
 .invitation-card::after {{
     content: "";
     position: absolute;
@@ -183,6 +188,9 @@ html, body, [class*="css"] {{
     color: #2D3748 !important;
     font-weight: 500 !important;
 }}
+.timeline-item:last-child {{
+    border-bottom: none;
+}}
 
 div[data-baseweb="input"] {{
     background-color: #FFFFFF !important;
@@ -215,6 +223,10 @@ div.stButton > button:first-child {{
 }}
 div.stButton > button:first-child * {{
     color: #FFFFFF !important;
+}}
+div.stButton > button:first-child:hover {{
+    background-color: #556353 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }}
 
 .welcome-envelope {{
@@ -250,7 +262,7 @@ div.stButton > button:first-child * {{
 """, unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────
-# FUNCIONES AUXILIARES DE DATOS
+# FUNCIONES AUXILIARES
 # ──────────────────────────────────────────────
 def cargar_regalos():
     if not CSV_REGALOS.exists():
@@ -259,11 +271,8 @@ def cargar_regalos():
 
 def cargar_respuestas():
     if CSV_RESPUESTAS.exists():
-        df = pd.read_csv(CSV_RESPUESTAS)
-        if "Mesa" not in df.columns:
-            df["Mesa"] = "Mesa 1"
-        return df
-    return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo", "Mesa"])
+        return pd.read_csv(CSV_RESPUESTAS)
+    return pd.DataFrame(columns=["Nombre", "Asiste", "Regalo", "Codigo"])
 
 def asignar_regalo(nombre):
     df = cargar_regalos()
@@ -273,9 +282,6 @@ def asignar_regalo(nombre):
     df = df[df["Regalo"] != regalo]
     df.to_csv(CSV_REGALOS, index=False)
     return regalo
-
-def guardar_respuestas(df):
-    df.to_csv(CSV_RESPUESTAS, index=False)
 
 # ──────────────────────────────────────────────
 # PASO 1: PANTALLA INICIAL DEL SOBRE
@@ -301,7 +307,7 @@ if not st.session_state["invitacion_abierta"]:
 # PASO 2: CONTENIDO DE LA INVITACIÓN
 # ──────────────────────────────────────────────
 else:
-    # 1. HEADER
+    # 1. HEADER CON NOMBRES
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel">NUESTRA BODA 💍</div>
@@ -312,7 +318,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. VERSÍCULO
+    # 2. VERSÍCULO BÍBLICO DE AMOR
     st.markdown("""
     <div class="invitation-card verse-card">
         <p class="verse-text">
@@ -322,7 +328,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. FOTO / PUZZLE
+    # 3. FOTO INTERACTIVA CON MARCO Y DETALLES FLORALES
     if img_b64:
         puzzle_html = f"""
         <!DOCTYPE html>
@@ -347,19 +353,25 @@ else:
                 text-align: center;
                 width: 100%;
                 max-width: 480px;
+                position: relative;
+                overflow: visible;
             }}
             .instructions {{
                 font-size: 13px;
                 color: #6B7A68;
                 margin-bottom: 25px;
                 font-weight: 600;
+                position: relative;
+                z-index: 5;
             }}
+
             .puzzle-outer-wrapper {{
                 position: relative;
                 width: 320px;
                 height: 320px;
                 margin: 0 auto;
             }}
+
             .frame-wrapper {{
                 position: relative;
                 width: 310px;
@@ -371,7 +383,39 @@ else:
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                z-index: 2;
             }}
+
+            /* DETALLE FLORAL SUPERIOR IZQUIERDO DEL MARCO */
+            .floral-corner-left {{
+                position: absolute;
+                top: -20px;
+                left: -20px;
+                width: 110px;
+                height: 110px;
+                background-image: url("{SVG_FLORES}");
+                background-size: contain;
+                background-repeat: no-repeat;
+                transform: rotate(-35deg);
+                z-index: 4;
+                pointer-events: none;
+            }}
+
+            /* DETALLE FLORAL INFERIOR DERECHO DEL MARCO */
+            .floral-corner-right {{
+                position: absolute;
+                bottom: -20px;
+                right: -20px;
+                width: 110px;
+                height: 110px;
+                background-image: url("{SVG_FLORES}");
+                background-size: contain;
+                background-repeat: no-repeat;
+                transform: rotate(145deg);
+                z-index: 4;
+                pointer-events: none;
+            }}
+
             #puzzle-board {{
                 width: 300px;
                 height: 300px;
@@ -381,6 +425,8 @@ else:
                 gap: 2px;
                 background: #FAF6F0;
                 clip-path: polygon(50% 0%, 100% 18%, 100% 82%, 50% 100%, 0% 82%, 0% 18%);
+                position: relative;
+                z-index: 3;
             }}
             .tile {{
                 width: 100%;
@@ -388,6 +434,8 @@ else:
                 background-image: url('{img_b64}');
                 background-size: 300px 300px;
                 cursor: pointer;
+                transition: transform 0.2s, border 0.2s;
+                border: 1px solid rgba(255,255,255,0.4);
             }}
             .tile.selected {{
                 border: 3px solid #D4AF37;
@@ -403,81 +451,134 @@ else:
                 font-size: 12px;
                 cursor: pointer;
                 font-weight: 600;
+                position: relative;
+                z-index: 5;
+            }}
+            .success-msg {{
+                display: none;
+                color: #4A5A48;
+                font-weight: bold;
+                margin-top: 12px;
+                font-size: 14px;
+                position: relative;
+                z-index: 5;
             }}
         </style>
         </head>
         <body>
         <div class="card-container">
-            <div class="instructions">🧩 Haz clic en dos piezas para intercambiarlas</div>
+            <div class="instructions">🧩 Haz clic en dos piezas para intercambiarlas y armar la foto</div>
+            
             <div class="puzzle-outer-wrapper">
+                <div class="floral-corner-left"></div>
+                <div class="floral-corner-right"></div>
                 <div class="frame-wrapper">
                     <div id="puzzle-board"></div>
                 </div>
             </div>
+
             <button class="btn-resolve" onclick="autoSolve()">✨ Armar automáticamente</button>
+            <div id="success" class="success-msg">🎉 ¡Nuestra foto está lista! ❤️</div>
         </div>
+
         <script>
             const board = document.getElementById('puzzle-board');
+            const successMsg = document.getElementById('success');
             let tiles = [];
             let selectedTile = null;
+
             const correctPositions = [
                 '0px 0px', '-100px 0px', '-200px 0px',
                 '0px -100px', '-100px -100px', '-200px -100px',
                 '0px -200px', '-100px -200px', '-200px -200px'
             ];
+
             let currentPositions = [...correctPositions];
+
             function shuffle(array) {{
                 for (let i = array.length - 1; i > 0; i--) {{
                     const j = Math.floor(Math.random() * (i + 1));
-                    [array[i]], array[j] = [array[j], array[i]];
+                    [array[i], array[j]] = [array[j], array[i]];
                 }}
             }}
+
             function initPuzzle() {{
                 shuffle(currentPositions);
                 renderBoard();
             }}
+
             function renderBoard() {{
                 board.innerHTML = '';
                 currentPositions.forEach((pos, index) => {{
                     const tile = document.createElement('div');
                     tile.className = 'tile';
                     tile.style.backgroundPosition = pos;
+                    tile.dataset.index = index;
                     tile.addEventListener('click', () => onTileClick(tile, index));
                     board.appendChild(tile);
                 }});
+                checkWin();
             }}
+
             function onTileClick(tile, index) {{
                 if (selectedTile === null) {{
                     selectedTile = index;
                     board.children[index].classList.add('selected');
                 }} else {{
-                    let temp = currentPositions[selectedTile];
-                    currentPositions[selectedTile] = currentPositions[index];
+                    let prevIndex = selectedTile;
+                    let temp = currentPositions[prevIndex];
+                    currentPositions[prevIndex] = currentPositions[index];
                     currentPositions[index] = temp;
+
                     selectedTile = null;
                     renderBoard();
                 }}
             }}
+
+            function checkWin() {{
+                let isWin = currentPositions.every((val, i) => val === correctPositions[i]);
+                if (isWin) {{
+                    successMsg.style.display = 'block';
+                }}
+            }}
+
             function autoSolve() {{
                 currentPositions = [...correctPositions];
                 renderBoard();
             }}
+
             initPuzzle();
         </script>
         </body>
         </html>
         """
-        components.html(puzzle_html, height=500)
+        components.html(puzzle_html, height=530)
 
-    # 4. MÚSICA
+    # 4. MÚSICA DE FONDO (YOUTUBE)
     st.markdown("""
     <div class="invitation-card" style="padding: 50px 25px 20px 25px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
+
     st.video("https://youtu.be/js2MkCAmTJY")
 
-    # 5. DÍA Y LUGAR
+    # 5. PADRES Y PADRINOS
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
+        <div style="display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 10px;">
+            <div>
+                <strong>Padres del Novio</strong><br>Carlos M & Diana ❤️
+            </div>
+            <div>
+                <strong>Padres de la Novia</strong><br>Emilio M & Pricila C ❤️
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 6. DÍA Y CALENDARIO
     st.markdown("""
     <div class="green-card">
         <div style="font-family: 'Cinzel', serif; letter-spacing: 2px; font-size: 0.9rem;">EL GRAN DÍA</div>
@@ -486,148 +587,51 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 6. ORGANIZACIÓN DEL SALÓN Y MESAS (NUEVA SECCIÓN)
+    # 7. UBICACIÓN Y CEREMONIA
     st.markdown("""
-    <div class="invitation-card" id="mesas">
-        <div class="subtitle-cinzel">🍽️ ORGANIZACIÓN DEL SALÓN</div>
-        <p style="font-size: 0.88rem; color: #6B7A68 !important; margin-top: 5px;">
-            Consulta la mesa asignada para tu lugar en la recepción
-        </p>
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">⛪ Ceremonia</div>
+        <p style="margin-top: 8px; font-weight: 600; font-size: 1rem;"></p>
+        <p style="font-size: 0.9rem; color: #4A5568 !important;">16:00 HRS</p>
+        <a href="https://maps.google.com" target="_blank" style="text-decoration: none;">
+            <div style="background-color: #E2E8F0; color: #2D3748 !important; padding: 8px 15px; border-radius: 15px; display: inline-block; font-size: 0.85rem; margin-top: 5px; font-weight: 500; position:relative; z-index:2;">
+                📍 Ver ubicación en GPS
+            </div>
+        </a>
     </div>
     """, unsafe_allow_html=True)
 
-    df_invitados = cargar_respuestas()
-    
-    # Buscador de mesa por nombre
-    busqueda_nombre = st.text_input("🔍 Ingresa tu nombre para buscar tu mesa:", placeholder="Ej: María López")
-    
-    if busqueda_nombre.strip():
-        coincidencias = df_invitados[df_invitados["Nombre"].str.lower().str.contains(busqueda_nombre.strip().lower(), na=False)]
-        if not coincidencias.empty:
-            for idx, row in coincidencias.iterrows():
-                mesa = row.get("Mesa", "Mesa 1")
-                st.success(f"📍 **{row['Nombre']}**, estás en la **{mesa}**.")
-        else:
-            st.info("No se encontró tu nombre en la lista confirmada. Si te acabas de registrar, la asignación se actualizará pronto.")
+    # 8. ITINERARIO
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel" style="margin-bottom: 15px;">Itinerario de Actividades</div>
+        <div class="timeline-item">⛪ 16:00 hrs — Ceremonia</div>
+        <div class="timeline-item">🥂 20:00 hrs — Bienvenida y Felicitaciones A Los Recién Casados</div>
+        <div class="timeline-item">🍽️ 20:30 hrs — Cena de Gala</div>
+        <div class="timeline-item" style="border-bottom:none;">💃 21:30 hrs — Fiesta y Baile</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Visualización gráfica interactiva del mapa de salón
-    st.write("")
-    if st.checkbox("🗺️ Ver Mapa Completo del Salón", value=True):
-        # Agrupar invitados por mesa
-        confirmados = df_invitados[df_invitados["Asiste"] == "Sí"] if not df_invitados.empty else pd.DataFrame()
-        
-        mesas_dict = {}
-        # Inicializar mesas base
-        for i in range(1, 7):
-            mesas_dict[f"Mesa {i}"] = []
-        mesas_dict["Mesa Presidencial"] = ["Carlos (Novio)", "Eunice (Novia)"]
+    # 9. DRESS CODE & NOTAS
+    st.markdown("""
+    <div class="invitation-card">
+        <div class="subtitle-cinzel">👗 Código de Vestimenta</div>
+        <p style="font-size: 1.1rem; font-weight: 600; color: #4A5A48 !important; margin-top: 8px;">FORMAL / ELEGANTE</p>
+        <p style="font-size: 0.85rem; color: #4A5568 !important;">Reservamos el color blanco para la novia y el verde oliva para el cortejo.</p>
+        <hr style="margin: 15px 0; border: none; border-top: 1px solid #E2E8F0;">
+        <p style="font-size: 0.9rem; font-weight: 600;">🔞 Evento de Adultos (Sin Niños)</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-        if not confirmados.empty:
-            for _, row in confirmados.iterrows():
-                m = row.get("Mesa", "Mesa 1")
-                if m not in mesas_dict:
-                    mesas_dict[m] = []
-                mesas_dict[m].append(row["Nombre"])
-
-        # Generar HTML del Mapa Interactivo tipo Bodas.net
-        html_mesas = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <style>
-            .salon-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                gap: 25px;
-                padding: 15px;
-                background-color: #F7F5F0;
-                border-radius: 15px;
-                border: 1px solid #E2E8F0;
-            }
-            .table-card {
-                background: white;
-                border-radius: 50%;
-                width: 200px;
-                height: 200px;
-                margin: 0 auto;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-                border: 2px solid #A3B18A;
-            }
-            .table-center {
-                text-align: center;
-                z-index: 2;
-            }
-            .table-title {
-                font-family: 'Cinzel', serif;
-                font-weight: bold;
-                font-size: 13px;
-                color: #4A5A48;
-            }
-            .table-count {
-                font-size: 10px;
-                color: #718096;
-            }
-            .guest-avatar {
-                position: absolute;
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                background: #6B7A68;
-                color: white;
-                font-size: 10px;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 2px solid white;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                overflow: hidden;
-                text-align: center;
-            }
-        </style>
-        </head>
-        <body>
-        <div class="salon-grid">
-        """
-
-        import math
-        for mesa_nombre, personas in mesas_dict.items():
-            html_mesas += f"""
-            <div class="table-card">
-                <div class="table-center">
-                    <div class="table-title">{mesa_nombre}</div>
-                    <div class="table-count">{len(personas)} Personas</div>
-                </div>
-            """
-            num_p = len(personas)
-            radius = 75  # Radio para distribuir alrededor de la mesa circular
-            for idx, p in enumerate(personas):
-                angle = (2 * math.pi / max(num_p, 1)) * idx
-                x = 84 + radius * math.cos(angle)
-                y = 84 + radius * math.sin(angle)
-                iniciales = "".join([w[0].upper() for w in p.split()[:2]])
-                html_mesas += f"""
-                <div class="guest-avatar" style="left: {x}px; top: {y}px;" title="{p}">
-                    {iniciales}
-                </div>
-                """
-            html_mesas += "</div>"
-
-        html_mesas += "</div></body></html>"
-        components.html(html_mesas, height=520, scrolling=True)
-
-    # 7. CONFIRMACIÓN Y REGALOS
+    # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
     st.markdown("""
     <div class="invitation-card" id="confirmacion">
         <div class="subtitle-cinzel">CONFIRMAR ASISTENCIA</div>
-        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 8px;">Por favor confirma tu presencia para asignarte tu mesa y sugerencia de regalo.</p>
+        <p style="font-size: 0.9rem; color: #4A5568 !important; margin-top: 8px;">Por favor confirma tu presencia e ingresa para recibir la sugerencia de regalo asignada.</p>
     </div>
     """, unsafe_allow_html=True)
 
+    # FORMULARIO
     with st.form("form_invitacion"):
         nombre = st.text_input("Nombre y Apellido:", placeholder="Ej: María López")
         asistencia = st.radio("¿Nos acompañarás?", ["¡Sí, allí estaré! 🎉", "Lo siento, no podré asistir 😢"])
@@ -645,65 +649,52 @@ else:
                 if asistencia == "¡Sí, allí estaré! 🎉":
                     regalo = asignar_regalo(nombre.strip())
                     asiste_val = "Sí"
-                    mesa_asistente = "Mesa 1"  # Mesa inicial por defecto
                 else:
                     regalo = "N/A"
                     asiste_val = "No"
-                    mesa_asistente = "Sin Mesa"
 
                 nueva_fila = pd.DataFrame([{
                     "Nombre": nombre.strip(),
                     "Asiste": asiste_val,
                     "Regalo": regalo,
-                    "Codigo": codigo,
-                    "Mesa": mesa_asistente
+                    "Codigo": codigo
                 }])
-                
-                df_actualizado = pd.concat([df_resp, nueva_fila], ignore_index=True)
-                guardar_respuestas(df_actualizado)
+                nueva_fila.to_csv(CSV_RESPUESTAS, mode='a', header=not CSV_RESPUESTAS.exists(), index=False)
 
                 st.success("¡Respuesta guardada con éxito!")
                 if asiste_val == "Sí":
                     st.balloons()
                     st.markdown(f"""
                     <div class="confirmation-envelope-card">
-                        <h3 style="font-family: 'Great Vibes', cursive !important; font-size: 2.3rem; color: #F3E5AB !important;">
+                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%);">
+                            <div class="seal-initials" style="width: 45px; height: 45px; font-size: 13px;">✉️</div>
+                        </div>
+                        <h3 style="font-family: 'Great Vibes', cursive !important; font-size: 2.3rem; margin-top: 15px; color: #F3E5AB !important;">
                             ¡Gracias por confirmar! 💖
                         </h3>
-                        <p style="font-size: 1rem; color: #FFFFFF !important;">
-                            Te asignamos temporalmente a la <strong>{mesa_asistente}</strong>.
+                        <p style="font-size: 1.1rem; line-height: 1.6; font-weight: 500; margin: 15px 0; color: #FFFFFF !important;">
+                            Te esperamos con ansias para celebrar este hermoso día con nosotros ✨🥂🎉💒
                         </p>
-                        <hr style="border: 0; border-top: 1px dashed rgba(255,255,255,0.4); margin: 15px 0;">
-                        <p style="font-size: 0.85rem; color: #F3E5AB !important;">🎁 Sugerencia de Regalo:</p>
-                        <h3 style="font-size: 1.5rem; color: #FFFFFF !important;">{regalo}</h3>
+                        <hr style="border: 0; border-top: 1px dashed rgba(255,255,255,0.4); margin: 20px 0;">
+                        <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #F3E5AB !important;">
+                            🎁 Sugerencia de Regalo Asignada:
+                        </p>
+                        <h2 style="font-size: 1.8rem; margin: 8px 0; font-family: 'Cinzel', serif !important; color: #FFFFFF !important;">
+                            {regalo}
+                        </h2>
+                        <p style="font-size: 0.8rem; opacity: 0.85; margin-top: 12px; color: #FFFFFF !important;">
+                            Código de Confirmación: <strong>{codigo}</strong>
+                        </p>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
-                    st.info("Agradecemos tu respuesta.")
+                    st.info("Lamentamos que no puedas acompañarnos, ¡agradecemos mucho tu respuesta!")
 
-    # 8. PANEL DE ADMINISTRACIÓN Y ASIGNACIÓN DE MESAS
+    # ADMIN PANEL
     st.markdown("<br><br>", unsafe_allow_html=True)
-    with st.expander("📊 Panel Admin (Gestor de Mesas e Invitados)"):
+    with st.expander("📊 Panel Admin (Ver invitados)"):
         df_ver = cargar_respuestas()
         if not df_ver.empty:
-            st.write("### Asignación Rápida de Mesas")
-            invitados_lista = df_ver[df_ver["Asiste"] == "Sí"]["Nombre"].tolist()
-            
-            if invitados_lista:
-                col1, col2 = st.columns(2)
-                with col1:
-                    invitado_sel = st.selectbox("Selecciona Invitado:", invitados_lista)
-                with col2:
-                    opciones_mesas = [f"Mesa {i}" for i in range(1, 11)] + ["Mesa Presidencial"]
-                    nueva_mesa = st.selectbox("Asignar Mesa:", opciones_mesas)
-                
-                if st.button("Guardar Mesa Asignada"):
-                    df_ver.loc[df_ver["Nombre"] == invitado_sel, "Mesa"] = nueva_mesa
-                    guardar_respuestas(df_ver)
-                    st.success(f"¡{invitado_sel} reasignado a {nueva_mesa}!")
-                    st.rerun()
-
-            st.write("### Lista de Confirmados")
             st.dataframe(df_ver, use_container_width=True)
         else:
             st.caption("Aún no hay respuestas.")
