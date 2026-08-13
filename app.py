@@ -36,7 +36,7 @@ def get_image_base64_or_url(path_local, url_github):
 img_b64 = get_image_base64_or_url(IMAGEN_HEADER, "")
 
 # Adorno floral SVG limpio (para evitar bloques de código negros)
-SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5-30-2-40 5-5 3-8 7-10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9 13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4-6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
+SVG_FLORES = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 120'><path fill='%236B7A68' d='M150 70c-20-10-40 0-50 15 15-5 30-2 40 5 5 3 8 7 10 10zM350 70c20-10 40 0 50 15-15-5 30-2 40 5 5 3 8 7 10 10z'/><path fill='%238A9A86' d='M180 50c-15-15-35-10-45 5 12-2 25 3 32 12 4 4 6 9 13-17zM320 50c15-15 35-10 45 5-12-2-25 3-32 12-4 4-6 9-13-17z'/><circle cx='250' cy='50' r='22' fill='%23D4A3A9'/><circle cx='250' cy='50' r='16' fill='%23E8C2C8'/><circle cx='250' cy='50' r='10' fill='%23F4DCDA'/><circle cx='215' cy='60' r='16' fill='%23E8B4B8'/><circle cx='215' cy='60' r='10' fill='%23F4DCDA'/><circle cx='285' cy='60' r='16' fill='%23E8B4B8'/><circle cx='285' cy='60' r='10' fill='%23F4DCDA'/><circle cx='190' cy='72' r='11' fill='%23F3D5D8'/><circle cx='310' cy='72' r='11' fill='%23F3D5D8'/></svg>"
 
 # ──────────────────────────────────────────────
 # ESTILOS CSS CORREGIDOS (COLORES Y FLORES)
@@ -314,7 +314,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. VERSÍCULO BÍBLICO DE AMOR (MENSAJE REINSERTADO)
+    # 2. VERSÍCULO BÍBLICO DE AMOR
     st.markdown("""
     <div class="invitation-card verse-card">
         <p class="verse-text">
@@ -335,7 +335,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 4. APARTADO DE PADRES (NUEVA SECCIÓN REINSERTADA)
+    # 4. PADRES DE LOS NOVIOS
     st.markdown("""
     <div class="invitation-card">
         <div class="subtitle-cinzel" style="margin-bottom: 15px;">Con la bendición de Dios y nuestros padres</div>
@@ -388,27 +388,23 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 8. MÚSICA DE FONDO (REINSERTADO)
+    # 8. MÚSICA DE FONDO
     st.markdown("""
     <div class="invitation-card" style="padding-bottom: 30px;">
         <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">🎵 Escucha nuestra canción</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Reemplazar con el ID de video real de YouTube
     st.video("https://www.youtube.com/watch?v=js2MkCAmTJY")
 
-    # 9. FOTO DE LOS NOVIOS (REINSERTADO)
+    # 9. FOTO DE LOS NOVIOS
     if img_b64:
         st.markdown("""
         <div class="invitation-card" style="padding: 20px;">
             <p style="font-size: 0.95rem; color: #4A5A48 !important; font-weight: 600; margin-bottom: 10px;">📸 Nuestra Foto</p>
         </div>
         """, unsafe_allow_html=True)
-        # st.image(img_b64, caption="Carlos & Eunice", use_column_width=True)
-    else:
-        # Espacio alternativo si no hay imagen en GitHub
-        st.caption("Añade tu foto en GitHub para que aparezca aquí.")
+        st.image(img_b64, caption="Carlos & Eunice", use_column_width=True)
 
     # 10. SECCIÓN DE CONFIRMACIÓN Y REGALOS
     st.markdown("""
